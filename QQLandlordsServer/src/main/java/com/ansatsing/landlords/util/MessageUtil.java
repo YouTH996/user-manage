@@ -11,6 +11,7 @@ public class MessageUtil {
 			if(message.contains(Constants.SYSTEM_EXIT_MSG_FLAG)) {
 				msg.setTYPE(MsgType.SYSTEM_EXIT_MSG);
 				msg.setMsg(message);
+				return msg;
 			}else if(message.startsWith("name-@")) {//用户名信息处理
 				msg.setTYPE(MsgType.USER_NAME_MSG);
 				msg.setMsg(message.substring(Constants.USER_NAME_MSG_FLAG.length()));
@@ -22,9 +23,13 @@ public class MessageUtil {
 				String toWho = message.substring(1, endIndex);
 				msg.setToWho(toWho);
 				return msg;
-			}else if(message.startsWith(Constants.ENTER_ROOM_MSG_FLAG)){//进入斗地主房间信息处理
-				msg.setTYPE(MsgType.ENTER_ROOM_MSG);
-				msg.setMsg(message.substring(Constants.ENTER_ROOM_MSG_FLAG.length()));
+			}else if(message.startsWith(Constants.ENTER_SEAT_MSG_FLAG)){//进入斗地主房间信息处理
+				msg.setTYPE(MsgType.ENTER_SEAT_MSG);
+				msg.setMsg(message.substring(Constants.ENTER_SEAT_MSG_FLAG.length()));
+				return msg;
+			}else if(message.startsWith(Constants.EXIT_SEAT_MSG_FLAG)){
+				msg.setTYPE(MsgType.EXIT_SEAT_MSG);
+				msg.setMsg(message.substring(Constants.EXIT_SEAT_MSG_FLAG.length()));
 				return msg;
 			}else {//群聊信息处理
 				msg.setTYPE(MsgType.SEND_ALL_MSG);

@@ -29,7 +29,7 @@ public class QQServerApp {
 			while(true) {
 				Socket socket = serverSocket.accept();
 				System.out.println(">>>>>>>一位网友连接成功！当前在线人数为："+(nameToSocket.size()+1));
-				new Thread(new QQServerHandler(socket,nameToSocket)).start();
+				new Thread(new ServerHandlerTransferThread(socket,nameToSocket)).start();
 				if(game3Sockets == null) {
 					game3Sockets = new ConcurrentHashMap<Integer, Socket>(); 
 				}
