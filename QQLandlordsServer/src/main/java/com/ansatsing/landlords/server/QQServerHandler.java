@@ -11,7 +11,7 @@ import java.util.Map;
 import com.ansatsing.landlords.entity.Message;
 import com.ansatsing.landlords.entity.MsgType;
 import com.ansatsing.landlords.entity.Player;
-import com.ansatsing.landlords.util.MessageHandler;
+import com.ansatsing.landlords.util.MessageUtil;
 /**
  * qq斗地主服务器端网络IO处理中心
  * @author sunyq
@@ -44,7 +44,7 @@ class QQServerHandler implements Runnable {
 						System.out.println(player.getUserName()+"发送了消息："+readMsg);
 					}
 					////////////////////////////////////////////////////////
-					message = MessageHandler.handle(readMsg);
+					message = MessageUtil.handle(readMsg);
 					if(message.getTYPE() == MsgType.USER_NAME_MSG) {
 						if(nameToSocket.keySet().contains(message.getMsg())){//处理重复网名
 							printWriter = new PrintWriter(this.socket.getOutputStream(), true);

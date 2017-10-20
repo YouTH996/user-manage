@@ -3,7 +3,7 @@ package com.ansatsing.landlords.util;
 import com.ansatsing.landlords.entity.Message;
 import com.ansatsing.landlords.entity.MsgType;
 
-public class MessageHandler {
+public class MessageUtil {
 	public static Message handle(String message) {
 		Message msg = null;
 		if(message != null && !message.trim().equals("")) {
