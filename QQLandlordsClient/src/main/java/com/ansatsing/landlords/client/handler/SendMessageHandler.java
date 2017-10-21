@@ -32,7 +32,7 @@ public class SendMessageHandler {
 	 */
 	public void sendExitSeatMsg(String msg){
 		if(msg != null && !msg.trim().equals("")){
-			sendMsg(SendMessagePack.packMsg(MsgType.ENTER_SEAT_MSG, msg));
+			sendMsg(SendMessagePack.packMsg(MsgType.EXIT_SEAT_MSG, msg));
 		}
 	}	
 	/**

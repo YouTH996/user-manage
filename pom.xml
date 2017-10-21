@@ -9,4 +9,14 @@
   	<module>QQLandlordsServer</module>
   	<module>QQLandlordsClient</module>
   </modules>
+  <properties>
+  	<Guava-version>20.0</Guava-version>
+  </properties>
+  <dependencies>
+  <dependency>
+    <groupId>com.google.guava</groupId>
+    <artifactId>guava</artifactId>
+    <version>${Guava-version}</version>
+</dependency>
+  </dependencies>
 </project>

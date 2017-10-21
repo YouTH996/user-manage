@@ -5,4 +5,5 @@ public class Constants {
 	public final static String USER_NAME_MSG_FLAG = "name-@";//用户名信息标志
 	public final static String ENTER_SEAT_MSG_FLAG = "enTeR@rOoM*MSg]";//霸占座位信息标志
 	public final static String EXIT_SEAT_MSG_FLAG = "e4TeR@rmoM*MSg{";//空出座位信息标志
+	public final static String INIT_SEAT_MSG_FLAG = "@4TeR@r$oM*MS5{";//初始化座位信息标志
 }

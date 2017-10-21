@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import com.ansatsing.landlords.entity.Message;
@@ -22,11 +23,11 @@ class ServerHandlerTransferThread implements Runnable {
 	Map<String, Socket> nameToSocket;
 	private Player player;
 	private MessageHandler messageHandler;
-	public ServerHandlerTransferThread( Socket socket,Map<String, Socket> nameToSocket) {
+	public ServerHandlerTransferThread( Socket socket,Map<String, Socket> nameToSocket,List<String> enterSeatList) {
 		this.socket = socket;
 		this.nameToSocket = nameToSocket;
 		player = new Player();
-		messageHandler = new MessageHandler(nameToSocket, player,socket);
+		messageHandler = new MessageHandler(nameToSocket, player,socket,enterSeatList);
 	}
 
 	public void run() {//消息处理以及中转
@@ -40,7 +41,7 @@ class ServerHandlerTransferThread implements Runnable {
 			while (true) {
 				readMsg = bufferedReader.readLine();
 				if (!readMsg.equals("")) {
-					System.out.println(player.getUserName()+"发送了消息："+readMsg);
+					System.out.println((player.getUserName() == null ? "未登陆的":player.getUserName())+"发送了消息："+readMsg);
 					/*if(player == null) {
 						System.out.println("新进网友正在为起网名发的信息："+readMsg);
 					}else {

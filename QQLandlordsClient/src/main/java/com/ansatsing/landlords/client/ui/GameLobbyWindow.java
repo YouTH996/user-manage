@@ -144,6 +144,8 @@ public class GameLobbyWindow extends JFrame {
 		sendPanel.add(send);
 		childJpanel2.add(sendPanel);
 		
+		//seats[20].setText("ccdfas");
+		//setSeatName(21, "kkkk");
 	}
 	
 	private void initListener(){
@@ -188,9 +190,10 @@ public class GameLobbyWindow extends JFrame {
 					if(jLabelTemp.getText().equals("空位")){
 						jLabelTemp.setText(userName);
 						if(currentRoom != null) {
+							messageHandler.sendExitSeatMsg(String.valueOf(currentRoom.getSeatNum()));
 							currentRoom.closeRoom();
 						}
-						currentRoom = new LandlordsRoomWindow(jLabelTemp);
+						currentRoom = new LandlordsRoomWindow(jLabelTemp,seatNum);
 						messageHandler.sendEnterSeatMsg(seatNum+"");
 					}else {
 						JOptionPane.showMessageDialog(null, "该位置有人", "信息警告", JOptionPane.WARNING_MESSAGE);
@@ -212,13 +215,15 @@ public class GameLobbyWindow extends JFrame {
 	 * @param userName
 	 */
 	public void setSeatName(int seatNum,String userName){
+		System.out.println(seatNum+"===="+userName+"-----"+seats[seatNum].getText());
 		seats[seatNum].setText(userName);
+		System.out.println(seatNum+"===="+userName+"--****--"+seats[seatNum].getText());
 	}
 	/**
 	 * 空出位置
 	 * @param seatNum
 	 */
 	public void emptySeat(int seatNum){
-		seats[seatNum].setText("空座");
+		seats[seatNum].setText("空位");
 	}
 }

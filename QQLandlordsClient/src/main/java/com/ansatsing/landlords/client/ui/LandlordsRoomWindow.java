@@ -13,12 +13,14 @@ import javax.swing.JLabel;
  */
 public class LandlordsRoomWindow extends JFrame {
 	private JLabel seat;
+	private int seatNum;
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
-	public LandlordsRoomWindow(JLabel seat) {
+	public LandlordsRoomWindow(JLabel seat,int seatNum) {
 		initGUI();
 		initListener();
+		this.seatNum = seatNum;
 		this.seat = seat;
 	}
 	private void initGUI() {
@@ -42,4 +44,8 @@ public class LandlordsRoomWindow extends JFrame {
 		seat.setText("空位");
 		dispose();
 	}
+	public int getSeatNum() {
+		return seatNum;
+	}
+	
 }
