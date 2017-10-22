@@ -6,7 +6,7 @@ import java.net.Socket;
 
 import com.ansatsing.landlords.entity.MsgType;
 /**
- * 消息处理并发送中心
+ * 消息处理并发送中心:信息从客户端发送到服务器端;
  *
  * @author ansatsing
  * @time 2017年10月20日 下午9:59:35
@@ -93,6 +93,15 @@ public class SendMessageHandler {
 	public void sendRemoveSocketMsg(String msg){
 		if(msg != null && !msg.trim().equals("")){
 			sendMsg(SendMessagePack.packMsg(MsgType.ROOM_REMOVE_SOCKET_MSG, msg));
+		}
+	}
+	/**
+	 * 斗地主房间新牌友入座时新增此牌友的socket到三人组Map
+	 * @param msg
+	 */
+	public void sendAddSocketMsg(String msg){
+		if(msg != null && !msg.trim().equals("")){
+			sendMsg(SendMessagePack.packMsg(MsgType.ROOM_ADD_SOCKET_MSG, msg));
 		}
 	}
 	/**

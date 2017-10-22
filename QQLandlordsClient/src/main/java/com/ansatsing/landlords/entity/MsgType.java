@@ -11,7 +11,8 @@ public enum MsgType {
 	EXIT_ROOM_MSG("退出斗地主房间信息"),
 	ROOM_SEND_ALL_MSG("房间群发消息"),
 	ROOM_SEND_ONE_MSG("房间私聊消息"),
-	ROOM_REMOVE_SOCKET_MSG("移除同桌牌友socket信息");
+	ROOM_REMOVE_SOCKET_MSG("移除同桌牌友socket信息"),
+	ROOM_ADD_SOCKET_MSG("增加同桌牌友socket信息");
 	private String description;
 	MsgType(String description) {
 		this.description =description;

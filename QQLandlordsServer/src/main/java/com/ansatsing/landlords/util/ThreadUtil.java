@@ -1,5 +1,10 @@
 package com.ansatsing.landlords.util;
-
+/**
+ * 获取线程对象
+ *
+ * @author ansatsing
+ * @time 2017年10月22日 下午11:44:51
+ */
 public class ThreadUtil {
 	public static Thread findThreadByName(String threadName){
         ThreadGroup group = Thread.currentThread().getThreadGroup();

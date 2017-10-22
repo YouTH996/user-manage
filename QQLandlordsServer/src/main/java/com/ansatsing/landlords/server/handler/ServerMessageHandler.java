@@ -143,6 +143,8 @@ public class ServerMessageHandler {
 				singleSendMsg(toSocket,toMsg);
 			}else if(message.getTYPE() == MsgType.ROOM_REMOVE_SOCKET_MSG){
 				tripleSockets.remove(message.getMsg());
+			}else if(message.getTYPE() == MsgType.ROOM_ADD_SOCKET_MSG){
+				tripleSockets.put(message.getMsg(), nameToSocket.get(message.getMsg()));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -275,6 +275,7 @@ public class LandlordsRoomWindow extends JFrame {
 		return seatNum;
 	}
 	public void setSeatUserName(String userName){
+		messageHandler.sendAddSocketMsg(userName);
 		if(leftUserName.getText().trim().equals("空位")){
 			leftUserName.setText(userName);
 		}else{
