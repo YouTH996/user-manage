@@ -1,18 +1,19 @@
-package com.ansatsing.landlords.client.handler;
+package com.ansatsing.landlords.client.thread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import com.ansatsing.landlords.client.handler.ReceiveMessageHandler;
 import com.ansatsing.landlords.client.ui.GameLobbyWindow;
 
-public class GameLobbyReceiveThread implements Runnable {
+public class ClientReceiveThread implements Runnable {
 	private Socket socket;
 	private boolean isStop = false;
 	private GameLobbyWindow qqGameWindow;
 	private ReceiveMessageHandler receiveMessageHandler;
-	public GameLobbyReceiveThread(Socket socket,GameLobbyWindow qqGameWindow) {
+	public ClientReceiveThread(Socket socket,GameLobbyWindow qqGameWindow) {
 		this.socket = socket;
 		this.qqGameWindow = qqGameWindow;
 		this.receiveMessageHandler = new ReceiveMessageHandler(qqGameWindow);
@@ -50,4 +51,8 @@ public class GameLobbyReceiveThread implements Runnable {
   public void stop(){
 	  this.isStop = true;
   }
+public ReceiveMessageHandler getReceiveMessageHandler() {
+	return receiveMessageHandler;
+}
+  
 }

@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.Socket;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -16,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.ansatsing.landlords.client.handler.SendMessageHandler;
+import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.util.PictureUtil;
 /**
  * 斗地主房间
@@ -40,17 +43,21 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel leftUserName;
 	private JLabel rightUserName;
 	private JLabel[] topCards;
+	private String userName;
+	private SendMessageHandler messageHandler;
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
-	public LandlordsRoomWindow(JLabel seat,int seatNum) {
+	public LandlordsRoomWindow(JLabel seat,int seatNum,String userName,Socket socket) {
+		this.userName = userName;
 		initGUI();
 		initListener();
 		this.seatNum = seatNum;
 		this.seat = seat;
+		this.messageHandler = new SendMessageHandler(socket);
 	}
 	private void initGUI() {
-		setTitle("开房斗地主");
+		setTitle("开房斗地主---" +userName);
 		setSize(WIDTH, HEIGHT);
 		setResizable(false);// 宽高度固死
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -214,6 +221,7 @@ public class LandlordsRoomWindow extends JFrame {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
+				messageHandler.sendExitSeatMsg(String.valueOf(seatNum));
 				seat.setText("空位");
 			}
 			
@@ -236,6 +244,28 @@ public class LandlordsRoomWindow extends JFrame {
 				
 			});
 		}
+		//房间发送信息鼠标单击事件
+		send.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (!sendMsg.getText().trim().equals("")) {
+					String msg = sendMsg.getText().trim();
+					msg = msg.replaceAll("：", ":");
+					//messageHandler.sendr(msg);
+					if (msg.startsWith("@")) {
+						messageHandler.sendRoomPrivateChatMsg(msg);
+						int endIdx = msg.indexOf(":");
+						String name = msg.substring(1, endIdx);
+						setHistoryMsg("你悄悄对" + name + "说:" + msg);
+					} else {
+						messageHandler.sendRoomAllChatMsg(msg);
+						setHistoryMsg("你说:" + msg);
+					}
+				}
+			}
+			
+		});
 	}
 	public void closeRoom() {
 		seat.setText("空位");
@@ -244,5 +274,27 @@ public class LandlordsRoomWindow extends JFrame {
 	public int getSeatNum() {
 		return seatNum;
 	}
-	
+	public void setSeatUserName(String userName){
+		if(leftUserName.getText().trim().equals("空位")){
+			leftUserName.setText(userName);
+		}else{
+			rightUserName.setText(userName);
+		}
+	}
+	public void emptySeat(String tempMsg) {
+		messageHandler.sendRemoveSocketMsg(tempMsg);
+		if(leftUserName.getText().trim().equals(tempMsg)){
+			leftUserName.setText("空位");
+		}else if(rightUserName.getText().trim().equals(tempMsg)){
+			rightUserName.setText("空位");
+		}
+	}
+	/**
+	 * 显示收到的群聊消息
+	 * 
+	 * @param readMsg
+	 */
+	public void setHistoryMsg(String readMsg) {
+		this.historyMsg.append(readMsg + "\n");
+	}	
 }

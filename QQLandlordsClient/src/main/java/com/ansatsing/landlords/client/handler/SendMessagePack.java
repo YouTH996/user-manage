@@ -2,6 +2,8 @@ package com.ansatsing.landlords.client.handler;
 
 import com.ansatsing.landlords.entity.MsgType;
 import com.ansatsing.landlords.util.Constants;
+
+import ch.qos.logback.core.joran.conditional.ElseAction;
 /*
  * 消息包装工具
  */
@@ -20,6 +22,12 @@ public class SendMessagePack {
 			return msg;
 		}else if(msgType == MsgType.EXIT_SEAT_MSG){
 			return Constants.EXIT_SEAT_MSG_FLAG+msg;
+		}else if(msgType == MsgType.ROOM_SEND_ALL_MSG){
+			return Constants.ROOM_SEND_ALL_MSG_FLAG+msg;
+		}else if(msgType == MsgType.ROOM_SEND_ONE_MSG){
+			return Constants.ROOM_SEND_ONE_MSG_FLAG+msg;
+		}else if(msgType == MsgType.ROOM_REMOVE_SOCKET_MSG){
+			return Constants.ROOM_REMOVE_SOCKET_FLAG+msg;
 		}
 		return tempMsg;
 	}

@@ -60,12 +60,39 @@ public class SendMessageHandler {
 		}
 	}
 	/**
+	 * 发送房间私聊信息
+	 * @param msg
+	 */
+	public void sendRoomPrivateChatMsg(String msg){
+		if(msg != null && !msg.trim().equals("")){
+			sendMsg(SendMessagePack.packMsg(MsgType.ROOM_SEND_ONE_MSG, msg));
+		}
+	}
+	/**
+	 * 发送房间群聊消息
+	 * @param msg
+	 */
+	public void sendRoomAllChatMsg(String msg){
+		if(msg != null && !msg.trim().equals("")){
+			sendMsg(SendMessagePack.packMsg(MsgType.ROOM_SEND_ALL_MSG, msg));
+		}
+	}	
+	/**
 	 * 发送用户名登记消息
 	 * @param msg
 	 */
 	public void sendUsernameMSg(String msg){
 		if(msg != null && !msg.trim().equals("")){
 			sendMsg(SendMessagePack.packMsg(MsgType.USER_NAME_MSG, msg));
+		}
+	}
+	/**
+	 * 移除牌友socket
+	 * @param msg
+	 */
+	public void sendRemoveSocketMsg(String msg){
+		if(msg != null && !msg.trim().equals("")){
+			sendMsg(SendMessagePack.packMsg(MsgType.ROOM_REMOVE_SOCKET_MSG, msg));
 		}
 	}
 	/**

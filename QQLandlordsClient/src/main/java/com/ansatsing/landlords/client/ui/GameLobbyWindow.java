@@ -9,10 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,9 +19,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.ansatsing.landlords.client.handler.ReceiveMessageHandler;
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
-import com.ansatsing.landlords.client.handler.GameLobbyReceiveThread;
-import com.ansatsing.landlords.util.Constants;
+import com.ansatsing.landlords.client.thread.ClientReceiveThread;
 
 /**
  * QQ斗地主游戏大厅
@@ -45,13 +42,14 @@ public class GameLobbyWindow extends JFrame {
 	private JTextArea sendMsg;
 	/** 输入消息区域 */
 	private JButton send;
-	private GameLobbyReceiveThread qqClientHandler;
+	private ClientReceiveThread qqClientHandler;
 	private JLabel seats[]; // 斗地主座位
 	// private JButton seats[]; //斗地主座位
 	private final int TOTAL = 30;// 总共多少桌
 	private String userName;// 网名
 	private LandlordsRoomWindow currentRoom;
 	private SendMessageHandler messageHandler;
+	private Socket socket;
 	/*
 	 * public static void main(String[] args) { Socket socket = null;
 	 * QQGameWindow qqGameWindow = new QQGameWindow(socket); }
@@ -63,12 +61,13 @@ public class GameLobbyWindow extends JFrame {
 		initListener();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
-		GameLobbyReceiveThread qqClientHandler = new GameLobbyReceiveThread(socket, this);
+		ClientReceiveThread qqClientHandler = new ClientReceiveThread(socket, this);
 		Thread thread = new Thread(qqClientHandler);
 		thread.start();
 		this.qqClientHandler = qqClientHandler;
 		this.userName = userName;
 		this.messageHandler = new SendMessageHandler(socket);
+		this.socket =socket;
 	}
 
 	private void initGUI() {
@@ -170,9 +169,9 @@ public class GameLobbyWindow extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (!sendMsg.getText().trim().equals("")) {
 					String msg = sendMsg.getText().trim();
+					msg = msg.replaceAll("：", ":");
 					messageHandler.sendAllChatMsg(msg);
 					if (msg.startsWith("@")) {
-						msg = msg.replaceAll("：", ":");
 						int endIdx = msg.indexOf(":");
 						String name = msg.substring(1, endIdx);
 						setHistoryMsg("你悄悄对" + name + "说:" + msg);
@@ -194,8 +193,9 @@ public class GameLobbyWindow extends JFrame {
 					if (jLabelTemp.getText().equals("空位")) {
 						jLabelTemp.setText(userName);
 						closeLandlordsRoom();
-						currentRoom = new LandlordsRoomWindow(jLabelTemp, seatNum);
+						currentRoom = new LandlordsRoomWindow(jLabelTemp, seatNum,userName,socket);
 						messageHandler.sendEnterSeatMsg(seatNum + "");
+						qqClientHandler.getReceiveMessageHandler().setLandlordsRoomWindow(currentRoom);
 					} else {
 						JOptionPane.showMessageDialog(null, "该位置有人", "信息警告", JOptionPane.WARNING_MESSAGE);
 					}
@@ -220,9 +220,7 @@ public class GameLobbyWindow extends JFrame {
 	 * @param userName
 	 */
 	public void setSeatName(int seatNum, String userName) {
-		System.out.println(seatNum + "====" + userName + "-----" + seats[seatNum].getText());
 		seats[seatNum].setText(userName);
-		System.out.println(seatNum + "====" + userName + "--****--" + seats[seatNum].getText());
 	}
 
 	/**

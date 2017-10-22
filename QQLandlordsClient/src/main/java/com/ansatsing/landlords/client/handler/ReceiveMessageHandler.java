@@ -1,14 +1,19 @@
 package com.ansatsing.landlords.client.handler;
 
-import java.net.Socket;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ansatsing.landlords.client.ui.GameLobbyWindow;
+import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 import com.ansatsing.landlords.util.Constants;
 import com.google.common.base.Splitter;
 
 public class ReceiveMessageHandler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveMessageHandler.class);
 	private GameLobbyWindow gameLobbyWindow;
+	private LandlordsRoomWindow landlordsRoomWindow;
 	public ReceiveMessageHandler(GameLobbyWindow gameLobbyWindow) {
 		this.gameLobbyWindow = gameLobbyWindow;
 	}
@@ -32,9 +37,29 @@ public class ReceiveMessageHandler {
 					String userName = seatNums.get(i).substring(spiltIdx+1);
 					gameLobbyWindow.setSeatName(seatNum, userName);
 				}
+			}else if(msg.startsWith(Constants.ENTER_ROOM_MSG_FLAG)){
+				if(landlordsRoomWindow != null){
+					landlordsRoomWindow.setSeatUserName(msg.substring(Constants.ENTER_ROOM_MSG_FLAG.length()));
+				}
+			}else if(msg.startsWith(Constants.EXIT_ROOM_MSG_FLAG)){
+				if(landlordsRoomWindow != null){
+					landlordsRoomWindow.emptySeat(msg.substring(Constants.EXIT_ROOM_MSG_FLAG.length()));
+				}
+			}else if(msg.startsWith(Constants.ROOM_SEND_ALL_MSG_FLAG)){
+				if(landlordsRoomWindow!=null){
+					landlordsRoomWindow.setHistoryMsg(msg.substring(Constants.ROOM_SEND_ALL_MSG_FLAG.length()));
+				}
+			}else if(msg.startsWith(Constants.ROOM_SEND_ONE_MSG_FLAG)){
+				if(landlordsRoomWindow!=null){
+					landlordsRoomWindow.setHistoryMsg(msg.substring(Constants.ROOM_SEND_ONE_MSG_FLAG.length()));
+				}
 			}else{
 				gameLobbyWindow.setHistoryMsg(msg);
 			}
 		}
 	}
+	public void setLandlordsRoomWindow(LandlordsRoomWindow landlordsRoomWindow) {
+		this.landlordsRoomWindow = landlordsRoomWindow;
+	}
+	
 }
