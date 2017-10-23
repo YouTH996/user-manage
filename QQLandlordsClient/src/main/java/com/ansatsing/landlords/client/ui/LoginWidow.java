@@ -81,7 +81,7 @@ public class LoginWidow extends JDialog {
 			getContentPane().add(content, BorderLayout.CENTER);
 
 			// 窗口标题
-			title = new JLabel("QQ聊天室登录");
+			title = new JLabel("QQ斗地主登录");
 			content.add(title);
 			title.setFont(new Font("微软雅黑", Font.BOLD, 15));
 			title.setBounds(3, 1, 154, 24);

@@ -17,8 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
-import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.util.PictureUtil;
 /**
  * 斗地主房间
@@ -26,6 +28,7 @@ import com.ansatsing.landlords.util.PictureUtil;
  *
  */
 public class LandlordsRoomWindow extends JFrame {
+	private final static Logger LOGGER = LoggerFactory.getLogger(LandlordsRoomWindow.class);
 	private JLabel seat;
 	private int seatNum;
 	private final int WIDTH = 1500;
@@ -274,11 +277,24 @@ public class LandlordsRoomWindow extends JFrame {
 	public int getSeatNum() {
 		return seatNum;
 	}
-	public void setSeatUserName(String userName){
+	/**
+	 * 实现了斗地主房间位置跟游戏大厅的位置顺序一致
+	 * msg    --->  ansatsing=3
+	 *   1
+	 * 0   2 
+	 *   4
+	 * 3   5
+	 * @param msg
+	 */
+	public void setSeatUserName(String msg){
+		LOGGER.info(userName+"入座情况》》》》》》》》》》》》"+msg);
+		int idx = msg.indexOf("=");
+		String userName = msg.substring(0,idx);
 		messageHandler.sendAddSocketMsg(userName);
-		if(leftUserName.getText().trim().equals("空位")){
+		int _seatNum = Integer.parseInt(msg.substring(idx+1));
+		if(_seatNum == getLeftSeatNum()) {
 			leftUserName.setText(userName);
-		}else{
+		}else if(_seatNum == getRightSeatNum()) {
 			rightUserName.setText(userName);
 		}
 	}
@@ -298,4 +314,30 @@ public class LandlordsRoomWindow extends JFrame {
 	public void setHistoryMsg(String readMsg) {
 		this.historyMsg.append(readMsg + "\n");
 	}	
+	/**
+	 * 获取左边位置的座位号
+	 * @return
+	 */
+	private int getLeftSeatNum( ) {
+		if(seatNum % 3 == 0){//左边  --参考游戏大厅方位
+			return seatNum +1;
+		}else if((seatNum+1)%3 == 0){//右边--参考游戏大厅方位
+			return seatNum - 2;
+		}else{//顶上--参考游戏大厅方位
+			return seatNum + 1;
+		}
+	}
+	/**
+	 * 获取右边边位置的座位号
+	 * @return
+	 */
+	private int getRightSeatNum() {
+		if(seatNum % 3 == 0){//左边  --参考游戏大厅方位
+			return seatNum +2;
+		}else if((seatNum+1)%3 == 0){//右边--参考游戏大厅方位
+			return seatNum - 1;
+		}else{//顶上--参考游戏大厅方位
+			return seatNum - 1;
+		}
+	}
 }

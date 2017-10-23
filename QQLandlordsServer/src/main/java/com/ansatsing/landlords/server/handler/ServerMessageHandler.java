@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,13 @@ public class ServerMessageHandler {
 	private Player player;
 	private Map<Integer, String> enterSeatMap;
 	private Map<String,Socket> tripleSockets;//记住正在斗地主的3个人的socket
-	public ServerMessageHandler(Map<String, Socket> nameToSocket,Player player,Socket socket,Map<Integer, String> enterSeatMap,Map<String,Socket> tripleSockets) {
+	private Map<Integer, Map<String, Socket>> gameGroups; 
+	public ServerMessageHandler(Map<String, Socket> nameToSocket,Player player,Socket socket,Map<Integer, String> enterSeatMap,Map<Integer, Map<String, Socket>> gameGroups) {
 		this.nameToSocket = nameToSocket;
 		this.player = player;
 		this.socket = socket;
 		this.enterSeatMap = enterSeatMap;
-		this.tripleSockets = tripleSockets;
+		this.gameGroups = gameGroups;
 	}
 
 	public void handleMessage(Message message) {
@@ -46,10 +48,7 @@ public class ServerMessageHandler {
 					singleSendMsg(socket,"这个网名可以啦!");
 					nameToSocket.put(userName, socket);
 					player.setUserName(userName);
-					if(player.getUserName() != null ){//设置线程名称
-						Thread.currentThread().setName(player.getUserName());
-					}
-					if(enterSeatMap.size() > 0){
+					if(enterSeatMap.size() > 0){//初始化游戏大厅座位情况
 						StringBuilder stringBuilder = new StringBuilder();
 						stringBuilder.append(Constants.INIT_SEAT_MSG_FLAG);
 						for(Integer seatNum:enterSeatMap.keySet()){
@@ -71,6 +70,26 @@ public class ServerMessageHandler {
 				batchSendMsg(message.getMsg()+Constants.ENTER_SEAT_MSG_FLAG+player.getUserName(),nameToSocket);
 				//enterSeatList.add(seatNum+"="+player.getUserName());
 				
+				//确定是哪一桌？
+				int tableNum = 0;
+				if(seatNum % 3 == 0){
+					tableNum = seatNum / 3;
+				}else if((seatNum+1)%3 == 0) {
+					tableNum = (seatNum +1) / 3 -1;
+				}else {
+					tableNum = (seatNum -1) / 3;
+				}
+				if(gameGroups.containsKey(tableNum)) {
+					tripleSockets = gameGroups.get(tableNum);
+					tripleSockets.put(player.getUserName(), socket);
+				}else {
+					if(tripleSockets == null) {
+						tripleSockets = new ConcurrentHashMap<String, Socket>();
+					}
+					tripleSockets.put(player.getUserName(), socket);
+					gameGroups.put(tableNum, tripleSockets);
+				}
+				
 				//找到当前桌的其他2个人的socket
 				/**算法分析
 				 * 0 1	 2
@@ -80,8 +99,8 @@ public class ServerMessageHandler {
 				 * 
 				 * 如果seatNum能整除3,则是第一个位置；如果seatNum+1能整除3则第3个位置，否则就中间的位置
 				 */
-				this.tripleSockets.put(player.getUserName(), this.socket);
-				if(seatNum % 3 == 0){
+				//this.tripleSockets.put(player.getUserName(), this.socket);
+				/*if(seatNum % 3 == 0){
 					if(enterSeatMap.containsKey(seatNum +1)){
 						this.tripleSockets.put(enterSeatMap.get(seatNum+1), nameToSocket.get(enterSeatMap.get(seatNum+1)));
 					}
@@ -103,15 +122,16 @@ public class ServerMessageHandler {
 					if(enterSeatMap.containsKey(seatNum +1)){
 						this.tripleSockets.put(enterSeatMap.get(seatNum+1), nameToSocket.get(enterSeatMap.get(seatNum+1)));
 					}
-				}
+				}*/
 				//斗地主房间里座位信息在牌友间互通
 				if(tripleSockets.size() > 1){
 					//1将自己的信息发给同桌的比你先进的牌友
-					batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+player.getUserName(), tripleSockets);
+					batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+player.getUserName()+"="+seatNum, tripleSockets);
 					//2将同桌的比你先进去的牌友的信息发给自己
 					for(String username:tripleSockets.keySet()){
 						if(username.equals(player.getUserName())) continue;
-							singleSendMsg(this.socket, Constants.ENTER_ROOM_MSG_FLAG+username);
+							
+							singleSendMsg(this.socket, Constants.ENTER_ROOM_MSG_FLAG+username+"="+getSeatNumByUserName(username));
 					}
 				}
 			}else if(message.getTYPE() == MsgType.SEND_ALL_MSG) {
@@ -196,5 +216,71 @@ public class ServerMessageHandler {
 				}
 			}
 		}
+	}
+	/**
+	 * 找同桌的其他牌友的座位号
+	 * @param seatNum
+	 * @param userName
+	 * @return
+	 */
+	private Integer getSeatNumByUserName(String userName) {
+		int seatNUm = -1;
+		int seatNum = player.getSeatNum();
+		if(enterSeatMap !=null) {
+			if(seatNum % 3 == 0){
+				if(enterSeatMap.containsKey(seatNum +1)){
+					if(enterSeatMap.get(seatNum+1).equals(userName))
+					{
+						return seatNum +1;
+					}
+				}
+				if(enterSeatMap.containsKey(seatNum +2)){
+					if(enterSeatMap.get(seatNum+2).equals(userName))
+					{
+						return seatNum +1;
+					}
+				}
+					
+			}else if((seatNum+1)%3 == 0){
+				if(enterSeatMap.containsKey(seatNum -1)){
+					if(enterSeatMap.get(seatNum-1).equals(userName))
+					{
+						return seatNum -1;
+					}
+				}
+				if(enterSeatMap.containsKey(seatNum -2)){
+					if(enterSeatMap.get(seatNum-2).equals(userName))
+					{
+						return seatNum -2;
+					}
+				}
+			}else{
+				if(enterSeatMap.containsKey(seatNum +1)){
+					if(enterSeatMap.get(seatNum+1).equals(userName))
+					{
+						return seatNum +1;
+					}
+				}
+				if(enterSeatMap.containsKey(seatNum -1)){
+					if(enterSeatMap.get(seatNum-1).equals(userName))
+					{
+						return seatNum -1;
+					}
+				}
+			}
+		}
+		return seatNUm;
+	}
+	public static void main(String[] args) {
+		int tableNum = 0;
+		int seatNum = 6;
+		if(seatNum % 3 == 0){
+			tableNum = seatNum / 3;
+		}else if((seatNum+1)%3 == 0) {
+			tableNum = (seatNum +1) / 3 -1;
+		}else {
+			tableNum = (seatNum -1) / 3;
+		}
+		System.out.println(tableNum);
 	}
 }

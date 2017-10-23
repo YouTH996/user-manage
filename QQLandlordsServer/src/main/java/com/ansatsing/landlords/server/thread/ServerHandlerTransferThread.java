@@ -29,13 +29,14 @@ public class ServerHandlerTransferThread implements Runnable {
 	Map<String, Socket> nameToSocket;
 	private Player player;
 	private ServerMessageHandler messageHandler;
-	private Map<String,Socket> tripleSockets;//记住正在斗地主的3个人的socket
-	public ServerHandlerTransferThread( Socket socket,Map<String, Socket> nameToSocket,Map<Integer, String> enterSeatMap) {
+	//private Map<String,Socket> tripleSockets;//记住正在斗地主的3个人的socket
+	//private Map<Integer, Map<String, Socket>> gameGroups;
+	public ServerHandlerTransferThread( Socket socket,Map<String, Socket> nameToSocket,Map<Integer, String> enterSeatMap,Map<Integer, Map<String, Socket>> gameGroups) {
 		this.socket = socket;
 		this.nameToSocket = nameToSocket;
 		player = new Player();
-		tripleSockets = new ConcurrentHashMap<String, Socket>();
-		messageHandler = new ServerMessageHandler(nameToSocket, player,socket,enterSeatMap,tripleSockets);
+		messageHandler = new ServerMessageHandler(nameToSocket, player,socket,enterSeatMap,gameGroups);
+		//this.gameGroups = gameGroups;
 	}
 
 	public void run() {//消息处理以及中转
@@ -100,7 +101,7 @@ public class ServerHandlerTransferThread implements Runnable {
 	 * 移除退出房间的同桌牌友的socket
 	 * @param userName
 	 */
-	public void removePlayer(String userName){
+	/*public void removePlayer(String userName){
 		tripleSockets.remove(userName);
-	}
+	}*/
 }
