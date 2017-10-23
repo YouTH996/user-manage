@@ -237,7 +237,7 @@ public class ServerMessageHandler {
 				if(enterSeatMap.containsKey(seatNum +2)){
 					if(enterSeatMap.get(seatNum+2).equals(userName))
 					{
-						return seatNum +1;
+						return seatNum +2;
 					}
 				}
 					
