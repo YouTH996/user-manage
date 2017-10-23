@@ -331,11 +331,11 @@ public class LandlordsRoomWindow extends JFrame {
 		}else if(_seatNum == LandlordsUtil.getRightSeatNum(seatNum)) {
 			rightUserName.setText(userName);
 		}
-		if(!leftUserName.getText().equals("空位") && !rightUserName.getText().equals("空位")){
+		/*if(!leftUserName.getText().equals("空位") && !rightUserName.getText().equals("空位")){
 			this.countDownThread = new CountDownThread(this, 15);
 			Thread thread = new Thread(countDownThread);
 			thread.start();
-		}
+		}*/
 	}
 	public void emptySeat(String tempMsg) {
 		//messageHandler.sendRemoveSocketMsg(tempMsg);

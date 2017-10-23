@@ -19,6 +19,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ansatsing.landlords.client.handler.ReceiveMessageHandler;
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
 import com.ansatsing.landlords.client.thread.ClientReceiveThread;
@@ -30,6 +33,7 @@ import com.ansatsing.landlords.client.thread.ClientReceiveThread;
  * @time 2017年10月20日 下午8:14:18
  */
 public class GameLobbyWindow extends JFrame {
+	private final static Logger LOGGER = LoggerFactory.getLogger(GameLobbyWindow.class);
 	private final int WIDTH = 1500;
 	private final int HEIGHT = 800;
 	private JPanel childJpanel1;// 主窗体左侧
@@ -191,8 +195,10 @@ public class GameLobbyWindow extends JFrame {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (jLabelTemp.getText().equals("空位")) {
+						if (currentRoom != null) {
+							closeLandlordsRoom();
+						}
 						jLabelTemp.setText(userName);
-						closeLandlordsRoom();
 						currentRoom = new LandlordsRoomWindow(jLabelTemp, seatNum,userName,socket);
 						messageHandler.sendEnterSeatMsg(seatNum + "");
 						qqClientHandler.getReceiveMessageHandler().setLandlordsRoomWindow(currentRoom);
@@ -236,9 +242,7 @@ public class GameLobbyWindow extends JFrame {
 	 * 关闭斗地主房间
 	 */
 	private void closeLandlordsRoom() {
-		if (currentRoom != null) {
 			messageHandler.sendExitSeatMsg(String.valueOf(currentRoom.getSeatNum()));
 			currentRoom.closeRoom();
-		}
 	}
 }
