@@ -106,12 +106,14 @@ public class LandlordsRoomWindow extends JFrame {
 		JLabel tip = new JLabel("提示");
 		JLabel out = new JLabel("出牌");
 		JLabel time = new JLabel("倒计时");
+		JLabel ready = new JLabel("准备");
 		actionPanel.add(rob);
 		actionPanel.add(noRob);
 		actionPanel.add(donot);
 		actionPanel.add(tip);
 		actionPanel.add(out);
 		actionPanel.add(time);
+		actionPanel.add(ready);
 		southPanel.add(actionPanel);
 		southPanel.add(cardPanel);
 		childJpanel1.add(southPanel, "South");
@@ -130,8 +132,11 @@ public class LandlordsRoomWindow extends JFrame {
 		leftTime.setBounds(10, 288, 40, 20);
 		leftUserName = new JLabel("空位");
 		leftUserName.setBounds(10, 258, 40, 20);
+		JLabel leftReady = new JLabel("准备");
+		leftReady.setBounds(10, 318, 40, 20);
 		leftActionPanel.add(leftUserName);
 		leftActionPanel.add(leftTime);
+		leftActionPanel.add(leftReady);
 		//leftActionPanel.setBackground(Color.red);
 		//leftCardPanel.setBackground(Color.BLACK);
 		leftCards = new JLabel[17];
@@ -162,8 +167,11 @@ public class LandlordsRoomWindow extends JFrame {
 		rightTime.setBounds(10, 288, 40, 20);
 		rightUserName = new JLabel("空位");
 		rightUserName.setBounds(10, 258, 40, 20);
+		JLabel rightReady = new JLabel("准备");
+		rightReady.setBounds(10, 318, 40, 20);
 		rightActionPanel.add(rightUserName);
 		rightActionPanel.add(rightTime);
+		rightActionPanel.add(rightReady);
 		//rightActionPanel.setBackground(Color.red);
 		//rightCardPanel.setBackground(Color.BLACK);
 		rightCards = new JLabel[17];
