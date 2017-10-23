@@ -234,6 +234,7 @@ public class LandlordsRoomWindow extends JFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				messageHandler.sendExitSeatMsg(String.valueOf(seatNum));
+				
 				seat.setText("空位");
 			}
 			

@@ -25,7 +25,7 @@ public class ServerMessageHandler {
 	private PrintWriter printWriter;
 	private Player player;
 	private Map<Integer, String> enterSeatMap;
-	private Map<String,Socket> tripleSockets;//记住正在斗地主的3个人的socket
+	//private Map<String,Socket> tripleSockets;//记住正在斗地主的3个人的socket
 	private Map<Integer, Map<String, Socket>> gameGroups; 
 	public ServerMessageHandler(Map<String, Socket> nameToSocket,Player player,Socket socket,Map<Integer, String> enterSeatMap,Map<Integer, Map<String, Socket>> gameGroups) {
 		this.nameToSocket = nameToSocket;
@@ -74,12 +74,13 @@ public class ServerMessageHandler {
 				//确定是哪一桌？
 				int tableNum = LandlordsUtil.getTableNum(seatNum);
 				if(gameGroups.containsKey(tableNum)) {
-					tripleSockets = gameGroups.get(tableNum);
-					tripleSockets.put(player.getUserName(), socket);
+					//tripleSockets = gameGroups.get(tableNum);
+					gameGroups.get(tableNum).put(player.getUserName(), socket);
 				}else {
-					if(tripleSockets == null) {
+					/*if(tripleSockets == null) {
 						tripleSockets = new ConcurrentHashMap<String, Socket>();
-					}
+					}*/
+					Map<String,Socket> tripleSockets = new ConcurrentHashMap<String, Socket>();
 					tripleSockets.put(player.getUserName(), socket);
 					gameGroups.put(tableNum, tripleSockets);
 				}
@@ -94,11 +95,11 @@ public class ServerMessageHandler {
 				 * 如果seatNum能整除3,则是第一个位置；如果seatNum+1能整除3则第3个位置，否则就中间的位置
 				 */
 				//斗地主房间里座位信息在牌友间互通
-				if(tripleSockets.size() > 1){
+				if(gameGroups.get(tableNum).size() > 1){
 					//1将自己的信息发给同桌的比你先进的牌友
-					batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+player.getUserName()+"="+seatNum, tripleSockets);
+					batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+player.getUserName()+"="+seatNum, gameGroups.get(tableNum));
 					//2将同桌的比你先进去的牌友的信息发给自己
-					for(String username:tripleSockets.keySet()){
+					for(String username:gameGroups.get(tableNum).keySet()){
 						if(username.equals(player.getUserName())) continue;
 							singleSendMsg(this.socket, Constants.ENTER_ROOM_MSG_FLAG+username+"="+getSeatNumByUserName(username));
 					}
@@ -106,7 +107,6 @@ public class ServerMessageHandler {
 			}else if(message.getTYPE() == MsgType.SEND_ALL_MSG) {
 				batchSendMsg(player.getUserName()+"说:"+message.getMsg(),nameToSocket);
 			}else if(message.getTYPE() == MsgType.EXIT_SEAT_MSG){
-				player.setSeatNum(0);
 				int seatNum = Integer.parseInt(message.getMsg());
 				//enterSeatList.remove(seatNum+"="+player.getUserName());
 				if(enterSeatMap.containsKey(seatNum)){
@@ -115,25 +115,29 @@ public class ServerMessageHandler {
 				batchSendMsg(Constants.EXIT_SEAT_MSG_FLAG+message.getMsg(),nameToSocket);
 				
 				//斗地主房间里座位信息在牌友间互通
-				if(tripleSockets.size() > 1){
+				if(gameGroups.get(LandlordsUtil.getTableNum(seatNum)).size() > 1){
 					//1将自己的退出房间的信息发给的牌友
-					batchSendMsg(Constants.EXIT_ROOM_MSG_FLAG+player.getUserName(), tripleSockets);
-					//2清除牌友socket
+					batchSendMsg(Constants.EXIT_ROOM_MSG_FLAG+player.getUserName(), gameGroups.get(LandlordsUtil.getTableNum(seatNum)));
+					/*//2清除牌友socket
 					for(String username:tripleSockets.keySet()){
 						if(username.equals(player.getUserName())) continue;
 						tripleSockets.remove(username);
-					}
+					}*/
+					//2tripleSockets置为null
+					gameGroups.get(LandlordsUtil.getTableNum(seatNum)).remove(player.getUserName());
 				}
+				player.setSeatNum(-1);
 			}else if(message.getTYPE() == MsgType.ROOM_SEND_ALL_MSG){
-				batchSendMsg(Constants.ROOM_SEND_ALL_MSG_FLAG+player.getUserName()+"说:"+message.getMsg(),tripleSockets);
+				batchSendMsg(Constants.ROOM_SEND_ALL_MSG_FLAG+player.getUserName()+"说:"+message.getMsg(),gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())));
 			}else if(message.getTYPE() == MsgType.ROOM_SEND_ONE_MSG){
-				Socket toSocket = tripleSockets.get(message.getToWho());
+				Socket toSocket = gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).get(message.getToWho());
 				String toMsg = Constants.ROOM_SEND_ONE_MSG_FLAG+player.getUserName()+"悄悄对你说:"+message.getMsg();
 				singleSendMsg(toSocket,toMsg);
 			}else if(message.getTYPE() == MsgType.ROOM_REMOVE_SOCKET_MSG){
-				tripleSockets.remove(message.getMsg());
+				gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).remove(message.getMsg());
+				//tripleSockets = null;
 			}else if(message.getTYPE() == MsgType.ROOM_ADD_SOCKET_MSG){
-				tripleSockets.put(message.getMsg(), nameToSocket.get(message.getMsg()));
+				gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).put(message.getMsg(), nameToSocket.get(message.getMsg()));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -174,11 +178,11 @@ public class ServerMessageHandler {
 	 * @throws  
 	 */
 	private void sendBeforeYouMsg(){
-		if(tripleSockets.size() > 1){
-			for(String username:tripleSockets.keySet()){
+		if(gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).size() > 1){
+			for(String username:gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).keySet()){
 				if(username.equals(player.getUserName())) continue;
 				try {
-					batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+username, tripleSockets);
+					batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+username, gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
