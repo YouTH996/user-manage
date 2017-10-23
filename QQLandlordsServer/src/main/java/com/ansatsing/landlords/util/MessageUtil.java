@@ -1,7 +1,5 @@
 package com.ansatsing.landlords.util;
 
-import org.slf4j.Logger;
-
 import com.ansatsing.landlords.entity.Message;
 import com.ansatsing.landlords.entity.MsgType;
 

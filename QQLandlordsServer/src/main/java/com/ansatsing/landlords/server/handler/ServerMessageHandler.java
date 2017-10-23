@@ -25,7 +25,7 @@ public class ServerMessageHandler {
 	private PrintWriter printWriter;
 	private Player player;
 	private Map<Integer, String> enterSeatMap;
-	//private Map<String,Socket> tripleSockets;//记住正在斗地主的3个人的socket
+	//private Map<String,Socket> tripleSockets;//记住正在斗地主的3个人的socket gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum()))
 	private Map<Integer, Map<String, Socket>> gameGroups; 
 	public ServerMessageHandler(Map<String, Socket> nameToSocket,Player player,Socket socket,Map<Integer, String> enterSeatMap,Map<Integer, Map<String, Socket>> gameGroups) {
 		this.nameToSocket = nameToSocket;
@@ -112,18 +112,15 @@ public class ServerMessageHandler {
 				if(enterSeatMap.containsKey(seatNum)){
 					enterSeatMap.remove(seatNum);
 				}
+				//游戏大厅座位信息清除
 				batchSendMsg(Constants.EXIT_SEAT_MSG_FLAG+message.getMsg(),nameToSocket);
 				
 				//斗地主房间里座位信息在牌友间互通
 				if(gameGroups.get(LandlordsUtil.getTableNum(seatNum)).size() > 1){
 					//1将自己的退出房间的信息发给的牌友
 					batchSendMsg(Constants.EXIT_ROOM_MSG_FLAG+player.getUserName(), gameGroups.get(LandlordsUtil.getTableNum(seatNum)));
-					/*//2清除牌友socket
-					for(String username:tripleSockets.keySet()){
-						if(username.equals(player.getUserName())) continue;
-						tripleSockets.remove(username);
-					}*/
-					//2tripleSockets置为null
+
+					//2 清除自己
 					gameGroups.get(LandlordsUtil.getTableNum(seatNum)).remove(player.getUserName());
 				}
 				player.setSeatNum(-1);
@@ -133,12 +130,12 @@ public class ServerMessageHandler {
 				Socket toSocket = gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).get(message.getToWho());
 				String toMsg = Constants.ROOM_SEND_ONE_MSG_FLAG+player.getUserName()+"悄悄对你说:"+message.getMsg();
 				singleSendMsg(toSocket,toMsg);
-			}else if(message.getTYPE() == MsgType.ROOM_REMOVE_SOCKET_MSG){
+			}/*else if(message.getTYPE() == MsgType.ROOM_REMOVE_SOCKET_MSG){
 				gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).remove(message.getMsg());
 				//tripleSockets = null;
 			}else if(message.getTYPE() == MsgType.ROOM_ADD_SOCKET_MSG){
 				gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).put(message.getMsg(), nameToSocket.get(message.getMsg()));
-			}
+			}*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

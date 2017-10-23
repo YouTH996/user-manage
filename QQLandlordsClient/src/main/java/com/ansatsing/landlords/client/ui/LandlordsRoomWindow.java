@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.Socket;
+import java.util.concurrent.CountDownLatch;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
+import com.ansatsing.landlords.client.thread.CountDownThread;
 import com.ansatsing.landlords.util.LandlordsUtil;
 import com.ansatsing.landlords.util.PictureUtil;
 /**
@@ -49,6 +51,16 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel[] topCards;
 	private String userName;
 	private SendMessageHandler messageHandler;
+	private JLabel time;//当前牌友的倒计时
+	private JLabel rob ;
+	private JLabel noRob;
+	private JLabel donot;
+	private JLabel tip;
+	private JLabel out;
+	private JLabel ready;
+	private CountDownThread countDownThread;
+	private JLabel rightTime;
+	private JLabel leftTime;
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -100,13 +112,18 @@ public class LandlordsRoomWindow extends JFrame {
 		for(int i=16;i>=0;i--){//不这步，牌的字母或者数字会被遮着
 			cardPanel.add(cards[i]);
 		}
-		JLabel rob = new JLabel("抢地主");
-		JLabel noRob = new JLabel("不抢");
-		JLabel donot = new JLabel("不要");
-		JLabel tip = new JLabel("提示");
-		JLabel out = new JLabel("出牌");
-		JLabel time = new JLabel("倒计时");
-		JLabel ready = new JLabel("准备");
+		 rob = new JLabel("抢地主");
+		 noRob = new JLabel("不抢");
+		 donot = new JLabel("不要");
+		 tip = new JLabel("提示");
+		 out = new JLabel("出牌");
+		time = new JLabel("倒计时");
+		 ready = new JLabel("请准备");
+		 rob.setVisible(false);
+		 noRob.setVisible(false);
+		 donot.setVisible(false);
+		 tip.setVisible(false);
+		 out.setVisible(false);
 		actionPanel.add(rob);
 		actionPanel.add(noRob);
 		actionPanel.add(donot);
@@ -128,11 +145,11 @@ public class LandlordsRoomWindow extends JFrame {
 		JPanel leftActionPanel = new JPanel();
 		leftActionPanel.setPreferredSize(new Dimension(50, 0));
 		leftActionPanel.setLayout(null);
-		JLabel leftTime = new JLabel("倒计时");
+		 leftTime = new JLabel("倒计时");
 		leftTime.setBounds(10, 288, 40, 20);
 		leftUserName = new JLabel("空位");
 		leftUserName.setBounds(10, 258, 40, 20);
-		JLabel leftReady = new JLabel("准备");
+		JLabel leftReady = new JLabel("请准备");
 		leftReady.setBounds(10, 318, 40, 20);
 		leftActionPanel.add(leftUserName);
 		leftActionPanel.add(leftTime);
@@ -163,11 +180,11 @@ public class LandlordsRoomWindow extends JFrame {
 		JPanel rightActionPanel = new JPanel();
 		rightActionPanel.setPreferredSize(new Dimension(50, 0));
 		rightActionPanel.setLayout(null);
-		JLabel rightTime = new JLabel("倒计时");
+		 rightTime = new JLabel("倒计时");
 		rightTime.setBounds(10, 288, 40, 20);
 		rightUserName = new JLabel("空位");
 		rightUserName.setBounds(10, 258, 40, 20);
-		JLabel rightReady = new JLabel("准备");
+		JLabel rightReady = new JLabel("请准备");
 		rightReady.setBounds(10, 318, 40, 20);
 		rightActionPanel.add(rightUserName);
 		rightActionPanel.add(rightTime);
@@ -233,9 +250,7 @@ public class LandlordsRoomWindow extends JFrame {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				messageHandler.sendExitSeatMsg(String.valueOf(seatNum));
-				
-				seat.setText("空位");
+				closeRoom();
 			}
 			
 		});
@@ -279,8 +294,17 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 			
 		});
+		ready.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				countDownThread.stop();
+			}
+			
+		});
 	}
 	public void closeRoom() {
+		messageHandler.sendExitSeatMsg(String.valueOf(seatNum));
 		seat.setText("空位");
 		dispose();
 	}
@@ -297,7 +321,7 @@ public class LandlordsRoomWindow extends JFrame {
 	 * @param msg
 	 */
 	public void setSeatUserName(String msg){
-		LOGGER.info(userName+"入座情况》》》》》》》》》》》》"+msg);
+	//	LOGGER.info(userName+"入座情况》》》》》》》》》》》》"+msg);
 		int idx = msg.indexOf("=");
 		String userName = msg.substring(0,idx);
 		messageHandler.sendAddSocketMsg(userName);
@@ -307,13 +331,22 @@ public class LandlordsRoomWindow extends JFrame {
 		}else if(_seatNum == LandlordsUtil.getRightSeatNum(seatNum)) {
 			rightUserName.setText(userName);
 		}
+		if(!leftUserName.getText().equals("空位") && !rightUserName.getText().equals("空位")){
+			this.countDownThread = new CountDownThread(this, 15);
+			Thread thread = new Thread(countDownThread);
+			thread.start();
+		}
 	}
 	public void emptySeat(String tempMsg) {
-		messageHandler.sendRemoveSocketMsg(tempMsg);
+		//messageHandler.sendRemoveSocketMsg(tempMsg);
 		if(leftUserName.getText().trim().equals(tempMsg)){
 			leftUserName.setText("空位");
 		}else if(rightUserName.getText().trim().equals(tempMsg)){
 			rightUserName.setText("空位");
+		}
+		if(countDownThread != null){
+			countDownThread.stop();
+			this.time.setText("倒计时");
 		}
 	}
 	/**
@@ -323,5 +356,10 @@ public class LandlordsRoomWindow extends JFrame {
 	 */
 	public void setHistoryMsg(String readMsg) {
 		this.historyMsg.append(readMsg + "\n");
-	}	
+	}
+	public void setTime(String time){
+		this.time.setText(time);
+		this.leftTime.setText(time);
+		this.rightTime.setText(time);
+	}
 }
