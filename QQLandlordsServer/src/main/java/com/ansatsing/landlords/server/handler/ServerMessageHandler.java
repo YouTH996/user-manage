@@ -13,6 +13,7 @@ import com.ansatsing.landlords.entity.Message;
 import com.ansatsing.landlords.entity.MsgType;
 import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.util.Constants;
+import com.ansatsing.landlords.util.LandlordsUtil;
 import com.ansatsing.landlords.util.ThreadUtil;
 
 import ch.qos.logback.core.joran.conditional.ElseAction;
@@ -71,14 +72,7 @@ public class ServerMessageHandler {
 				//enterSeatList.add(seatNum+"="+player.getUserName());
 				
 				//确定是哪一桌？
-				int tableNum = 0;
-				if(seatNum % 3 == 0){
-					tableNum = seatNum / 3;
-				}else if((seatNum+1)%3 == 0) {
-					tableNum = (seatNum +1) / 3 -1;
-				}else {
-					tableNum = (seatNum -1) / 3;
-				}
+				int tableNum = LandlordsUtil.getTableNum(seatNum);
 				if(gameGroups.containsKey(tableNum)) {
 					tripleSockets = gameGroups.get(tableNum);
 					tripleSockets.put(player.getUserName(), socket);
@@ -130,7 +124,6 @@ public class ServerMessageHandler {
 					//2将同桌的比你先进去的牌友的信息发给自己
 					for(String username:tripleSockets.keySet()){
 						if(username.equals(player.getUserName())) continue;
-							
 							singleSendMsg(this.socket, Constants.ENTER_ROOM_MSG_FLAG+username+"="+getSeatNumByUserName(username));
 					}
 				}
@@ -227,46 +220,17 @@ public class ServerMessageHandler {
 		int seatNUm = -1;
 		int seatNum = player.getSeatNum();
 		if(enterSeatMap !=null) {
-			if(seatNum % 3 == 0){
-				if(enterSeatMap.containsKey(seatNum +1)){
-					if(enterSeatMap.get(seatNum+1).equals(userName))
-					{
-						return seatNum +1;
-					}
+			if(enterSeatMap.containsKey(LandlordsUtil.getLeftSeatNum(seatNum))) {
+				if(enterSeatMap.get(LandlordsUtil.getLeftSeatNum(seatNum)).equals(userName))
+				{
+					return LandlordsUtil.getLeftSeatNum(seatNum);
 				}
-				if(enterSeatMap.containsKey(seatNum +2)){
-					if(enterSeatMap.get(seatNum+2).equals(userName))
-					{
-						return seatNum +2;
-					}
-				}
-					
-			}else if((seatNum+1)%3 == 0){
-				if(enterSeatMap.containsKey(seatNum -1)){
-					if(enterSeatMap.get(seatNum-1).equals(userName))
-					{
-						return seatNum -1;
-					}
-				}
-				if(enterSeatMap.containsKey(seatNum -2)){
-					if(enterSeatMap.get(seatNum-2).equals(userName))
-					{
-						return seatNum -2;
-					}
-				}
-			}else{
-				if(enterSeatMap.containsKey(seatNum +1)){
-					if(enterSeatMap.get(seatNum+1).equals(userName))
-					{
-						return seatNum +1;
-					}
-				}
-				if(enterSeatMap.containsKey(seatNum -1)){
-					if(enterSeatMap.get(seatNum-1).equals(userName))
-					{
-						return seatNum -1;
-					}
-				}
+			}
+			if(enterSeatMap.containsKey(LandlordsUtil.getRightSeatNum(seatNum))) {
+				if(enterSeatMap.get(LandlordsUtil.getRightSeatNum(seatNum)).equals(userName))
+				{
+					return LandlordsUtil.getRightSeatNum(seatNum);
+				}			
 			}
 		}
 		return seatNUm;

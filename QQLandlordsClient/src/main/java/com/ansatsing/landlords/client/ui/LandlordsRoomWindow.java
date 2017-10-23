@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
+import com.ansatsing.landlords.util.LandlordsUtil;
 import com.ansatsing.landlords.util.PictureUtil;
 /**
  * 斗地主房间
@@ -292,9 +293,9 @@ public class LandlordsRoomWindow extends JFrame {
 		String userName = msg.substring(0,idx);
 		messageHandler.sendAddSocketMsg(userName);
 		int _seatNum = Integer.parseInt(msg.substring(idx+1));
-		if(_seatNum == getLeftSeatNum()) {
+		if(_seatNum == LandlordsUtil.getLeftSeatNum(seatNum)) {
 			leftUserName.setText(userName);
-		}else if(_seatNum == getRightSeatNum()) {
+		}else if(_seatNum == LandlordsUtil.getRightSeatNum(seatNum)) {
 			rightUserName.setText(userName);
 		}
 	}
@@ -314,30 +315,4 @@ public class LandlordsRoomWindow extends JFrame {
 	public void setHistoryMsg(String readMsg) {
 		this.historyMsg.append(readMsg + "\n");
 	}	
-	/**
-	 * 获取左边位置的座位号
-	 * @return
-	 */
-	private int getLeftSeatNum( ) {
-		if(seatNum % 3 == 0){//左边  --参考游戏大厅方位
-			return seatNum +1;
-		}else if((seatNum+1)%3 == 0){//右边--参考游戏大厅方位
-			return seatNum - 2;
-		}else{//顶上--参考游戏大厅方位
-			return seatNum + 1;
-		}
-	}
-	/**
-	 * 获取右边边位置的座位号
-	 * @return
-	 */
-	private int getRightSeatNum() {
-		if(seatNum % 3 == 0){//左边  --参考游戏大厅方位
-			return seatNum +2;
-		}else if((seatNum+1)%3 == 0){//右边--参考游戏大厅方位
-			return seatNum - 1;
-		}else{//顶上--参考游戏大厅方位
-			return seatNum - 1;
-		}
-	}
 }
