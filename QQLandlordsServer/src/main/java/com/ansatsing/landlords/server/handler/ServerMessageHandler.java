@@ -93,30 +93,6 @@ public class ServerMessageHandler {
 				 * 
 				 * 如果seatNum能整除3,则是第一个位置；如果seatNum+1能整除3则第3个位置，否则就中间的位置
 				 */
-				//this.tripleSockets.put(player.getUserName(), this.socket);
-				/*if(seatNum % 3 == 0){
-					if(enterSeatMap.containsKey(seatNum +1)){
-						this.tripleSockets.put(enterSeatMap.get(seatNum+1), nameToSocket.get(enterSeatMap.get(seatNum+1)));
-					}
-					if(enterSeatMap.containsKey(seatNum +2)){
-						this.tripleSockets.put(enterSeatMap.get(seatNum+2), nameToSocket.get(enterSeatMap.get(seatNum+2)));
-					}
-						
-				}else if((seatNum+1)%3 == 0){
-					if(enterSeatMap.containsKey(seatNum -1)){
-						this.tripleSockets.put(enterSeatMap.get(seatNum-1), nameToSocket.get(enterSeatMap.get(seatNum-1)));
-					}
-					if(enterSeatMap.containsKey(seatNum -2)){
-						this.tripleSockets.put(enterSeatMap.get(seatNum-2), nameToSocket.get(enterSeatMap.get(seatNum-2)));
-					}
-				}else{
-					if(enterSeatMap.containsKey(seatNum -1)){
-						this.tripleSockets.put(enterSeatMap.get(seatNum-1), nameToSocket.get(enterSeatMap.get(seatNum-1)));
-					}
-					if(enterSeatMap.containsKey(seatNum +1)){
-						this.tripleSockets.put(enterSeatMap.get(seatNum+1), nameToSocket.get(enterSeatMap.get(seatNum+1)));
-					}
-				}*/
 				//斗地主房间里座位信息在牌友间互通
 				if(tripleSockets.size() > 1){
 					//1将自己的信息发给同桌的比你先进的牌友
