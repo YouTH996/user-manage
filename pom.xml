@@ -9,6 +9,7 @@
 	<modules>
 		<module>QQLandlordsServer</module>
 		<module>QQLandlordsClient</module>
+		<module>QQLandlords-common</module>
 	</modules>
 	<properties>
 		<Guava-version>20.0</Guava-version>
