@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
 import com.ansatsing.landlords.client.thread.CountDownThread;
+import com.ansatsing.landlords.state.GameState;
+import com.ansatsing.landlords.state.GameWaitState;
 import com.ansatsing.landlords.util.LandlordsUtil;
 import com.ansatsing.landlords.util.PictureUtil;
 /**
@@ -61,6 +63,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private CountDownThread countDownThread;
 	private JLabel rightTime;
 	private JLabel leftTime;
+	private GameState gameState = new GameWaitState(this);//游戏状态;初始化状态为游戏等待状态
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -299,6 +302,8 @@ public class LandlordsRoomWindow extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				countDownThread.stop();
+				ready.setVisible(false);
+				time.setText("倒计时");
 			}
 			
 		});
@@ -331,11 +336,13 @@ public class LandlordsRoomWindow extends JFrame {
 		}else if(_seatNum == LandlordsUtil.getRightSeatNum(seatNum)) {
 			rightUserName.setText(userName);
 		}
-		/*if(!leftUserName.getText().equals("空位") && !rightUserName.getText().equals("空位")){
-			this.countDownThread = new CountDownThread(this, 15);
+		if(!leftUserName.getText().equals("空位") && !rightUserName.getText().equals("空位")){
+			gameState.pushGameState();
+			gameState.handleWindow();
+			/*this.countDownThread = new CountDownThread(this, 30);
 			Thread thread = new Thread(countDownThread);
-			thread.start();
-		}*/
+			thread.start();*/
+		}
 	}
 	public void emptySeat(String tempMsg) {
 		//messageHandler.sendRemoveSocketMsg(tempMsg);
@@ -348,6 +355,9 @@ public class LandlordsRoomWindow extends JFrame {
 			countDownThread.stop();
 			this.time.setText("倒计时");
 		}
+	}
+	public void setCountDownThread(CountDownThread countDownThread) {
+		this.countDownThread = countDownThread;
 	}
 	/**
 	 * 显示收到的群聊消息
@@ -362,4 +372,22 @@ public class LandlordsRoomWindow extends JFrame {
 		this.leftTime.setText(time);
 		this.rightTime.setText(time);
 	}
+	
+	/**
+	 * 
+	 */
+	private void setTimeLableName(String leftOrRight) {
+		if("left".equals(leftOrRight)) {
+			leftTime.setText("倒计时");
+		}else {
+			rightTime.setText("倒计时");
+		}
+	}
+	public void setGameState(GameState gameState) {
+		this.gameState = gameState;
+	}
+	public GameState getGameState() {
+		return gameState;
+	}
+	
 }
