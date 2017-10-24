@@ -134,7 +134,12 @@ public class ServerMessageHandler {
 				Socket toSocket = gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).get(message.getToWho());
 				String toMsg = Constants.ROOM_SEND_ONE_MSG_FLAG+player.getUserName()+"悄悄对你说:"+message.getMsg();
 				singleSendMsg(toSocket,toMsg);
-			}/*else if(message.getTYPE() == MsgType.ROOM_REMOVE_SOCKET_MSG){
+			}else if(message.getTYPE() == MsgType.GAME_READY_MSG){
+				batchSendMsg(Constants.GAME_READY_MSG_FLAG+message.getMsg(), gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())));
+			}
+			
+			
+			/*else if(message.getTYPE() == MsgType.ROOM_REMOVE_SOCKET_MSG){
 				gameGroups.get(LandlordsUtil.getTableNum(player.getSeatNum())).remove(message.getMsg());
 				//tripleSockets = null;
 			}else if(message.getTYPE() == MsgType.ROOM_ADD_SOCKET_MSG){

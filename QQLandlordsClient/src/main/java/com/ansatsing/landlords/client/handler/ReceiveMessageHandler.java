@@ -53,6 +53,10 @@ public class ReceiveMessageHandler {
 				if(landlordsRoomWindow!=null){
 					landlordsRoomWindow.setHistoryMsg(msg.substring(Constants.ROOM_SEND_ONE_MSG_FLAG.length()));
 				}
+			}else if(msg.startsWith(Constants.GAME_READY_MSG_FLAG)){
+				if(landlordsRoomWindow!=null){
+					landlordsRoomWindow.setGameReady(msg.substring(Constants.GAME_READY_MSG_FLAG.length()));
+				}
 			}else{
 				gameLobbyWindow.setHistoryMsg(msg);
 			}

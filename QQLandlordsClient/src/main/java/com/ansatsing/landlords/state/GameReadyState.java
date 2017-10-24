@@ -1,6 +1,6 @@
 package com.ansatsing.landlords.state;
 
-import com.ansatsing.landlords.client.thread.CountDownThread;
+import com.ansatsing.landlords.client.thread.ReadyCountDownThread;
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 
 public class GameReadyState extends GameState {
@@ -31,7 +31,7 @@ public class GameReadyState extends GameState {
 	}
 	@Override
 	public void handleWindow() {
-		CountDownThread countDownThread = new CountDownThread(this.landlordsRoomWindow, 30);
+		ReadyCountDownThread countDownThread = new ReadyCountDownThread(this.landlordsRoomWindow, 30);
 		this.landlordsRoomWindow.setCountDownThread(countDownThread);
 		Thread thread = new Thread(countDownThread);
 		thread.start();

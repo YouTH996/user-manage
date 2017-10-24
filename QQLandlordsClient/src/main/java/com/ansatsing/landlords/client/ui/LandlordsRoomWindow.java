@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
-import com.ansatsing.landlords.client.thread.CountDownThread;
+import com.ansatsing.landlords.client.thread.ReadyCountDownThread;
 import com.ansatsing.landlords.state.GameState;
 import com.ansatsing.landlords.state.GameWaitState;
 import com.ansatsing.landlords.util.LandlordsUtil;
@@ -60,9 +60,11 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel tip;
 	private JLabel out;
 	private JLabel ready;
-	private CountDownThread countDownThread;
+	private ReadyCountDownThread countDownThread;
 	private JLabel rightTime;
 	private JLabel leftTime;
+	private JLabel leftReady;
+	private JLabel rightReady;
 	private GameState gameState = new GameWaitState(this);//游戏状态;初始化状态为游戏等待状态
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
@@ -152,7 +154,7 @@ public class LandlordsRoomWindow extends JFrame {
 		leftTime.setBounds(10, 288, 40, 20);
 		leftUserName = new JLabel("空位");
 		leftUserName.setBounds(10, 258, 40, 20);
-		JLabel leftReady = new JLabel("请准备");
+		 leftReady = new JLabel("请准备");
 		leftReady.setBounds(10, 318, 40, 20);
 		leftActionPanel.add(leftUserName);
 		leftActionPanel.add(leftTime);
@@ -187,7 +189,7 @@ public class LandlordsRoomWindow extends JFrame {
 		rightTime.setBounds(10, 288, 40, 20);
 		rightUserName = new JLabel("空位");
 		rightUserName.setBounds(10, 258, 40, 20);
-		JLabel rightReady = new JLabel("请准备");
+		 rightReady = new JLabel("请准备");
 		rightReady.setBounds(10, 318, 40, 20);
 		rightActionPanel.add(rightUserName);
 		rightActionPanel.add(rightTime);
@@ -301,6 +303,7 @@ public class LandlordsRoomWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				messageHandler.sendGameReadyMsg(userName);
 				countDownThread.stop();
 				ready.setVisible(false);
 				time.setText("倒计时");
@@ -356,7 +359,7 @@ public class LandlordsRoomWindow extends JFrame {
 			this.time.setText("倒计时");
 		}
 	}
-	public void setCountDownThread(CountDownThread countDownThread) {
+	public void setCountDownThread(ReadyCountDownThread countDownThread) {
 		this.countDownThread = countDownThread;
 	}
 	/**
@@ -367,27 +370,38 @@ public class LandlordsRoomWindow extends JFrame {
 	public void setHistoryMsg(String readMsg) {
 		this.historyMsg.append(readMsg + "\n");
 	}
+	//设置自己的倒计时时间
 	public void setTime(String time){
 		this.time.setText(time);
+	}
+	//设置左边牌友的倒计时时间
+	public void setLeftTime(String time){
 		this.leftTime.setText(time);
+	}
+	//设置右边牌友的倒计时时间
+	public void setRightTime(String time){
 		this.rightTime.setText(time);
 	}
 	
-	/**
-	 * 
-	 */
-	private void setTimeLableName(String leftOrRight) {
-		if("left".equals(leftOrRight)) {
-			leftTime.setText("倒计时");
-		}else {
-			rightTime.setText("倒计时");
-		}
-	}
 	public void setGameState(GameState gameState) {
 		this.gameState = gameState;
 	}
 	public GameState getGameState() {
 		return gameState;
 	}
-	
+	//设置牌友的准备情况
+	public void setGameReady(String userName){
+		LOGGER.info("setGameReady----"+userName);
+		if(leftUserName.getText().equals(userName)){
+			countDownThread.stopLeft();
+			leftTime.setText("倒计时");
+			leftTime.setVisible(false);
+			leftReady.setVisible(false);
+		}else if(rightUserName.getText().equals(userName)){
+			countDownThread.stopRight();
+			rightTime.setText("倒计时");
+			rightTime.setVisible(false);
+			rightReady.setVisible(false);
+		}
+	}
 }

@@ -12,7 +12,9 @@ public enum MsgType {
 	ROOM_SEND_ALL_MSG("房间群发消息"),
 	ROOM_SEND_ONE_MSG("房间私聊消息"),
 	ROOM_REMOVE_SOCKET_MSG("移除同桌牌友socket信息"),
-	ROOM_ADD_SOCKET_MSG("增加同桌牌友socket信息");
+	ROOM_ADD_SOCKET_MSG("增加同桌牌友socket信息"),
+	GAME_READY_MSG("游戏准备信息"),
+	GAME_DEAL_MSG("游戏发牌信息");
 	private String description;
 	MsgType(String description) {
 		this.description =description;

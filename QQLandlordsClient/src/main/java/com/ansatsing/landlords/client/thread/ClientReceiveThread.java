@@ -5,10 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ansatsing.landlords.client.handler.ReceiveMessageHandler;
 import com.ansatsing.landlords.client.ui.GameLobbyWindow;
 
 public class ClientReceiveThread implements Runnable {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClientReceiveThread.class);
 	private Socket socket;
 	private boolean isStop = false;
 	private GameLobbyWindow qqGameWindow;
@@ -27,7 +31,7 @@ public class ClientReceiveThread implements Runnable {
 				readMsg = bufferedReader.readLine();
 				if(readMsg != null){
 					if(!readMsg.equals("")) {
-						//System.out.println(readMsg);
+						LOGGER.info("从服务器收到的消息："+readMsg);
 						receiveMessageHandler.handleMessage(readMsg);
 					}
 				}

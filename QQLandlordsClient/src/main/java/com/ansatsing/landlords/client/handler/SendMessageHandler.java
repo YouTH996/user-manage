@@ -105,6 +105,15 @@ public class SendMessageHandler {
 		}
 	}
 	/**
+	 * 发送游戏准备信息
+	 * @param msg
+	 */
+	public void sendGameReadyMsg(String msg){
+		if(msg != null && !msg.trim().equals("")){
+			sendMsg(SendMessagePack.packMsg(MsgType.GAME_READY_MSG, msg));
+		}
+	}
+	/**
 	 * 发送消息
 	 * @param msg
 	 */
