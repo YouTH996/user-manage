@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ServerSocketFactory;
 
-import com.ansatsing.landlords.server.thread.ServerHandlerTransferThread;
+import com.ansatsing.landlords.server.socket.ServerHandlerTransferThread;
 
 /**
  * qq斗地主服务器端入口类

@@ -12,4 +12,5 @@ public class Constants {
 	public final static String ROOM_SEND_ONE_MSG_FLAG = "^e4TcR@)*U%F^J{";//房间私聊信息标志
 	public final static String ROOM_REMOVE_SOCKET_FLAG = "(e)TcR@)*U+F^J{";//牌友退出房间时移除牌友socket信息标志
 	public final static String ROOM_ADD_SOCKET_FLAG = "(eb%TcR@)*F+F^J{";//牌友进入房间时添加牌友socket信息标志
+	
 }

@@ -161,7 +161,9 @@ public class GameLobbyWindow extends JFrame {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				closeLandlordsRoom();
+				if(currentRoom != null) {
+					closeLandlordsRoom();
+				}
 				messageHandler.sendSystemExitMsg();
 				qqClientHandler.stop();// 收信息的线程停止
 			}
@@ -242,6 +244,7 @@ public class GameLobbyWindow extends JFrame {
 	 * 关闭斗地主房间
 	 */
 	private void closeLandlordsRoom() {
+		
 			messageHandler.sendExitSeatMsg(String.valueOf(currentRoom.getSeatNum()));
 			currentRoom.closeRoom();
 	}

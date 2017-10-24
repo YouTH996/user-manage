@@ -1,4 +1,4 @@
-package com.ansatsing.landlords.server.thread;
+package com.ansatsing.landlords.server.socket;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import com.ansatsing.landlords.entity.Message;
 import com.ansatsing.landlords.entity.MsgType;
 import com.ansatsing.landlords.entity.Player;
-import com.ansatsing.landlords.server.handler.ServerMessageHandler;
 import com.ansatsing.landlords.util.MessageUtil;
 /**
  * qq斗地主服务器端网络IO处理中心
