@@ -404,4 +404,7 @@ public class LandlordsRoomWindow extends JFrame {
 			rightReady.setVisible(false);
 		}
 	}
+	public void sendDealMsg() {
+		messageHandler.sendGameDealMsg(userName);
+	}
 }

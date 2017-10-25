@@ -114,6 +114,15 @@ public class SendMessageHandler {
 		}
 	}
 	/**
+	 * 发送游戏发牌信号
+	 * @param msg
+	 */
+	public void sendGameDealMsg(String msg){
+		if(msg != null && !msg.trim().equals("")){
+			sendMsg(SendMessagePack.packMsg(MsgType.GAME_DEAL_MSG, msg));
+		}
+	}	
+	/**
 	 * 发送消息
 	 * @param msg
 	 */

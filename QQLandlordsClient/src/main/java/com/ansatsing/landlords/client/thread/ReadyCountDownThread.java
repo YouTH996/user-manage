@@ -40,7 +40,7 @@ public class ReadyCountDownThread implements Runnable {
 			landlordsRoomWindow.closeRoom();
 		}
 		if(seconds > 0){//说明3人都准备好了，那就向服务器发送请求发牌的信号
-			
+			landlordsRoomWindow.sendDealMsg();
 		}
 	}
 	public void stop(){
@@ -58,10 +58,10 @@ public class ReadyCountDownThread implements Runnable {
 			landlordsRoomWindow.setTime(String.valueOf(seconds));
 		}
 		if(!rightStop){
-			landlordsRoomWindow.setRightTime(String.valueOf(seconds)+rightStop);
+			landlordsRoomWindow.setRightTime(String.valueOf(seconds));
 		}
 		if(!leftStop){
-			landlordsRoomWindow.setLeftTime(String.valueOf(seconds)+leftStop);
+			landlordsRoomWindow.setLeftTime(String.valueOf(seconds));
 		}
 		
 	}

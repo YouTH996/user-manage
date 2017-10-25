@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.ansatsing.landlords.entity.Message;
 import com.ansatsing.landlords.entity.MsgType;
 import com.ansatsing.landlords.entity.Player;
+import com.ansatsing.landlords.entity.Table;
 import com.ansatsing.landlords.util.MessageUtil;
 /**
  * qq斗地主服务器端网络IO处理中心
@@ -22,17 +23,16 @@ import com.ansatsing.landlords.util.MessageUtil;
 public class ServerHandlerTransferThread implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerHandlerTransferThread.class);
 	private Socket socket;
-	Map<String, Socket> nameToSocket;
 	private Player player;
 	private ServerMessageHandler messageHandler;
-	//private Map<String,Socket> tripleSockets;//记住正在斗地主的3个人的socket
-	//private Map<Integer, Map<String, Socket>> gameGroups;
-	public ServerHandlerTransferThread( Socket socket,Map<String, Socket> nameToSocket,Map<Integer, String> enterSeatMap,Map<Integer, Map<String, Socket>> gameGroups) {
+	private Map<String, Player> userName2Player;
+	public ServerHandlerTransferThread( Socket socket,Map<Integer, Player> playerMap,Map<Integer, Table> tableMap,Map<String, Player> _userName2Player) {
 		this.socket = socket;
-		this.nameToSocket = nameToSocket;
-		player = new Player();
-		messageHandler = new ServerMessageHandler(nameToSocket, player,socket,enterSeatMap,gameGroups);
-		//this.gameGroups = gameGroups;
+		this.player = new Player();
+		this.player.setSocket(socket);
+		this.userName2Player = _userName2Player;
+		if(tableMap == null) LOGGER.info("tableMapnullllllllllllllllllllllllllllll");
+		messageHandler = new ServerMessageHandler(this.player,playerMap,tableMap,_userName2Player);
 	}
 
 	public void run() {//消息处理以及中转
@@ -65,8 +65,8 @@ public class ServerHandlerTransferThread implements Runnable {
 				}
 			}
 			if(player != null && player.getUserName() != null) {
-				nameToSocket.remove(player.getUserName());
-				messageHandler.batchSendMsg(player.getUserName()+"退出聊天室了!当前聊天室人数："+nameToSocket.size(),nameToSocket);
+				userName2Player.remove(player.getUserName());
+				messageHandler.batchSendMsg(player.getUserName()+"退出聊天室了!当前聊天室人数："+userName2Player.size(),userName2Player.values());
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -93,11 +93,4 @@ public class ServerHandlerTransferThread implements Runnable {
 			}
 		}
 	}
-	/**
-	 * 移除退出房间的同桌牌友的socket
-	 * @param userName
-	 */
-	/*public void removePlayer(String userName){
-		tripleSockets.remove(userName);
-	}*/
 }
