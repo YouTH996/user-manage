@@ -419,22 +419,22 @@ public class LandlordsRoomWindow extends JFrame {
 	 * @param str
 	 */
 	public void dealCard(String str,int i) {
-		if(i>50){
+		if(i>50){//发底牌
 			topCards[i-51].setIcon(PictureUtil.getPicture("cards/back.png"));
 		}else{
-			if(i%3==0){
+			if(i%3==0){//从左边第一个位置开始发牌，相对于游戏大厅里的位置！
 				if(seatNum%3 ==0){
 					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 				}else{
 					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
-			}else if((i-1)%3==0){
+			}else if((i-1)%3==0){//接下来发三角 顶上那个位置的人牌
 				if((seatNum-1)%3 ==0){
 					getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 				}else{
 					getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
-			}else{
+			}else{//接下来发三角形右边那个人的牌
 				if((seatNum+1)%3 ==0){
 					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 				}else{
@@ -443,7 +443,7 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 		}
 	}
-	//相对于大厅位置
+	//相对于大厅位置-找到三角形顶端那个人
 	private JLabel[] getTopPlayer(){
 		if((seatNum -1) % 3 ==0){
 			return cards;
@@ -453,7 +453,7 @@ public class LandlordsRoomWindow extends JFrame {
 			return rightCards;
 		}
 	}
-	//相对于大厅位置
+	//相对于大厅位置--找到三角形左边那个人
 	private JLabel[] getLeftPlayer(){
 		if((seatNum -1) % 3 ==0){
 			return rightCards;
@@ -463,7 +463,7 @@ public class LandlordsRoomWindow extends JFrame {
 			return leftCards;
 		}
 	}
-	//相对于大厅位置
+	//相对于大厅位置--找到三角形右边那个人
 		private JLabel[] getRightPlayer(){
 			if((seatNum -1) % 3 ==0){
 				return leftCards;
@@ -482,6 +482,7 @@ public class LandlordsRoomWindow extends JFrame {
 			gameState.pushGameState();
 			gameState.handleWindow();
 		}
+		//启动抢地主
 		public void startRob(){
 			rob.setVisible(true);
 			noRob.setVisible(true);
