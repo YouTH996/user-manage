@@ -1,5 +1,6 @@
 package com.ansatsing.landlords.state;
 
+import com.ansatsing.landlords.client.thread.DealCardsThread;
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 
 /**
@@ -36,8 +37,9 @@ public class GameDealState extends GameState {
 
 	@Override
 	public void handleWindow() {
-		// TODO Auto-generated method stub
-		
+		DealCardsThread dealCardsThread = new DealCardsThread(landlordsRoomWindow);
+		Thread thread = new Thread(dealCardsThread);
+		thread.start();
 	}
 
 }

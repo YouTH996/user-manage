@@ -57,6 +57,8 @@ public class ReceiveMessageHandler {
 				if(landlordsRoomWindow!=null){
 					landlordsRoomWindow.setGameReady(msg.substring(Constants.GAME_READY_MSG_FLAG.length()));
 				}
+			}else if(msg.startsWith(Constants.SEND_CARDS_MSG_FlAG)){
+				landlordsRoomWindow.startDealCards(msg.substring(Constants.SEND_CARDS_MSG_FlAG.length()));
 			}else{
 				gameLobbyWindow.setHistoryMsg(msg);
 			}

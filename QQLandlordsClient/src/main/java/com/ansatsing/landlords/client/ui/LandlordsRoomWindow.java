@@ -3,6 +3,7 @@ package com.ansatsing.landlords.client.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Label;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -27,6 +28,8 @@ import com.ansatsing.landlords.state.GameState;
 import com.ansatsing.landlords.state.GameWaitState;
 import com.ansatsing.landlords.util.LandlordsUtil;
 import com.ansatsing.landlords.util.PictureUtil;
+
+import ch.qos.logback.core.joran.conditional.ElseAction;
 /**
  * 斗地主房间
  * @author sunyq
@@ -66,6 +69,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel leftReady;
 	private JLabel rightReady;
 	private GameState gameState = new GameWaitState(this);//游戏状态;初始化状态为游戏等待状态
+	private String saveCards;//存放服务器发来的随机牌
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -106,10 +110,10 @@ public class LandlordsRoomWindow extends JFrame {
 		cardPanel.setLayout(null);
 		cardPanel.setPreferredSize(new Dimension(0, 215));
 		//cardPanel.setBackground(Color.blue);
-		cards = new JLabel[17];
-		for(int i=0;i<17;i++){
+		cards = new JLabel[20];
+		for(int i=0;i<20;i++){
 			JLabel newJabel = new JLabel();
-			newJabel.setIcon(PictureUtil.getPicture("cards/"+(i+1)+".jpg"));
+			//newJabel.setIcon(PictureUtil.getPicture("cards/"+(i+1)+".jpg"));
 			newJabel.setBounds(385+(18)*i, 50, 105, 150);
 			cards[i] = newJabel;
 			
@@ -161,10 +165,10 @@ public class LandlordsRoomWindow extends JFrame {
 		leftActionPanel.add(leftReady);
 		//leftActionPanel.setBackground(Color.red);
 		//leftCardPanel.setBackground(Color.BLACK);
-		leftCards = new JLabel[17];
-		for(int i=0;i<17;i++){
+		leftCards = new JLabel[20];
+		for(int i=0;i<20;i++){
 			JLabel newJabel = new JLabel();
-			newJabel.setIcon(PictureUtil.getPicture("cards/back.png"));
+			//newJabel.setIcon(PictureUtil.getPicture("cards/back.png"));
 			newJabel.setBounds(10, 80+(18)*i, 84, 113);
 			leftCards[i] = newJabel;
 			leftCardPanel.add(leftCards[i]);
@@ -196,10 +200,10 @@ public class LandlordsRoomWindow extends JFrame {
 		rightActionPanel.add(rightReady);
 		//rightActionPanel.setBackground(Color.red);
 		//rightCardPanel.setBackground(Color.BLACK);
-		rightCards = new JLabel[17];
-		for(int i=0;i<17;i++){
+		rightCards = new JLabel[20];
+		for(int i=0;i<20;i++){
 			JLabel newJabel = new JLabel();
-			newJabel.setIcon(PictureUtil.getPicture("cards/back.png"));
+			//newJabel.setIcon(PictureUtil.getPicture("cards/back.png"));
 			newJabel.setBounds(10, 80+(18)*i, 84, 113);
 			rightCards[i] = newJabel;
 			rightCardPanel.add(rightCards[i]);
@@ -218,7 +222,7 @@ public class LandlordsRoomWindow extends JFrame {
 		topCards = new JLabel[3];
 		for(int i=0;i<3;i++){
 			JLabel newJabel = new JLabel();
-			newJabel.setIcon(PictureUtil.getPicture("cards/back.png"));
+			//newJabel.setIcon(PictureUtil.getPicture("cards/back.png"));
 			newJabel.setBounds(420+(100)*i, 10, 84, 113);
 			topCards[i] = newJabel;
 			topPanel.add(topCards[i]);
@@ -407,4 +411,80 @@ public class LandlordsRoomWindow extends JFrame {
 	public void sendDealMsg() {
 		messageHandler.sendGameDealMsg(userName);
 	}
+	//发牌
+	/**
+	 * 0 1 2
+	 * 3 4 5
+	 * 6 7 8
+	 * @param str
+	 */
+	public void dealCard(String str,int i) {
+		if(i>50){
+			topCards[i-51].setIcon(PictureUtil.getPicture("cards/back.png"));
+		}else{
+			if(i%3==0){
+				if(seatNum%3 ==0){
+					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
+				}else{
+					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
+				}
+			}else if((i-1)%3==0){
+				if((seatNum-1)%3 ==0){
+					getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
+				}else{
+					getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
+				}
+			}else{
+				if((seatNum+1)%3 ==0){
+					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
+				}else{
+					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
+				}
+			}
+		}
+	}
+	//相对于大厅位置
+	private JLabel[] getTopPlayer(){
+		if((seatNum -1) % 3 ==0){
+			return cards;
+		}else if(seatNum % 3 == 0){
+			return leftCards;
+		}else{
+			return rightCards;
+		}
+	}
+	//相对于大厅位置
+	private JLabel[] getLeftPlayer(){
+		if((seatNum -1) % 3 ==0){
+			return rightCards;
+		}else if(seatNum % 3 == 0){
+			return cards;
+		}else{
+			return leftCards;
+		}
+	}
+	//相对于大厅位置
+		private JLabel[] getRightPlayer(){
+			if((seatNum -1) % 3 ==0){
+				return leftCards;
+			}else if(seatNum % 3 == 0){
+				return rightCards;
+			}else{
+				return cards;
+			}
+		}
+		public String getServerCards(){
+			return this.saveCards;
+		}
+		//启动发牌
+		public void startDealCards(String cards){
+			this.saveCards = cards;
+			gameState.pushGameState();
+			gameState.handleWindow();
+		}
+		public void startRob(){
+			rob.setVisible(true);
+			noRob.setVisible(true);
+			time.setVisible(true);
+		}
 }

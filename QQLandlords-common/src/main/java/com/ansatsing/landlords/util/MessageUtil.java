@@ -65,6 +65,10 @@ public class MessageUtil {
 				msg.setTYPE(MsgType.GAME_READY_MSG);
 				msg.setMsg(message.substring(Constants.GAME_READY_MSG_FLAG.length()));
 				return msg;
+			}else if(message.startsWith(Constants.GAME_DEAL_MSG_FLAG)){
+				msg.setTYPE(MsgType.GAME_DEAL_MSG);
+				msg.setMsg(message.substring(Constants.GAME_DEAL_MSG_FLAG.length()));
+				return msg;
 			}else {//大厅群聊信息处理
 				msg.setTYPE(MsgType.SEND_ALL_MSG);
 				msg.setMsg(message);

@@ -69,30 +69,16 @@ public class ServerMessageHandler {
 			String toMsg = Constants.ROOM_SEND_ONE_MSG_FLAG+player.getUserName()+"悄悄对你说:"+message.getMsg();
 			singleSendMsg(_player,toMsg);
 		}else if(message.getTYPE() == MsgType.GAME_READY_MSG){
-			
+			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setCards(LandlordsUtil.getRondomCards());
 			batchSendMsg(Constants.GAME_READY_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers());
 		}else if(message.getTYPE() == MsgType.GAME_DEAL_MSG) {
 			if(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())) != null) {
-			
+				singleSendMsg(this.player, Constants.SEND_CARDS_MSG_FlAG+tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getCards());
 			}
 		}
 			
 	}
 
-	/**
-	 * 私发信息
-	 * @param sendMsg
-	 * @throws IOException
-	 */
-	private void singleSendMsg(Socket _socket,String sendMsg) throws IOException{
-		if(_socket != null){
-			PrintWriter printWriter = new PrintWriter(_socket.getOutputStream(), true);
-			printWriter.println(sendMsg);
-		}else{
-			LOGGER.info("私聊对象的socket为空！所以私聊信息发送失败");
-		}
-		
-	}
 	/**
 	 * 群发消息
 	 * @param sendMsg

@@ -35,8 +35,6 @@ public class GameRobState extends GameState {
 	}
 	@Override
 	public void handleWindow() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
