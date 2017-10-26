@@ -9,6 +9,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.BoxLayout;
@@ -24,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
 import com.ansatsing.landlords.client.thread.ReadyCountDownThread;
+import com.ansatsing.landlords.entity.Card;
+import com.ansatsing.landlords.entity.CardComparator;
 import com.ansatsing.landlords.state.GameState;
 import com.ansatsing.landlords.state.GameWaitState;
 import com.ansatsing.landlords.util.LandlordsUtil;
@@ -70,6 +75,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel rightReady;
 	private GameState gameState = new GameWaitState(this);//游戏状态;初始化状态为游戏等待状态
 	private String saveCards;//存放服务器发来的随机牌
+	private List<Card> cardList = new ArrayList<Card>();//主要功能用于牌排序
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -163,13 +169,11 @@ public class LandlordsRoomWindow extends JFrame {
 		leftActionPanel.add(leftUserName);
 		leftActionPanel.add(leftTime);
 		leftActionPanel.add(leftReady);
-		//leftActionPanel.setBackground(Color.red);
-		//leftCardPanel.setBackground(Color.BLACK);
 		leftCards = new JLabel[20];
 		for(int i=0;i<20;i++){
 			JLabel newJabel = new JLabel();
 			//newJabel.setIcon(PictureUtil.getPicture("cards/back.png"));
-			newJabel.setBounds(10, 80+(18)*i, 84, 113);
+			newJabel.setBounds(10, 20+(15)*i, 84, 113);
 			leftCards[i] = newJabel;
 			leftCardPanel.add(leftCards[i]);
 			
@@ -204,7 +208,7 @@ public class LandlordsRoomWindow extends JFrame {
 		for(int i=0;i<20;i++){
 			JLabel newJabel = new JLabel();
 			//newJabel.setIcon(PictureUtil.getPicture("cards/back.png"));
-			newJabel.setBounds(10, 80+(18)*i, 84, 113);
+			newJabel.setBounds(10, 20+(15)*i, 84, 113);
 			rightCards[i] = newJabel;
 			rightCardPanel.add(rightCards[i]);
 			
@@ -420,27 +424,36 @@ public class LandlordsRoomWindow extends JFrame {
 	 */
 	public void dealCard(String str,int i) {
 		if(i>50){//发底牌
+			topCards[i-51].setText(String.valueOf(i));
 			topCards[i-51].setIcon(PictureUtil.getPicture("cards/back.png"));
 		}else{
 			if(i%3==0){//从左边第一个位置开始发牌，相对于游戏大厅里的位置！
 				if(seatNum%3 ==0){
-					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
+					//getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
+					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 				}else{
 					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
 			}else if((i-1)%3==0){//接下来发三角 顶上那个位置的人牌
 				if((seatNum-1)%3 ==0){
-					getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
+					//getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
+					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 				}else{
 					getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
 			}else{//接下来发三角形右边那个人的牌
 				if((seatNum+1)%3 ==0){
-					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
+					//getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
+					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 				}else{
 					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
 			}
+		}
+		//显示自己的牌
+		Collections.sort(cardList,new CardComparator());
+		for(int j=0;j<cardList.size();j++) {
+			cards[j].setIcon(PictureUtil.getPicture("cards/"+cardList.get(j).getImage()+".jpg"));
 		}
 	}
 	//相对于大厅位置-找到三角形顶端那个人
@@ -484,6 +497,7 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 		//启动抢地主
 		public void startRob(){
+			LOGGER.info("底牌："+topCards[1].getText());
 			rob.setVisible(true);
 			noRob.setVisible(true);
 			time.setVisible(true);
