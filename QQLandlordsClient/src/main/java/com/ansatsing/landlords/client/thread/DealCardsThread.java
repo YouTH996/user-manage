@@ -31,7 +31,7 @@ public class DealCardsThread implements Runnable {
 			}
 		}
 		if(landlordsRoomWindow.getSeatNum() % 3 == 0) {//从左边位置开始轮流抢地主
-			landlordsRoomWindow.startRob(null);
+			landlordsRoomWindow.startRob(0);
 		}
 	}
 }

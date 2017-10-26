@@ -23,15 +23,15 @@ public class RobCountDownThread implements Runnable {
 	public void run() {
 		while(!isStop){
 			setTimeLableText();
+			if(seconds == 0){
+				 break;
+			 }
 			 try {
 	                TimeUnit.SECONDS.sleep(1);
 	            } catch (InterruptedException e) {
 	                e.printStackTrace();
 	            }
 			 seconds--;
-			 if(seconds == 0){
-				 break;
-			 }
 		}
 		if(seconds == 0) {//如果牌友一直不点 按钮 ，就直接当农民
 			landlordsRoomWindow.sendRobMsg("农民");

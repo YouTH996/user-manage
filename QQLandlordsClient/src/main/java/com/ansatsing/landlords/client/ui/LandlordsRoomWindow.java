@@ -132,7 +132,7 @@ public class LandlordsRoomWindow extends JFrame {
 		for(int i=16;i>=0;i--){//不这步，牌的字母或者数字会被遮着
 			cardPanel.add(cards[i]);
 		}
-		playerRole = new JLabel();
+		playerRole = new JLabel("角色");
 		playerRole.setVisible(false);
 		 rob = new JLabel("抢地主");
 		 noRob = new JLabel("不抢");
@@ -177,7 +177,7 @@ public class LandlordsRoomWindow extends JFrame {
 		leftActionPanel.add(leftUserName);
 		leftActionPanel.add(leftTime);
 		leftActionPanel.add(leftReady);
-		leftPlayerRole = new JLabel();
+		leftPlayerRole = new JLabel("角色");
 		leftPlayerRole.setVisible(false);
 		leftPlayerRole.setBounds(10, 348, 40, 20);
 		leftActionPanel.add(leftPlayerRole);
@@ -216,7 +216,7 @@ public class LandlordsRoomWindow extends JFrame {
 		rightActionPanel.add(rightReady);
 		//rightActionPanel.setBackground(Color.red);
 		//rightCardPanel.setBackground(Color.BLACK);
-		rightPlayerRole = new JLabel();
+		rightPlayerRole = new JLabel("角色");
 		rightPlayerRole.setBounds(10, 348, 40, 20);
 		rightPlayerRole.setVisible(false);
 		rightActionPanel.add(rightPlayerRole);
@@ -446,9 +446,18 @@ public class LandlordsRoomWindow extends JFrame {
 	public void sendDealMsg() {
 		messageHandler.sendGameDealMsg(userName);
 	}
-	//把自己的抢地主信息通知其他2位牌友
+	//把自己的抢地主信息通知其他2位牌友:   消息格式：username=角色=(seatNUm+1)  ； (seatNUm+1)-->意味轮到这个座位号的人抢地主
 	public void sendRobMsg(String msg) {
-		messageHandler.sendGameRobMsg(userName+"="+msg);
+		playerRole.setText(msg);
+		playerRole.setVisible(true);
+		time.setText("倒计时");
+		time.setVisible(false);
+		rob.setVisible(false);
+		noRob.setVisible(false);
+		messageHandler.sendGameRobMsg(userName+"="+msg+"="+(seatNum+1));
+		if(isAllFarmer()){//主要针对最后一个抢地主的界面，而且全部是农民 就重启新的一轮准备
+			restartGameReady();
+		}
 	}
 	//发牌
 	/**
@@ -531,26 +540,12 @@ public class LandlordsRoomWindow extends JFrame {
 			gameState.handleWindow();
 		}
 		//启动抢地主
-		public void startRob(String msg){
-			if(msg != null) {
-				String str[] = msg.split("=");
-				String username =str[0];
-				String role =str[1];
-				if(leftUserName.getText().equals(username)) {
-					leftPlayerRole.setText(role);
-					leftPlayerRole.setVisible(true);
-				}else {
-					rightPlayerRole.setText(role);
-					rightPlayerRole.setVisible(true);
-				}
-			}
-			if(seatNum % 3 == 0) {
+		public void startRob(int seat_num){
+			if( seat_num == 0) {//因为抢地主是从左边第一个位置来的
 				rob();
-			}
-			if((seatNum -1) %3==0) {
+			}else if(seat_num == seatNum) {
 				rob();
-			}
-			if((seatNum +1) %3==0) {
+			}else if(seat_num == seatNum) {
 				rob();
 			}
 		}
@@ -559,6 +554,47 @@ public class LandlordsRoomWindow extends JFrame {
 			noRob.setVisible(true);
 			time.setVisible(true);
 			gameState.pushGameState();
+			gameState.handleWindow();
+		}
+		//设置左右边牌友的角色
+		public void setOtherPlayerRole(String msg){
+			if(msg != null) {
+				String str[] = msg.split("=");
+				String username =str[0];
+				String role =str[1];
+				int seat_num = Integer.valueOf(str[2]);
+				if(leftUserName.getText().equals(username)) {
+					leftPlayerRole.setText(role);
+					leftPlayerRole.setVisible(true);
+				}else if(rightUserName.getText().equals(username)){
+					rightPlayerRole.setText(role);
+					rightPlayerRole.setVisible(true);
+				}
+				if(isAllFarmer()){
+					restartGameReady();
+					return ;
+				}
+				startRob(seat_num);
+			}
+		}
+		//判断是不是全部是农民
+		private boolean isAllFarmer(){
+			if(playerRole.getText().equals("农民") && leftPlayerRole.getText().equals("农民") && rightPlayerRole.getText().equals("农民")){
+				return true;
+			}
+			return false;
+		}
+		//全部是农民重启新一轮游戏准备
+		private void restartGameReady(){
+			playerRole.setText("角色");
+			leftPlayerRole.setText("角色");
+			rightPlayerRole.setText("角色");
+			playerRole.setVisible(false);
+			leftPlayerRole.setVisible(false);
+			rightPlayerRole.setVisible(false);
+			gameState.pullGameState();
+			gameState.pullGameState();
+			gameState.pullGameState();
 			gameState.handleWindow();
 		}
 }

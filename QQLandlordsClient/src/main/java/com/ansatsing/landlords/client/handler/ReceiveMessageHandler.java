@@ -29,7 +29,6 @@ public class ReceiveMessageHandler {
 				gameLobbyWindow.emptySeat(Integer.parseInt(tempMsg));
 			}else if(msg.startsWith(Constants.INIT_SEAT_MSG_FLAG)){
 				tempMsg = msg.substring(Constants.INIT_SEAT_MSG_FLAG.length());
-				System.out.println(gameLobbyWindow.getTitle()+"============"+tempMsg);
 				List<String> seatNums = Splitter.on(",").trimResults().splitToList(tempMsg);
 				for(int i=0;i<seatNums.size();i++){
 					int spiltIdx = seatNums.get(i).indexOf("=");
@@ -60,7 +59,7 @@ public class ReceiveMessageHandler {
 			}else if(msg.startsWith(Constants.SEND_CARDS_MSG_FlAG)){
 				landlordsRoomWindow.startDealCards(msg.substring(Constants.SEND_CARDS_MSG_FlAG.length()));
 			}else if(msg.startsWith(Constants.GAME_ROB_MSG_FLAG)) {
-				landlordsRoomWindow.startRob(msg.substring(Constants.GAME_ROB_MSG_FLAG.length()));
+				landlordsRoomWindow.setOtherPlayerRole(msg.substring(Constants.GAME_ROB_MSG_FLAG.length()));
 			}else{
 				gameLobbyWindow.setHistoryMsg(msg);
 			}
