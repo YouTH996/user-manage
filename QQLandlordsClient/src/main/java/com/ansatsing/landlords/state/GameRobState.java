@@ -1,5 +1,7 @@
 package com.ansatsing.landlords.state;
 
+import com.ansatsing.landlords.client.thread.DealCardsThread;
+import com.ansatsing.landlords.client.thread.RobCountDownThread;
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 
 /**
@@ -35,6 +37,9 @@ public class GameRobState extends GameState {
 	}
 	@Override
 	public void handleWindow() {
+		RobCountDownThread dealCardsThread = new RobCountDownThread(landlordsRoomWindow,10);
+		Thread thread = new Thread(dealCardsThread);
+		thread.start();
 	}
 
 }

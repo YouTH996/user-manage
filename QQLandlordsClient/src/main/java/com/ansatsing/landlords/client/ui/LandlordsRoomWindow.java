@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
 import com.ansatsing.landlords.client.thread.ReadyCountDownThread;
+import com.ansatsing.landlords.client.thread.RobCountDownThread;
 import com.ansatsing.landlords.entity.Card;
 import com.ansatsing.landlords.entity.CardComparator;
 import com.ansatsing.landlords.state.GameState;
@@ -69,6 +70,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel out;
 	private JLabel ready;
 	private ReadyCountDownThread countDownThread;
+	private RobCountDownThread robDownThread;
 	private JLabel rightTime;
 	private JLabel leftTime;
 	private JLabel leftReady;
@@ -76,6 +78,9 @@ public class LandlordsRoomWindow extends JFrame {
 	private GameState gameState = new GameWaitState(this);//游戏状态;初始化状态为游戏等待状态
 	private String saveCards;//存放服务器发来的随机牌
 	private List<Card> cardList = new ArrayList<Card>();//主要功能用于牌排序
+	private JLabel playerRole;//农民还是地主--->自己
+	private JLabel leftPlayerRole;//农民还是地主---》自己的左边牌友
+	private JLabel rightPlayerRole;//农民还是地主--->自己的右边牌友
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -127,6 +132,8 @@ public class LandlordsRoomWindow extends JFrame {
 		for(int i=16;i>=0;i--){//不这步，牌的字母或者数字会被遮着
 			cardPanel.add(cards[i]);
 		}
+		playerRole = new JLabel();
+		playerRole.setVisible(false);
 		 rob = new JLabel("抢地主");
 		 noRob = new JLabel("不抢");
 		 donot = new JLabel("不要");
@@ -139,6 +146,7 @@ public class LandlordsRoomWindow extends JFrame {
 		 donot.setVisible(false);
 		 tip.setVisible(false);
 		 out.setVisible(false);
+		 actionPanel.add(playerRole);
 		actionPanel.add(rob);
 		actionPanel.add(noRob);
 		actionPanel.add(donot);
@@ -169,6 +177,10 @@ public class LandlordsRoomWindow extends JFrame {
 		leftActionPanel.add(leftUserName);
 		leftActionPanel.add(leftTime);
 		leftActionPanel.add(leftReady);
+		leftPlayerRole = new JLabel();
+		leftPlayerRole.setVisible(false);
+		leftPlayerRole.setBounds(10, 348, 40, 20);
+		leftActionPanel.add(leftPlayerRole);
 		leftCards = new JLabel[20];
 		for(int i=0;i<20;i++){
 			JLabel newJabel = new JLabel();
@@ -204,6 +216,10 @@ public class LandlordsRoomWindow extends JFrame {
 		rightActionPanel.add(rightReady);
 		//rightActionPanel.setBackground(Color.red);
 		//rightCardPanel.setBackground(Color.BLACK);
+		rightPlayerRole = new JLabel();
+		rightPlayerRole.setBounds(10, 348, 40, 20);
+		rightPlayerRole.setVisible(false);
+		rightActionPanel.add(rightPlayerRole);
 		rightCards = new JLabel[20];
 		for(int i=0;i<20;i++){
 			JLabel newJabel = new JLabel();
@@ -307,6 +323,7 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 			
 		});
+		//准备事件
 		ready.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -317,6 +334,20 @@ public class LandlordsRoomWindow extends JFrame {
 				time.setText("倒计时");
 			}
 			
+		});
+		//抢地主事件
+		rob.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				sendRobMsg("地主");
+			}
+		});
+		//不抢地主事件
+		noRob.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				sendRobMsg("农民");
+			}
 		});
 	}
 	public void closeRoom() {
@@ -415,6 +446,10 @@ public class LandlordsRoomWindow extends JFrame {
 	public void sendDealMsg() {
 		messageHandler.sendGameDealMsg(userName);
 	}
+	//把自己的抢地主信息通知其他2位牌友
+	public void sendRobMsg(String msg) {
+		messageHandler.sendGameRobMsg(userName+"="+msg);
+	}
 	//发牌
 	/**
 	 * 0 1 2
@@ -451,7 +486,7 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 		}
 		//显示自己的牌
-		Collections.sort(cardList,new CardComparator());
+		Collections.sort(cardList);
 		for(int j=0;j<cardList.size();j++) {
 			cards[j].setIcon(PictureUtil.getPicture("cards/"+cardList.get(j).getImage()+".jpg"));
 		}
@@ -496,10 +531,34 @@ public class LandlordsRoomWindow extends JFrame {
 			gameState.handleWindow();
 		}
 		//启动抢地主
-		public void startRob(){
-			LOGGER.info("底牌："+topCards[1].getText());
+		public void startRob(String msg){
+			if(msg != null) {
+				String str[] = msg.split("=");
+				String username =str[0];
+				String role =str[1];
+				if(leftUserName.getText().equals(username)) {
+					leftPlayerRole.setText(role);
+					leftPlayerRole.setVisible(true);
+				}else {
+					rightPlayerRole.setText(role);
+					rightPlayerRole.setVisible(true);
+				}
+			}
+			if(seatNum % 3 == 0) {
+				rob();
+			}
+			if((seatNum -1) %3==0) {
+				rob();
+			}
+			if((seatNum +1) %3==0) {
+				rob();
+			}
+		}
+		private void rob() {
 			rob.setVisible(true);
 			noRob.setVisible(true);
 			time.setVisible(true);
+			gameState.pushGameState();
+			gameState.handleWindow();
 		}
 }

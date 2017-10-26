@@ -32,7 +32,9 @@ public class SendMessagePack {
 			return Constants.ROOM_ADD_SOCKET_FLAG+msg;
 		}else if(msgType == MsgType.GAME_READY_MSG){
 			return Constants.GAME_READY_MSG_FLAG+msg;
-		}else if(msgType == msgType.GAME_DEAL_MSG) {
+		}else if(msgType == MsgType.GAME_DEAL_MSG) {
+			return Constants.GAME_DEAL_MSG_FLAG+msg;
+		}else if(msgType == MsgType.GAME_ROB_MSG) {
 			return Constants.GAME_DEAL_MSG_FLAG+msg;
 		}
 		return tempMsg;

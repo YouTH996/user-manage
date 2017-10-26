@@ -75,6 +75,8 @@ public class ServerMessageHandler {
 			if(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())) != null) {
 				singleSendMsg(this.player, Constants.SEND_CARDS_MSG_FlAG+tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getCards());
 			}
+		}else if(message.getTYPE() == MsgType.GAME_ROB_MSG) {
+			batchSendMsg(Constants.GAME_ROB_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers());
 		}
 			
 	}

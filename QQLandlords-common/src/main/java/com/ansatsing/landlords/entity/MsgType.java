@@ -15,7 +15,8 @@ public enum MsgType {
 	ROOM_ADD_SOCKET_MSG("增加同桌牌友socket信息"),
 	GAME_READY_MSG("游戏准备信息"),
 	GAME_DEAL_MSG("客户端请求服务器发牌信息"),
-	SEND_CARDS_MSG("服务器端发送洗过的牌到客户端以供客户端发牌动作的信息");
+	SEND_CARDS_MSG("服务器端发送洗过的牌到客户端以供客户端发牌动作的信息"),
+	GAME_ROB_MSG("抢地主阶段发送抢地主情况给服务器的信息");
 	private String description;
 	MsgType(String description) {
 		this.description =description;

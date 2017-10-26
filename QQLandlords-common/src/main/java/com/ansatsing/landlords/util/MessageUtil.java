@@ -2,7 +2,13 @@ package com.ansatsing.landlords.util;
 
 import com.ansatsing.landlords.entity.Message;
 import com.ansatsing.landlords.entity.MsgType;
-
+/**
+ * 目前主要用于服务器端 的信息处理
+ * 
+ * 有的时候感觉这个类有点多余
+ * @author sunyq
+ *
+ */
 public class MessageUtil {
 	public static Message handle(String message) {
 		Message msg = null;
@@ -68,6 +74,10 @@ public class MessageUtil {
 			}else if(message.startsWith(Constants.GAME_DEAL_MSG_FLAG)){
 				msg.setTYPE(MsgType.GAME_DEAL_MSG);
 				msg.setMsg(message.substring(Constants.GAME_DEAL_MSG_FLAG.length()));
+				return msg;
+			}else if(message.startsWith(Constants.GAME_ROB_MSG_FLAG)){
+				msg.setTYPE(MsgType.GAME_ROB_MSG);
+				msg.setMsg(message.substring(Constants.GAME_ROB_MSG_FLAG.length()));
 				return msg;
 			}else {//大厅群聊信息处理
 				msg.setTYPE(MsgType.SEND_ALL_MSG);

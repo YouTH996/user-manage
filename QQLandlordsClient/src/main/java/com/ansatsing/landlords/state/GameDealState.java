@@ -26,7 +26,7 @@ public class GameDealState extends GameState {
 	@Override
 	public void pushGameState() {
 		// TODO Auto-generated method stub
-		landlordsRoomWindow.setGameState( new GamePlayState(this.landlordsRoomWindow));
+		landlordsRoomWindow.setGameState( new GameRobState(this.landlordsRoomWindow));
 	}
 
 	@Override

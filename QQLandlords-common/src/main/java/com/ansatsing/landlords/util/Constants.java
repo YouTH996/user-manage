@@ -16,4 +16,5 @@ public class Constants {
 	public final static String GAME_READY_MSG_FLAG = "GAME_READY_MSG_FLAG";//游戏准备信息标志
 	public final static String GAME_DEAL_MSG_FLAG = "GAME_DEAL_MSG_FLAG";//游戏发牌信息标志+
 	public final static String SEND_CARDS_MSG_FlAG="SEND_CARDS_MSG_FlAG";//洗过的牌发送到客户端
+	public final static String GAME_ROB_MSG_FLAG = "SEND_ROB_MSG_FLAG";//("抢地主阶段发送抢地主情况给服务器的信息的标志");
 }

@@ -24,12 +24,14 @@ public class DealCardsThread implements Runnable {
 		for(int i=0;i<card.size();i++){
 			try {
 				landlordsRoomWindow.dealCard(card.get(i),i);
-				TimeUnit.MILLISECONDS.sleep(1000);
+				TimeUnit.MILLISECONDS.sleep(150);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		landlordsRoomWindow.startRob();
+		if(landlordsRoomWindow.getSeatNum() % 3 == 0) {//从左边位置开始轮流抢地主
+			landlordsRoomWindow.startRob(null);
+		}
 	}
 }

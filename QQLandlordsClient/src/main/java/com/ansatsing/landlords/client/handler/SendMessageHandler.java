@@ -123,6 +123,15 @@ public class SendMessageHandler {
 		}
 	}	
 	/**
+	 * 发送游戏抢地址情况的信号
+	 * @param msg
+	 */
+	public void sendGameRobMsg(String msg){
+		if(msg != null && !msg.trim().equals("")){
+			sendMsg(SendMessagePack.packMsg(MsgType.GAME_ROB_MSG, msg));
+		}
+	}		
+	/**
 	 * 发送消息
 	 * @param msg
 	 */

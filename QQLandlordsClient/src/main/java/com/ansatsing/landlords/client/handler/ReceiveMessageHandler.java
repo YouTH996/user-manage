@@ -59,6 +59,8 @@ public class ReceiveMessageHandler {
 				}
 			}else if(msg.startsWith(Constants.SEND_CARDS_MSG_FlAG)){
 				landlordsRoomWindow.startDealCards(msg.substring(Constants.SEND_CARDS_MSG_FlAG.length()));
+			}else if(msg.startsWith(Constants.GAME_ROB_MSG_FLAG)) {
+				landlordsRoomWindow.startRob(msg.substring(Constants.GAME_ROB_MSG_FLAG.length()));
 			}else{
 				gameLobbyWindow.setHistoryMsg(msg);
 			}
