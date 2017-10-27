@@ -69,8 +69,10 @@ public class ServerMessageHandler {
 			String toMsg = Constants.ROOM_SEND_ONE_MSG_FLAG+player.getUserName()+"悄悄对你说:"+message.getMsg();
 			singleSendMsg(_player,toMsg);
 		}else if(message.getTYPE() == MsgType.GAME_READY_MSG){
-			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setCards(LandlordsUtil.getRondomCards());
-			batchSendMsg(Constants.GAME_READY_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers());
+			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setCards(LandlordsUtil.getRondomCards());//产生随机牌
+			this.player.setReadFlag(Integer.parseInt(message.getMsg()));
+			String sendMsg = player.getSeatNum()+"="+player.getReadFlag();
+			batchSendMsg(Constants.GAME_READY_MSG_FLAG+sendMsg, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers());
 		}else if(message.getTYPE() == MsgType.GAME_DEAL_MSG) {
 			if(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())) != null) {
 				singleSendMsg(this.player, Constants.SEND_CARDS_MSG_FlAG+tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getCards());

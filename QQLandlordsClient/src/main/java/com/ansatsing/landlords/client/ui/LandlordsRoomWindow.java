@@ -3,7 +3,6 @@ package com.ansatsing.landlords.client.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Label;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -12,7 +11,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,13 +27,15 @@ import com.ansatsing.landlords.client.handler.SendMessageHandler;
 import com.ansatsing.landlords.client.thread.ReadyCountDownThread;
 import com.ansatsing.landlords.client.thread.RobCountDownThread;
 import com.ansatsing.landlords.entity.Card;
-import com.ansatsing.landlords.entity.CardComparator;
+import com.ansatsing.landlords.state.GameDealState;
+import com.ansatsing.landlords.state.GameOverState;
+import com.ansatsing.landlords.state.GamePlayState;
+import com.ansatsing.landlords.state.GameReadyState;
+import com.ansatsing.landlords.state.GameRobState;
 import com.ansatsing.landlords.state.GameState;
 import com.ansatsing.landlords.state.GameWaitState;
 import com.ansatsing.landlords.util.LandlordsUtil;
 import com.ansatsing.landlords.util.PictureUtil;
-
-import ch.qos.logback.core.joran.conditional.ElseAction;
 /**
  * 斗地主房间
  * @author sunyq
@@ -214,8 +214,6 @@ public class LandlordsRoomWindow extends JFrame {
 		rightActionPanel.add(rightUserName);
 		rightActionPanel.add(rightTime);
 		rightActionPanel.add(rightReady);
-		//rightActionPanel.setBackground(Color.red);
-		//rightCardPanel.setBackground(Color.BLACK);
 		rightPlayerRole = new JLabel("角色");
 		rightPlayerRole.setBounds(10, 348, 40, 20);
 		rightPlayerRole.setVisible(false);
@@ -328,10 +326,12 @@ public class LandlordsRoomWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				messageHandler.sendGameReadyMsg(userName);
+				messageHandler.sendGameReadyMsg("1");//1代表准备好
+				if(countDownThread != null)
 				countDownThread.stop();
-				ready.setVisible(false);
+				ready.setText("已准备");
 				time.setText("倒计时");
+				time.setVisible(false);
 			}
 			
 		});
@@ -339,6 +339,8 @@ public class LandlordsRoomWindow extends JFrame {
 		rob.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if(robDownThread !=null)
+				robDownThread.stop();
 				sendRobMsg("地主");
 			}
 		});
@@ -346,6 +348,8 @@ public class LandlordsRoomWindow extends JFrame {
 		noRob.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if(robDownThread !=null)
+				robDownThread.stop();
 				sendRobMsg("农民");
 			}
 		});
@@ -360,7 +364,7 @@ public class LandlordsRoomWindow extends JFrame {
 	}
 	/**
 	 * 实现了斗地主房间位置跟游戏大厅的位置顺序一致
-	 * msg    --->  ansatsing=3
+	 * msg    --->  ansatsing=3=readFlag
 	 *   1
 	 * 0   2 
 	 *   4
@@ -369,14 +373,27 @@ public class LandlordsRoomWindow extends JFrame {
 	 */
 	public void setSeatUserName(String msg){
 	//	LOGGER.info(userName+"入座情况》》》》》》》》》》》》"+msg);
-		int idx = msg.indexOf("=");
-		String userName = msg.substring(0,idx);
-		messageHandler.sendAddSocketMsg(userName);
-		int _seatNum = Integer.parseInt(msg.substring(idx+1));
+		//int idx = msg.indexOf("=");
+		String[] str=msg.split("=");
+		String userName = str[0];
+		//String seat_num = str[1];
+		int readFlag = Integer.parseInt(str[2]);
+		//messageHandler.sendAddSocketMsg(userName);
+		int _seatNum = Integer.parseInt(str[1]);
 		if(_seatNum == LandlordsUtil.getLeftSeatNum(seatNum)) {
 			leftUserName.setText(userName);
+			if(readFlag == 1) {
+				leftReady.setText("已准备");
+				leftReady.setVisible(true);
+				leftTime.setVisible(false);
+			}
 		}else if(_seatNum == LandlordsUtil.getRightSeatNum(seatNum)) {
 			rightUserName.setText(userName);
+			if(readFlag == 1) {
+				rightReady.setText("已准备");
+				rightReady.setVisible(true);
+				rightTime.setVisible(false);
+			}
 		}
 		if(!leftUserName.getText().equals("空位") && !rightUserName.getText().equals("空位")){
 			gameState.pushGameState();
@@ -387,16 +404,17 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 	}
 	public void emptySeat(String tempMsg) {
-		//messageHandler.sendRemoveSocketMsg(tempMsg);
 		if(leftUserName.getText().trim().equals(tempMsg)){
 			leftUserName.setText("空位");
+			leftTime.setText("倒计时");
 		}else if(rightUserName.getText().trim().equals(tempMsg)){
 			rightUserName.setText("空位");
+			rightTime.setText("倒计时");
 		}
 		if(countDownThread != null){
 			countDownThread.stop();
-			this.time.setText("倒计时");
 		}
+		this.time.setText("倒计时");
 	}
 	public void setCountDownThread(ReadyCountDownThread countDownThread) {
 		this.countDownThread = countDownThread;
@@ -429,18 +447,26 @@ public class LandlordsRoomWindow extends JFrame {
 		return gameState;
 	}
 	//设置牌友的准备情况
-	public void setGameReady(String userName){
+	public void setGameReady(String msg){
 		LOGGER.info("setGameReady----"+userName);
-		if(leftUserName.getText().equals(userName)){
-			countDownThread.stopLeft();
+		String str[] = msg.split("=");
+		int seat_num = Integer.parseInt(str[0]);
+		int readFlag = Integer.parseInt(str[1]);
+		if(isLeftPlayer(seat_num)) {
+			if(countDownThread != null) {
+				countDownThread.stopLeft();
+			}
 			leftTime.setText("倒计时");
 			leftTime.setVisible(false);
-			leftReady.setVisible(false);
-		}else if(rightUserName.getText().equals(userName)){
+			leftReady.setText("已准备");
+			leftReady.setVisible(true);
+		}else {
+			if(countDownThread != null)
 			countDownThread.stopRight();
 			rightTime.setText("倒计时");
 			rightTime.setVisible(false);
-			rightReady.setVisible(false);
+			rightReady.setText("已准备");
+			rightReady.setVisible(true);
 		}
 	}
 	public void sendDealMsg() {
@@ -448,6 +474,7 @@ public class LandlordsRoomWindow extends JFrame {
 	}
 	//把自己的抢地主信息通知其他2位牌友:   消息格式：username=角色=(seatNUm+1)  ； (seatNUm+1)-->意味轮到这个座位号的人抢地主
 	public void sendRobMsg(String msg) {
+		//if(robDownThread)
 		playerRole.setText(msg);
 		playerRole.setVisible(true);
 		time.setText("倒计时");
@@ -455,6 +482,7 @@ public class LandlordsRoomWindow extends JFrame {
 		rob.setVisible(false);
 		noRob.setVisible(false);
 		messageHandler.sendGameRobMsg(userName+"="+msg+"="+(seatNum+1));
+		LOGGER.info(userName+"========="+(seatNum+1));
 		if(isAllFarmer()){//主要针对最后一个抢地主的界面，而且全部是农民 就重启新的一轮准备
 			restartGameReady();
 		}
@@ -468,7 +496,7 @@ public class LandlordsRoomWindow extends JFrame {
 	 */
 	public void dealCard(String str,int i) {
 		if(i>50){//发底牌
-			topCards[i-51].setText(String.valueOf(i));
+			//topCards[i-51].setText(String.valueOf(i));
 			topCards[i-51].setIcon(PictureUtil.getPicture("cards/back.png"));
 		}else{
 			if(i%3==0){//从左边第一个位置开始发牌，相对于游戏大厅里的位置！
@@ -498,6 +526,18 @@ public class LandlordsRoomWindow extends JFrame {
 		Collections.sort(cardList);
 		for(int j=0;j<cardList.size();j++) {
 			cards[j].setIcon(PictureUtil.getPicture("cards/"+cardList.get(j).getImage()+".jpg"));
+		}
+	}
+	//接受的其他牌友发来的信号时，首先判断是左边牌友还是右边牌友[是相对于自己的位置]
+	private boolean isLeftPlayer(int seat_num) {
+		if((seatNum -1) % 3 ==0 && (seat_num+1)%3==0){
+			return true;
+		}else if(seatNum % 3 == 0 && (seat_num -1)%3 ==0){
+			return true;
+		}else if((seatNum +1)%3==0&&seat_num%3 == 0){
+			return true;
+		}else {
+			return false;
 		}
 	}
 	//相对于大厅位置-找到三角形顶端那个人
@@ -536,17 +576,20 @@ public class LandlordsRoomWindow extends JFrame {
 		//启动发牌
 		public void startDealCards(String cards){
 			this.saveCards = cards;
+			leftReady.setText("请准备");
+			leftReady.setVisible(false);
+			rightReady.setText("请准备");
+			rightReady.setVisible(false);
+			ready.setText("请准备");
+			ready.setVisible(false);
 			gameState.pushGameState();
 			gameState.handleWindow();
 		}
 		//启动抢地主
 		public void startRob(int seat_num){
-			if( seat_num == 0) {//因为抢地主是从左边第一个位置来的
+			if(seat_num == seatNum) {
 				rob();
-			}else if(seat_num == seatNum) {
-				rob();
-			}else if(seat_num == seatNum) {
-				rob();
+				LOGGER.info(userName+" *****rob()*****  "+seat_num);
 			}
 		}
 		private void rob() {
@@ -554,7 +597,10 @@ public class LandlordsRoomWindow extends JFrame {
 			noRob.setVisible(true);
 			time.setVisible(true);
 			gameState.pushGameState();
-			gameState.handleWindow();
+			//gameState.handleWindow();
+			RobCountDownThread dealCardsThread = new RobCountDownThread(this,10);
+			Thread thread = new Thread(dealCardsThread);
+			thread.start();
 		}
 		//设置左右边牌友的角色
 		public void setOtherPlayerRole(String msg){
@@ -592,9 +638,74 @@ public class LandlordsRoomWindow extends JFrame {
 			playerRole.setVisible(false);
 			leftPlayerRole.setVisible(false);
 			rightPlayerRole.setVisible(false);
+			for(int i=0;i<topCards.length;i++) {
+				topCards[i].setIcon(null);
+			}
+			for(int i=0;i<leftCards.length;i++) {
+				leftCards[i].setIcon(null);
+			}
+			for(int i=0;i<rightCards.length;i++) {
+				rightCards[i].setIcon(null);
+			}
+			for(int i=0;i<cards.length;i++) {
+				cards[i].setIcon(null);
+			}
+			cardList.clear();
+			time.setVisible(true);
+			leftTime.setVisible(true);
+			rightTime.setVisible(true);
+			ready.setVisible(true);
+			leftReady.setVisible(true);
+			rightReady.setVisible(true);
+			if(gameState instanceof GameRobState) {
+				LOGGER.info("11GameRobStateGameRobStateGameRobStateGameRobStateGameRobState");
+			}else if (gameState instanceof GameReadyState) {
+				LOGGER.info("11GameReadyStateGameReadyStateGameReadyStateGameReadyStateGameReadyState");
+			}else if (gameState instanceof GameWaitState) {
+				LOGGER.info("11GameWaitStateGameWaitStateGameWaitStateGameWaitStateGameWaitState");
+			}else if (gameState instanceof GameDealState) {
+				LOGGER.info("11GameDealStateGameDealStateGameDealStateGameDealStateGameDealState");
+			}else if (gameState instanceof GamePlayState) {
+				LOGGER.info("11GamePlayStateGamePlayStateGamePlayStateGamePlayStateGamePlayStateGamePlayState");
+			}else if (gameState instanceof GameOverState) {
+				LOGGER.info("11GameOverStateGameOverStateGameOverStateGameOverState");
+			}
+			
 			gameState.pullGameState();
 			gameState.pullGameState();
-			gameState.pullGameState();
+			if(gameState instanceof GameReadyState) {
+				LOGGER.info("GameReadyStateGameReadyStateGameReadyStateGameReadyStateGameReadyStateGa");
+			}else if(gameState instanceof GameDealState) {
+				LOGGER.info("GameDealStateGameDealStateGameDealStateGameDealStateGameDealState");
+			}
+			//gameState.pullGameState();
 			gameState.handleWindow();
 		}
+		//用于开启准备线程时判断牌友是否已经提前准备好了
+		public boolean leftIsReady() {
+			if(leftReady.getText().equals("已准备")) {
+				return true;
+			}else {
+				return false;
+			}
+		}
+		//用于开启准备线程时判断牌友是否已经提前准备好了
+		public boolean rightIsReady() {
+			if(rightReady.getText().equals("已准备")) {
+				return true;
+			}else {
+				return false;
+			}
+		}
+		public boolean isReady() {
+			if(ready.getText().equals("已准备")) {
+				return true;
+			}else {
+				return false;
+			}
+		}
+		public void setRobDownThread(RobCountDownThread robDownThread) {
+			this.robDownThread = robDownThread;
+		}
+		
 }

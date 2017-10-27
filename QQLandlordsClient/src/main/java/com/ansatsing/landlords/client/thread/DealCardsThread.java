@@ -20,6 +20,9 @@ public class DealCardsThread implements Runnable {
 		this.landlordsRoomWindow = landlordsRoomWindow;
 	}
 	public void run() {
+		if(landlordsRoomWindow.getServerCards() == null) {
+			System.out.println("DealCardsThreadDealCardsThreadDealCardsThreadDealCardsThreadnulllllllllllllllllll");
+		}
 		List<String> card = Splitter.on(",").splitToList(landlordsRoomWindow.getServerCards());
 		for(int i=0;i<card.size();i++){
 			try {
@@ -31,7 +34,7 @@ public class DealCardsThread implements Runnable {
 			}
 		}
 		if(landlordsRoomWindow.getSeatNum() % 3 == 0) {//从左边位置开始轮流抢地主
-			landlordsRoomWindow.startRob(0);
+			landlordsRoomWindow.startRob(landlordsRoomWindow.getSeatNum());
 		}
 	}
 }

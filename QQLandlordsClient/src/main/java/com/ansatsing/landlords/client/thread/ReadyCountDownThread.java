@@ -20,6 +20,15 @@ public class ReadyCountDownThread implements Runnable {
 	private volatile boolean leftStop = false;
 	public ReadyCountDownThread(LandlordsRoomWindow landlordsRoomWindow,int seconds){
 		this.landlordsRoomWindow = landlordsRoomWindow;
+		if(landlordsRoomWindow.leftIsReady()) {
+			leftStop = true;
+		}
+		if(landlordsRoomWindow.rightIsReady()) {
+			rightStop = true;
+		}
+		if(landlordsRoomWindow.isReady()) {
+			isStop = true;
+		}
 		this.seconds = seconds;
 	}
 	public void run() {
@@ -35,12 +44,11 @@ public class ReadyCountDownThread implements Runnable {
 				 break;
 			 }
 		}
-		if(seconds == 0){
-			if(!isStop)
-			landlordsRoomWindow.closeRoom();
-		}
-		if(seconds > 0){//说明3人都准备好了，那就向服务器发送请求发牌的信号
+		if(seconds > 0 && landlordsRoomWindow.isReady() && landlordsRoomWindow.leftIsReady()&&landlordsRoomWindow.rightIsReady()){//说明3人都准备好了，那就向服务器发送请求发牌的信号
 			landlordsRoomWindow.sendDealMsg();
+		}else if(seconds == 0) {
+			if(!isStop)
+				landlordsRoomWindow.closeRoom();
 		}
 	}
 	public void stop(){

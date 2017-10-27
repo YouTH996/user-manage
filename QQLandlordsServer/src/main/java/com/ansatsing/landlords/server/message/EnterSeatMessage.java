@@ -56,11 +56,11 @@ public class EnterSeatMessage extends AbstractMessage {
 		//斗地主房间里座位信息在牌友间互通
 		if(tableMap.get(tableNum).getPlayers().size() > 1){
 			//1将自己的信息发给同桌的比你先进的牌友
-			batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+player.getUserName()+"="+seatNum, tableMap.get(tableNum).getPlayers());
+			batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+player.getUserName()+"="+seatNum+"="+player.getReadFlag(), tableMap.get(tableNum).getPlayers());
 			//2将同桌的比你先进去的牌友的信息发给自己
 			for(Player temp:tableMap.get(tableNum).getPlayers()){
 				if(temp == this.player) continue;
-				singleSendMsg(this.player, Constants.ENTER_ROOM_MSG_FLAG+temp.getUserName()+"="+getSeatNumByUserName(temp.getUserName()));
+				singleSendMsg(this.player, Constants.ENTER_ROOM_MSG_FLAG+temp.getUserName()+"="+getSeatNumByUserName(temp.getUserName())+"="+temp.getReadFlag());
 			}
 		}
 	}

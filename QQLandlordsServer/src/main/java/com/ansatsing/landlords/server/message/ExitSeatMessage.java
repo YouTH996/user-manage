@@ -36,10 +36,9 @@ public class ExitSeatMessage extends AbstractMessage {
 		if(tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers().size() > 1){
 			//1将自己的退出房间的信息发给的牌友
 			batchSendMsg(Constants.EXIT_ROOM_MSG_FLAG+player.getUserName(), tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers());
-
-			//2 清除自己
-			tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers().remove(player);
 		}
+		//2 清除自己
+		tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers().remove(player);
 		player.setSeatNum(-1);
 	}
 }

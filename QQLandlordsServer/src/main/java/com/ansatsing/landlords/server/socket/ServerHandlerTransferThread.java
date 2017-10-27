@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -26,11 +27,15 @@ public class ServerHandlerTransferThread implements Runnable {
 	private Player player;
 	private ServerMessageHandler messageHandler;
 	private Map<String, Player> userName2Player;
+	private Map<Integer, Player> playerMap;//一个座位对应一个玩家
+	private Map<Integer, Table> tableMap;//一桌对应一个table实体类对象
 	public ServerHandlerTransferThread( Socket socket,Map<Integer, Player> playerMap,Map<Integer, Table> tableMap,Map<String, Player> _userName2Player) {
 		this.socket = socket;
 		this.player = new Player();
 		this.player.setSocket(socket);
 		this.userName2Player = _userName2Player;
+		this.tableMap = tableMap;
+		this.playerMap = playerMap;
 		if(tableMap == null) LOGGER.info("tableMapnullllllllllllllllllllllllllllll");
 		messageHandler = new ServerMessageHandler(this.player,playerMap,tableMap,_userName2Player);
 	}
@@ -57,6 +62,9 @@ public class ServerHandlerTransferThread implements Runnable {
 							}
 							break;
 						}else{
+							System.out.println("userName2Player  size:=======   "+userName2Player.size());
+							System.out.println("playerMap  size:=======   "+playerMap.size());
+							System.out.println("tableMap  size:=======   "+tableMap.size());
 							messageHandler.handleMessage(message);
 						}
 					}else{

@@ -9,6 +9,7 @@ public class Player {
 	private int seatNum;//座位号
 	private Socket socket;
 	private Channel channel;
+	private int readFlag = 0;//0没有准备好    1准备好了
 	public String getUserName() {
 		return userName;
 	}
@@ -27,6 +28,15 @@ public class Player {
 
 	public Socket getSocket() {
 		return socket;
+	}
+	
+
+	public int getReadFlag() {
+		return readFlag;
+	}
+
+	public void setReadFlag(int readFlag) {
+		this.readFlag = readFlag;
 	}
 
 	public void setSocket(Socket socket) {

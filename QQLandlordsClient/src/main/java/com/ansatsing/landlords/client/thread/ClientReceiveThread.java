@@ -41,14 +41,14 @@ public class ClientReceiveThread implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
-			if(socket != null) {
+			/*if(socket != null) {//只要没有收到退出信号，就不应该有关闭套接字的代码
 				try {
 					socket.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
+			}*/
 		}
 	}
 	//停止线程

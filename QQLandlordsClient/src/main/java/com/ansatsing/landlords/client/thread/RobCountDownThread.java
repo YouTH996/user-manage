@@ -4,6 +4,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.text.StyledEditorKit.BoldAction;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 
 /**
@@ -13,6 +16,7 @@ import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
  * @time 2017年10月23日 下午9:09:00
  */
 public class RobCountDownThread implements Runnable {
+	private final static Logger LOGGER = LoggerFactory.getLogger(RobCountDownThread.class);
 	private LandlordsRoomWindow landlordsRoomWindow;
 	private int seconds;
 	private volatile boolean isStop = false;
@@ -21,13 +25,14 @@ public class RobCountDownThread implements Runnable {
 		this.seconds = seconds;
 	}
 	public void run() {
-		while(!isStop){
+		while(!this.isStop){
 			setTimeLableText();
 			if(seconds == 0){
 				 break;
 			 }
 			 try {
 	                TimeUnit.SECONDS.sleep(1);
+	                
 	            } catch (InterruptedException e) {
 	                e.printStackTrace();
 	            }
@@ -38,7 +43,7 @@ public class RobCountDownThread implements Runnable {
 		}
 	}
 	public void stop(){
-		isStop = true;
+		this.isStop = true;
 	}
 	//设置倒计时标签的内容：是显示倒计时还是显示 倒计时名称
 	private void setTimeLableText(){
