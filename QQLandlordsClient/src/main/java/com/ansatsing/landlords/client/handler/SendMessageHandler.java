@@ -87,24 +87,6 @@ public class SendMessageHandler {
 		}
 	}
 	/**
-	 * 移除牌友socket
-	 * @param msg
-	 */
-	public void sendRemoveSocketMsg(String msg){
-		if(msg != null && !msg.trim().equals("")){
-			sendMsg(SendMessagePack.packMsg(MsgType.ROOM_REMOVE_SOCKET_MSG, msg));
-		}
-	}
-	/**
-	 * 斗地主房间新牌友入座时新增此牌友的socket到三人组Map
-	 * @param msg
-	 */
-	public void sendAddSocketMsg(String msg){
-		if(msg != null && !msg.trim().equals("")){
-			sendMsg(SendMessagePack.packMsg(MsgType.ROOM_ADD_SOCKET_MSG, msg));
-		}
-	}
-	/**
 	 * 发送游戏准备信息
 	 * @param msg
 	 */

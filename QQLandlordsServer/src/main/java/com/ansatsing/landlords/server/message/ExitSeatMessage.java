@@ -40,5 +40,6 @@ public class ExitSeatMessage extends AbstractMessage {
 		//2 清除自己
 		tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers().remove(player);
 		player.setSeatNum(-1);
+		player.setReadFlag(0);
 	}
 }

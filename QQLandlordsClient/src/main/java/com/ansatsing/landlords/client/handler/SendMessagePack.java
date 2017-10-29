@@ -26,10 +26,6 @@ public class SendMessagePack {
 			return Constants.ROOM_SEND_ALL_MSG_FLAG+msg;
 		}else if(msgType == MsgType.ROOM_SEND_ONE_MSG){
 			return Constants.ROOM_SEND_ONE_MSG_FLAG+msg;
-		}else if(msgType == MsgType.ROOM_REMOVE_SOCKET_MSG){
-			return Constants.ROOM_REMOVE_SOCKET_FLAG+msg;
-		}else if(msgType == MsgType.ROOM_ADD_SOCKET_MSG){
-			return Constants.ROOM_ADD_SOCKET_FLAG+msg;
 		}else if(msgType == MsgType.GAME_READY_MSG){
 			return Constants.GAME_READY_MSG_FLAG+msg;
 		}else if(msgType == MsgType.GAME_DEAL_MSG) {

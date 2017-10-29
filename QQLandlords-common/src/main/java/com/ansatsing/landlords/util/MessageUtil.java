@@ -59,14 +59,6 @@ public class MessageUtil {
 					msg.setToWho(toWho);
 					return msg;
 				}
-			}else if(message.startsWith(Constants.ROOM_REMOVE_SOCKET_FLAG)){
-				msg.setTYPE(MsgType.ROOM_REMOVE_SOCKET_MSG);
-				msg.setMsg(message.substring(Constants.ROOM_REMOVE_SOCKET_FLAG.length()));
-				return msg;
-			}else if(message.startsWith(Constants.ROOM_ADD_SOCKET_FLAG)){
-				msg.setTYPE(MsgType.ROOM_ADD_SOCKET_MSG);
-				msg.setMsg(message.substring(Constants.ROOM_ADD_SOCKET_FLAG.length()));
-				return msg;
 			}else if(message.startsWith(Constants.GAME_READY_MSG_FLAG)){
 				msg.setTYPE(MsgType.GAME_READY_MSG);
 				msg.setMsg(message.substring(Constants.GAME_READY_MSG_FLAG.length()));

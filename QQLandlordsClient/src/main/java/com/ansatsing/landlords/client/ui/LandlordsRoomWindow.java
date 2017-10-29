@@ -348,8 +348,11 @@ public class LandlordsRoomWindow extends JFrame {
 		noRob.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(robDownThread !=null)
-				robDownThread.stop();
+				if(robDownThread !=null){
+					System.out.println("88888888888888888  	robDownThread.stop();");
+					robDownThread.stop();
+				}
+				
 				sendRobMsg("农民");
 			}
 		});
@@ -384,19 +387,27 @@ public class LandlordsRoomWindow extends JFrame {
 			leftUserName.setText(userName);
 			if(readFlag == 1) {
 				leftReady.setText("已准备");
-				leftReady.setVisible(true);
+				
 				leftTime.setVisible(false);
+			}else{
+				leftReady.setText("请准备");
+				leftTime.setVisible(true);
 			}
+			leftReady.setVisible(true);
 		}else if(_seatNum == LandlordsUtil.getRightSeatNum(seatNum)) {
 			rightUserName.setText(userName);
 			if(readFlag == 1) {
 				rightReady.setText("已准备");
-				rightReady.setVisible(true);
 				rightTime.setVisible(false);
+			}else{
+				rightReady.setText("请准备");
+				rightTime.setVisible(true);
 			}
+			rightReady.setVisible(true);
 		}
 		if(!leftUserName.getText().equals("空位") && !rightUserName.getText().equals("空位")){
 			gameState.pushGameState();
+			System.out.println("setSeatUserNamesetSeatUserName   gameState  "+gameState.getClass().getName());
 			gameState.handleWindow();
 			/*this.countDownThread = new CountDownThread(this, 30);
 			Thread thread = new Thread(countDownThread);
@@ -405,16 +416,26 @@ public class LandlordsRoomWindow extends JFrame {
 	}
 	public void emptySeat(String tempMsg) {
 		if(leftUserName.getText().trim().equals(tempMsg)){
+		//	countDownThread.stopLeft();
 			leftUserName.setText("空位");
-			leftTime.setText("倒计时");
+			leftReady.setText("请准备");
+			leftReady.setVisible(false);
 		}else if(rightUserName.getText().trim().equals(tempMsg)){
+		//	countDownThread.stopRight();
 			rightUserName.setText("空位");
-			rightTime.setText("倒计时");
+			rightReady.setText("请准备");
+			rightReady.setVisible(false);
 		}
+		leftTime.setText("倒计时");
+		rightTime.setText("倒计时");
 		if(countDownThread != null){
 			countDownThread.stop();
 		}
 		this.time.setText("倒计时");
+		//状态也要回滚
+		if(gameState instanceof GameReadyState){
+			gameState.pullGameState();
+		}
 	}
 	public void setCountDownThread(ReadyCountDownThread countDownThread) {
 		this.countDownThread = countDownThread;
@@ -597,10 +618,10 @@ public class LandlordsRoomWindow extends JFrame {
 			noRob.setVisible(true);
 			time.setVisible(true);
 			gameState.pushGameState();
-			//gameState.handleWindow();
-			RobCountDownThread dealCardsThread = new RobCountDownThread(this,10);
+			gameState.handleWindow();
+			/*RobCountDownThread dealCardsThread = new RobCountDownThread(this,10);
 			Thread thread = new Thread(dealCardsThread);
-			thread.start();
+			thread.start();*/
 		}
 		//设置左右边牌友的角色
 		public void setOtherPlayerRole(String msg){
@@ -657,20 +678,10 @@ public class LandlordsRoomWindow extends JFrame {
 			ready.setVisible(true);
 			leftReady.setVisible(true);
 			rightReady.setVisible(true);
-			if(gameState instanceof GameRobState) {
-				LOGGER.info("11GameRobStateGameRobStateGameRobStateGameRobStateGameRobState");
-			}else if (gameState instanceof GameReadyState) {
-				LOGGER.info("11GameReadyStateGameReadyStateGameReadyStateGameReadyStateGameReadyState");
-			}else if (gameState instanceof GameWaitState) {
-				LOGGER.info("11GameWaitStateGameWaitStateGameWaitStateGameWaitStateGameWaitState");
-			}else if (gameState instanceof GameDealState) {
-				LOGGER.info("11GameDealStateGameDealStateGameDealStateGameDealStateGameDealState");
-			}else if (gameState instanceof GamePlayState) {
-				LOGGER.info("11GamePlayStateGamePlayStateGamePlayStateGamePlayStateGamePlayStateGamePlayState");
-			}else if (gameState instanceof GameOverState) {
-				LOGGER.info("11GameOverStateGameOverStateGameOverStateGameOverState");
-			}
-			
+		//把不准备的消息发送给牌友
+			leftReady.setText("请准备");
+			rightReady.setText("请准备");
+			ready.setText("请准备");
 			gameState.pullGameState();
 			gameState.pullGameState();
 			if(gameState instanceof GameReadyState) {

@@ -11,8 +11,6 @@ public enum MsgType {
 	EXIT_ROOM_MSG("退出斗地主房间信息"),
 	ROOM_SEND_ALL_MSG("房间群发消息"),
 	ROOM_SEND_ONE_MSG("房间私聊消息"),
-	ROOM_REMOVE_SOCKET_MSG("移除同桌牌友socket信息"),
-	ROOM_ADD_SOCKET_MSG("增加同桌牌友socket信息"),
 	GAME_READY_MSG("游戏准备信息"),
 	GAME_DEAL_MSG("客户端请求服务器发牌信息"),
 	SEND_CARDS_MSG("服务器端发送洗过的牌到客户端以供客户端发牌动作的信息"),

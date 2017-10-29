@@ -39,10 +39,12 @@ public class RobCountDownThread implements Runnable {
 			 seconds--;
 		}
 		if(seconds == 0) {//如果牌友一直不点 按钮 ，就直接当农民
+			System.out.println("RobCountDownThread  seconds == =====================0");
 			landlordsRoomWindow.sendRobMsg("农民");
 		}
 	}
 	public void stop(){
+		System.out.println("RobCountDownThread  stop() stop()stop()stop()stop()");
 		this.isStop = true;
 	}
 	//设置倒计时标签的内容：是显示倒计时还是显示 倒计时名称

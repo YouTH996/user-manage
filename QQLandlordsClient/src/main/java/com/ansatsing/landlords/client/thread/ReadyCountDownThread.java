@@ -32,7 +32,7 @@ public class ReadyCountDownThread implements Runnable {
 		this.seconds = seconds;
 	}
 	public void run() {
-		while(!isStop || !rightStop || !leftStop){//或者关系
+		while(!isStop && !rightStop && !leftStop){//并且
 			setTimeLableText();
 			 try {
 	                TimeUnit.SECONDS.sleep(1);
@@ -52,6 +52,7 @@ public class ReadyCountDownThread implements Runnable {
 		}
 	}
 	public void stop(){
+		System.out.println("ReadyCountDownThreadReadyCountDownThrea    stop()");
 		isStop = true;
 	}
 	public void stopRight(){
