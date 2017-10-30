@@ -25,9 +25,11 @@ public abstract class  AbstractMessage {
 	 * @param sendMsg
 	 * @throws IOException
 	 */
-	public void batchSendMsg(String sendMsg,Collection<Player> players) {
+	public void batchSendMsg(String sendMsg,Collection<Player> players,boolean excludeMyself) {
 		for(Player _player:players) {
-			if(_player == this.player) continue;
+			if(excludeMyself){
+				if(_player == this.player) continue;
+			}
 			singleSendMsg(_player, sendMsg);
 		}
 	}

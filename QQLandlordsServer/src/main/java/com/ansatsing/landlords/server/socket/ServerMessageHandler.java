@@ -52,12 +52,12 @@ public class ServerMessageHandler {
 			socketMessage = new EnterSeatMessage(player,playerMap,tableMap,userName2Player);
 			socketMessage.handleMsg(message);
 		}else if(message.getTYPE() == MsgType.SEND_ALL_MSG) {
-			batchSendMsg(player.getUserName()+"说:"+message.getMsg(),userName2Player.values());
+			batchSendMsg(player.getUserName()+"说:"+message.getMsg(),userName2Player.values(),true);
 		}else if(message.getTYPE() == MsgType.EXIT_SEAT_MSG){
 			socketMessage = new ExitSeatMessage(player,playerMap,tableMap,userName2Player);
 			socketMessage.handleMsg(message);
 		}else if(message.getTYPE() == MsgType.ROOM_SEND_ALL_MSG){
-			batchSendMsg(Constants.ROOM_SEND_ALL_MSG_FLAG+player.getUserName()+"说:"+message.getMsg(),tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers());
+			batchSendMsg(Constants.ROOM_SEND_ALL_MSG_FLAG+player.getUserName()+"说:"+message.getMsg(),tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(),true);
 		}else if(message.getTYPE() == MsgType.ROOM_SEND_ONE_MSG){
 			Player _player = null;
 			for(Player p: tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers()) {
@@ -72,13 +72,27 @@ public class ServerMessageHandler {
 			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setCards(LandlordsUtil.getRondomCards());//产生随机牌
 			this.player.setReadFlag(Integer.parseInt(message.getMsg()));
 			String sendMsg = player.getSeatNum()+"="+player.getReadFlag();
-			batchSendMsg(Constants.GAME_READY_MSG_FLAG+sendMsg, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers());
+			batchSendMsg(Constants.GAME_READY_MSG_FLAG+sendMsg, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(),true);
+			
+			//如果有3个人准备好 启动发牌线程
+			if(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers().size() == 3){
+				boolean flag = true;
+				for(Player _player :tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers()){
+					if(_player.getReadFlag() == 0){
+						flag = false;
+						break;
+					}
+				}
+				if(flag){
+					batchSendMsg(Constants.START_DEAL_MSG_FLAG+tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getCards(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), false);
+				}
+			}
 		}else if(message.getTYPE() == MsgType.GAME_DEAL_MSG) {
 			if(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())) != null) {
 				singleSendMsg(this.player, Constants.SEND_CARDS_MSG_FlAG+tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getCards());
 			}
 		}else if(message.getTYPE() == MsgType.GAME_ROB_MSG) {
-			batchSendMsg(Constants.GAME_ROB_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers());
+			batchSendMsg(Constants.GAME_ROB_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(),true);
 		}
 			
 	}
@@ -88,9 +102,11 @@ public class ServerMessageHandler {
 	 * @param sendMsg
 	 * @throws IOException
 	 */
-	public void batchSendMsg(String sendMsg,Collection<Player> players) {
+	public void batchSendMsg(String sendMsg,Collection<Player> players,boolean excludeMyself) {
 		for(Player _player:players) {
-			if(_player == this.player) continue;
+			if(excludeMyself){
+				if(_player == this.player) continue;
+			}
 			singleSendMsg(_player, sendMsg);
 		}
 	}

@@ -111,12 +111,8 @@ public class LandlordsRoomWindow extends JFrame {
 		//显示自己方向的面板
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
-		//southPanel.setBackground(Color.red);
 		JPanel actionPanel = new JPanel();//出牌，不要，提示，抢地主，不强等动作面板
 		actionPanel.setPreferredSize(new Dimension(0, 20));
-		//actionPanel.setSize(200, 30);
-		//actionPanel.sets
-		//actionPanel.setBackground(Color.BLACK);
 		JPanel cardPanel = new JPanel();//显示纸牌的面板
 		//cardPanel.setLayout(new BoxLayout(cardPanel,  BoxLayout.X_AXIS));
 		cardPanel.setLayout(null);
@@ -125,10 +121,8 @@ public class LandlordsRoomWindow extends JFrame {
 		cards = new JLabel[20];
 		for(int i=0;i<20;i++){
 			JLabel newJabel = new JLabel();
-			//newJabel.setIcon(PictureUtil.getPicture("cards/"+(i+1)+".jpg"));
 			newJabel.setBounds(385+(18)*i, 50, 105, 150);
 			cards[i] = newJabel;
-			
 		}
 		for(int i=16;i>=0;i--){//不这步，牌的字母或者数字会被遮着
 			cardPanel.add(cards[i]);
@@ -361,7 +355,10 @@ public class LandlordsRoomWindow extends JFrame {
 	public void closeRoom() {
 		messageHandler.sendExitSeatMsg(String.valueOf(seatNum));
 		seat.setText("空位");
-		if(countDownThread != null) countDownThread.stop();//关闭准备倒计时线程
+		if(countDownThread != null){
+			//countDownThread.stop();//关闭准备倒计时线程
+			countDownThread.notAllSitted();
+		}
 		if(robDownThread != null) robDownThread.stop();//关闭抢地主线程
 		dispose();
 	}
@@ -408,10 +405,18 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 			rightReady.setVisible(true);
 		}
-		if(!leftUserName.getText().equals("空位") && !rightUserName.getText().equals("空位")){
+		/*if(!leftUserName.getText().equals("空位") && !rightUserName.getText().equals("空位")){
 			gameState.pushGameState();
 			System.out.println("setSeatUserNamesetSeatUserName   gameState  "+gameState.getClass().getName());
 			gameState.handleWindow();
+		}*/
+	}
+	public void startGameReadyThread(){
+		if(gameState instanceof GameWaitState){
+			gameState.pushGameState();
+			gameState.handleWindow();
+		}else{
+			System.out.println("游戏准备线程启动失败!");
 		}
 	}
 	public void emptySeat(String tempMsg) {
@@ -740,6 +745,18 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 		public void setRobDownThread(RobCountDownThread robDownThread) {
 			this.robDownThread = robDownThread;
+		}
+		//启动发牌线程
+		public void startGameDealThread(String cards) {
+			this.saveCards = cards;
+			/*leftReady.setText("请准备");
+			leftReady.setVisible(false);
+			rightReady.setText("请准备");
+			rightReady.setVisible(false);
+			ready.setText("请准备");
+			ready.setVisible(false);*/
+			gameState.pushGameState();
+			gameState.handleWindow();
 		}
 		
 		

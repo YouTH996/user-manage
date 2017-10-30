@@ -42,14 +42,19 @@ public class ReadyCountDownThread implements Runnable {
 				 break;
 			 }
 		}
-		if(seconds > 0 && landlordsRoomWindow.isReady() && landlordsRoomWindow.leftIsReady()&&landlordsRoomWindow.rightIsReady()){//说明3人都准备好了，那就向服务器发送请求发牌的信号
+		/*if(seconds > 0 && landlordsRoomWindow.isReady() && landlordsRoomWindow.leftIsReady()&&landlordsRoomWindow.rightIsReady()){//说明3人都准备好了，那就向服务器发送请求发牌的信号
 			landlordsRoomWindow.sendDealMsg();
 		}else if(seconds == 0) {
 			if(!isStop) {
 				System.out.println("ReadyCountDownThreadReadyCountDownThrea    closeRoom");
 				landlordsRoomWindow.closeRoom();
 			}
-		}
+		}*/
+		 if(seconds == 0) {
+				if(!isStop) {
+					landlordsRoomWindow.closeRoom();
+				}
+			}
 	}
 	public void stop(){
 		System.out.println("ReadyCountDownThreadReadyCountDownThrea    stop()");

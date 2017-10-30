@@ -30,7 +30,7 @@ public class UserNameMessage extends AbstractMessage {
 			String userName = message.getMsg();
 			player.setUserName(userName);
 			singleSendMsg(player,"这个网名可以啦!");
-			batchSendMsg(userName+"骑着野母猪大摇大摆的溜进聊天室......大家给点面子欢迎欢迎！！！",userName2Player.values());
+			batchSendMsg(userName+"骑着野母猪大摇大摆的溜进聊天室......大家给点面子欢迎欢迎！！！",userName2Player.values(),true);
 			userName2Player.put(userName, player);
 			if(playerMap.size() > 0){//初始化游戏大厅座位情况
 				StringBuilder stringBuilder = new StringBuilder();

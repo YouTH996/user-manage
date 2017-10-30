@@ -60,6 +60,10 @@ public class ReceiveMessageHandler {
 				landlordsRoomWindow.startDealCards(msg.substring(Constants.SEND_CARDS_MSG_FlAG.length()));
 			}else if(msg.startsWith(Constants.GAME_ROB_MSG_FLAG)) {
 				landlordsRoomWindow.setOtherPlayerRole(msg.substring(Constants.GAME_ROB_MSG_FLAG.length()));
+			}else if(msg.startsWith(Constants.START_READY_MSG_FLAG)){
+				landlordsRoomWindow.startGameReadyThread();
+			}else if(msg.startsWith(Constants.START_DEAL_MSG_FLAG)){
+				landlordsRoomWindow.startGameDealThread(msg.substring(Constants.START_DEAL_MSG_FLAG.length()));
 			}else{
 				gameLobbyWindow.setHistoryMsg(msg);
 			}

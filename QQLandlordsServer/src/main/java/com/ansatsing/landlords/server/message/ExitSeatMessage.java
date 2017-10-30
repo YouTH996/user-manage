@@ -25,17 +25,20 @@ public class ExitSeatMessage extends AbstractMessage {
 	@Override
 	public void handleMsg(Message message) {
 		int seatNum = Integer.parseInt(message.getMsg());
-		//enterSeatList.remove(seatNum+"="+player.getUserName());
+		//如果处于游戏准备线程时退出 则做如下处理
+		/*if(tableMap.get(LandlordsUtil.getTableNum(seatNum)).isReady()){
+			
+		}*/
 		if(playerMap.containsKey(seatNum)){
 			playerMap.remove(seatNum);
 		}
 		//游戏大厅座位信息清除
-		batchSendMsg(Constants.EXIT_SEAT_MSG_FLAG+message.getMsg(),userName2Player.values());
+		batchSendMsg(Constants.EXIT_SEAT_MSG_FLAG+message.getMsg(),userName2Player.values(),true);
 		
 		//斗地主房间里座位信息在牌友间互通
 		if(tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers().size() > 1){
 			//1将自己的退出房间的信息发给的牌友
-			batchSendMsg(Constants.EXIT_ROOM_MSG_FLAG+player.getUserName(), tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers());
+			batchSendMsg(Constants.EXIT_ROOM_MSG_FLAG+player.getUserName(), tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers(),true);
 		}
 		//2 清除自己
 		tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers().remove(player);

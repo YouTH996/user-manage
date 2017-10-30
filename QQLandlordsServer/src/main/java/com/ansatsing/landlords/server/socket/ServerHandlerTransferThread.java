@@ -74,7 +74,7 @@ public class ServerHandlerTransferThread implements Runnable {
 			}
 			if(player != null && player.getUserName() != null) {
 				userName2Player.remove(player.getUserName());
-				messageHandler.batchSendMsg(player.getUserName()+"退出聊天室了!当前聊天室人数："+userName2Player.size(),userName2Player.values());
+				messageHandler.batchSendMsg(player.getUserName()+"退出聊天室了!当前聊天室人数："+userName2Player.size(),userName2Player.values(),true);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

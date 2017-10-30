@@ -30,5 +30,41 @@ public class Table {
 	public void setPlayers(List<Player> players) {
 		this.players = players;
 	}
+	public boolean isWait() {
+		return isWait;
+	}
+	public void setWait(boolean isWait) {
+		this.isWait = isWait;
+	}
+	public boolean isReady() {
+		return isReady;
+	}
+	public void setReady(boolean isReady) {
+		this.isReady = isReady;
+	}
+	public boolean isRob() {
+		return isRob;
+	}
+	public void setRob(boolean isRob) {
+		this.isRob = isRob;
+	}
+	public boolean isDeal() {
+		return isDeal;
+	}
+	public void setDeal(boolean isDeal) {
+		this.isDeal = isDeal;
+	}
+	public boolean isPlay() {
+		return isPlay;
+	}
+	public void setPlay(boolean isPlay) {
+		this.isPlay = isPlay;
+	}
+	public boolean isOver() {
+		return isOver;
+	}
+	public void setOver(boolean isOver) {
+		this.isOver = isOver;
+	}
 	
 }

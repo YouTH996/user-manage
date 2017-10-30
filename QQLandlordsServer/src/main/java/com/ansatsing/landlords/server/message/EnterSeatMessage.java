@@ -24,21 +24,14 @@ public class EnterSeatMessage extends AbstractMessage {
 	public void handleMsg(Message message) {
 		int seatNum = Integer.parseInt(message.getMsg());
 		player.setSeatNum(seatNum);
-		//enterSeatMap.put(seatNum, player.getUserName());
 		playerMap.put(seatNum, player);
-		batchSendMsg(message.getMsg()+Constants.ENTER_SEAT_MSG_FLAG+player.getUserName(),userName2Player.values());
-		//enterSeatList.add(seatNum+"="+player.getUserName());
+		batchSendMsg(message.getMsg()+Constants.ENTER_SEAT_MSG_FLAG+player.getUserName(),userName2Player.values(),true);
 		
 		//确定是哪一桌？
 		int tableNum = LandlordsUtil.getTableNum(seatNum);
 		if(tableMap.containsKey(tableNum)) {
-			//tripleSockets = gameGroups.get(tableNum);
-			
 			tableMap.get(tableNum).getPlayers().add(player);
 		}else {
-			/*Map<String,T> tripleSockets = new ConcurrentHashMap<String, T>();
-			tripleSockets.put(player.getUserName(), socket);
-			gameGroups.put(tableNum, tripleSockets);*/
 			Table table = new Table();
 			table.getPlayers().add(player);
 			tableMap.put(tableNum, table);
@@ -56,11 +49,17 @@ public class EnterSeatMessage extends AbstractMessage {
 		//斗地主房间里座位信息在牌友间互通
 		if(tableMap.get(tableNum).getPlayers().size() > 1){
 			//1将自己的信息发给同桌的比你先进的牌友
-			batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+player.getUserName()+"="+seatNum+"="+player.getReadFlag(), tableMap.get(tableNum).getPlayers());
+			batchSendMsg(Constants.ENTER_ROOM_MSG_FLAG+player.getUserName()+"="+seatNum+"="+player.getReadFlag(), tableMap.get(tableNum).getPlayers(),true);
 			//2将同桌的比你先进去的牌友的信息发给自己
 			for(Player temp:tableMap.get(tableNum).getPlayers()){
 				if(temp == this.player) continue;
 				singleSendMsg(this.player, Constants.ENTER_ROOM_MSG_FLAG+temp.getUserName()+"="+getSeatNumByUserName(temp.getUserName())+"="+temp.getReadFlag());
+			}
+			//如果有3个人了就启动游戏准备线程
+			if(tableMap.get(tableNum).getPlayers().size() == 3){
+				batchSendMsg(Constants.START_READY_MSG_FLAG, tableMap.get(tableNum).getPlayers(), false);
+				tableMap.get(tableNum).setWait(false);
+				tableMap.get(tableNum).setReady(true);
 			}
 		}
 	}
