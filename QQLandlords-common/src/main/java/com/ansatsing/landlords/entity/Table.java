@@ -12,6 +12,12 @@ public class Table {
 
 	private String cards;
 	private List<Player> players = new ArrayList<Player>(3);
+	private boolean isWait = true;
+	private boolean isReady =false;
+	private boolean isRob =false;
+	private boolean isDeal =false;
+	private boolean isPlay =false;
+	private boolean isOver = false;
 	public String getCards() {
 		return cards;
 	}

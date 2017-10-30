@@ -10,6 +10,7 @@ public class Player {
 	private Socket socket;
 	private Channel channel;
 	private int readFlag = 0;//0没有准备好    1准备好了
+	private int roleFlag = 0;//0无角色 1农民角色 2地主角色
 	public String getUserName() {
 		return userName;
 	}
@@ -49,6 +50,14 @@ public class Player {
 
 	public void setChannel(Channel channel) {
 		this.channel = channel;
+	}
+
+	public int getRoleFlag() {
+		return roleFlag;
+	}
+
+	public void setRoleFlag(int roleFlag) {
+		this.roleFlag = roleFlag;
 	}
 	
 }
