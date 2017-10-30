@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -360,6 +361,8 @@ public class LandlordsRoomWindow extends JFrame {
 	public void closeRoom() {
 		messageHandler.sendExitSeatMsg(String.valueOf(seatNum));
 		seat.setText("空位");
+		if(countDownThread != null) countDownThread.stop();//关闭准备倒计时线程
+		if(robDownThread != null) robDownThread.stop();//关闭抢地主线程
 		dispose();
 	}
 	public int getSeatNum() {
@@ -409,9 +412,6 @@ public class LandlordsRoomWindow extends JFrame {
 			gameState.pushGameState();
 			System.out.println("setSeatUserNamesetSeatUserName   gameState  "+gameState.getClass().getName());
 			gameState.handleWindow();
-			/*this.countDownThread = new CountDownThread(this, 30);
-			Thread thread = new Thread(countDownThread);
-			thread.start();*/
 		}
 	}
 	public void emptySeat(String tempMsg) {
@@ -429,13 +429,14 @@ public class LandlordsRoomWindow extends JFrame {
 		leftTime.setText("倒计时");
 		rightTime.setText("倒计时");
 		if(countDownThread != null){
-			countDownThread.stop();
+			countDownThread.notAllSitted();
 		}
 		this.time.setText("倒计时");
-		//状态也要回滚
+		//如果在准备状态时 一人退出游戏，则留下的牌友必须状态复原到游戏等待状态
 		if(gameState instanceof GameReadyState){
 			gameState.pullGameState();
 		}
+		//如果
 	}
 	public void setCountDownThread(ReadyCountDownThread countDownThread) {
 		this.countDownThread = countDownThread;
@@ -477,17 +478,31 @@ public class LandlordsRoomWindow extends JFrame {
 			if(countDownThread != null) {
 				countDownThread.stopLeft();
 			}
-			leftTime.setText("倒计时");
-			leftTime.setVisible(false);
-			leftReady.setText("已准备");
-			leftReady.setVisible(true);
+			if(readFlag == 1) {
+				leftTime.setText("倒计时");
+				leftTime.setVisible(false);
+				leftReady.setText("已准备");
+				leftReady.setVisible(true);
+			}else if(readFlag == 0) {
+				leftTime.setText("倒计时");
+				leftTime.setVisible(true);
+				leftReady.setText("请准备");
+				leftReady.setVisible(true);
+			}
 		}else {
 			if(countDownThread != null)
 			countDownThread.stopRight();
-			rightTime.setText("倒计时");
-			rightTime.setVisible(false);
-			rightReady.setText("已准备");
-			rightReady.setVisible(true);
+			if(readFlag == 1) {
+				rightTime.setText("倒计时");
+				rightTime.setVisible(false);
+				rightReady.setText("已准备");
+				rightReady.setVisible(true);
+			}else if(readFlag == 0) {
+				rightTime.setText("倒计时");
+				rightTime.setVisible(true);
+				rightReady.setText("请准备");
+				rightReady.setVisible(true);
+			}
 		}
 	}
 	public void sendDealMsg() {
@@ -505,6 +520,7 @@ public class LandlordsRoomWindow extends JFrame {
 		messageHandler.sendGameRobMsg(userName+"="+msg+"="+(seatNum+1));
 		LOGGER.info(userName+"========="+(seatNum+1));
 		if(isAllFarmer()){//主要针对最后一个抢地主的界面，而且全部是农民 就重启新的一轮准备
+			//gameState.pullGameState();//针对最后一个抢地主的
 			restartGameReady();
 		}
 	}
@@ -645,14 +661,16 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 		}
 		//判断是不是全部是农民
-		private boolean isAllFarmer(){
+		public boolean isAllFarmer(){
 			if(playerRole.getText().equals("农民") && leftPlayerRole.getText().equals("农民") && rightPlayerRole.getText().equals("农民")){
 				return true;
 			}
 			return false;
 		}
 		//全部是农民重启新一轮游戏准备
-		private void restartGameReady(){
+		public void restartGameReady(){
+			//要把未准备的信息 告知服务器端，因为新的一轮 每个人的准备状态信息都是未准备
+			messageHandler.sendGameReadyMsg("0");
 			playerRole.setText("角色");
 			leftPlayerRole.setText("角色");
 			rightPlayerRole.setText("角色");
@@ -682,12 +700,17 @@ public class LandlordsRoomWindow extends JFrame {
 			leftReady.setText("请准备");
 			rightReady.setText("请准备");
 			ready.setText("请准备");
+			if(gameState instanceof GameReadyState) {
+				LOGGER.info("11GameReadyStateGameReadyStateGameReadyStateGameReadyStateGameReadyStateGa");
+			}else if(gameState instanceof GameDealState) {
+				LOGGER.info("11GameDealStateGameDealStateGameDealStateGameDealStateGameDealState");
+			}
 			gameState.pullGameState();
 			gameState.pullGameState();
 			if(gameState instanceof GameReadyState) {
-				LOGGER.info("GameReadyStateGameReadyStateGameReadyStateGameReadyStateGameReadyStateGa");
+				LOGGER.info("22GameReadyStateGameReadyStateGameReadyStateGameReadyStateGameReadyStateGa");
 			}else if(gameState instanceof GameDealState) {
-				LOGGER.info("GameDealStateGameDealStateGameDealStateGameDealStateGameDealState");
+				LOGGER.info("22GameDealStateGameDealStateGameDealStateGameDealStateGameDealState");
 			}
 			//gameState.pullGameState();
 			gameState.handleWindow();
@@ -718,5 +741,6 @@ public class LandlordsRoomWindow extends JFrame {
 		public void setRobDownThread(RobCountDownThread robDownThread) {
 			this.robDownThread = robDownThread;
 		}
+		
 		
 }

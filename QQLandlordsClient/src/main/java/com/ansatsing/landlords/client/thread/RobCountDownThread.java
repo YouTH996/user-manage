@@ -41,6 +41,7 @@ public class RobCountDownThread implements Runnable {
 		if(seconds == 0) {//如果牌友一直不点 按钮 ，就直接当农民
 			System.out.println("RobCountDownThread  seconds == =====================0");
 			landlordsRoomWindow.sendRobMsg("农民");
+			//if(landlordsRoomWindow.isa)
 		}
 	}
 	public void stop(){
