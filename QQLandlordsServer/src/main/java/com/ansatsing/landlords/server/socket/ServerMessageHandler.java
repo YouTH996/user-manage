@@ -111,6 +111,7 @@ public class ServerMessageHandler {
 					playerMap.get(this.player.getSeatNum() - 1).setRoleFlag(1);
 					playerMap.get(this.player.getSeatNum() - 2).setRoleFlag(1);
 				}
+				tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setLandlord(this.player);;
 			}
 			batchSendMsg(Constants.SET_ROLE_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(),true);
 			
@@ -132,7 +133,8 @@ public class ServerMessageHandler {
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setReady(true);
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setWait(false);
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setRob(false);
-						batchSendMsg(Constants.RESTART_READY_MSG_FLAG, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), true);
+						//tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).set
+						batchSendMsg(Constants.RESTART_READY_MSG_FLAG, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), false);
 						
 					}else {//启动出牌线程
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setDeal(false);
@@ -140,7 +142,8 @@ public class ServerMessageHandler {
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setWait(false);
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setRob(false);
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setPlay(true);
-						
+						//batchSendMsg(Constants.START_PLAY_MSG_FLAG, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), false);
+						singleSendMsg(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getLandlord(), Constants.START_PLAY_MSG_FLAG+"START");
 					}
 				}
 			}

@@ -18,7 +18,9 @@ public enum MsgType {
 	START_READY_MSG("启动游戏准备线程的信息"),
 	RESTART_READY_MSG("重启动游戏准备线程的信息"),
 	START_DEAL_MSG("启动游戏发牌线程的信息"),
-	SET_ROLE_MSG("设置斗地主角色的信息");
+	SET_ROLE_MSG("设置斗地主角色的信息"),
+	START_PLAY_MSG("开启打牌线程的信息"),
+	PLAY_CARD_MSG("游戏出牌的信息");
 	private String description;
 	MsgType(String description) {
 		this.description =description;

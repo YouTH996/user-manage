@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
+import com.ansatsing.landlords.client.thread.PlayCountDownThread;
 import com.ansatsing.landlords.client.thread.ReadyCountDownThread;
 import com.ansatsing.landlords.client.thread.RobCountDownThread;
 import com.ansatsing.landlords.entity.Card;
@@ -83,6 +84,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel playerRole;//农民还是地主--->自己
 	private JLabel leftPlayerRole;//农民还是地主---》自己的左边牌友
 	private JLabel rightPlayerRole;//农民还是地主--->自己的右边牌友
+	private PlayCountDownThread playCountDown;
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -549,7 +551,14 @@ public class LandlordsRoomWindow extends JFrame {
 	}
 	//把自己的抢地主信息通知其他2位牌友:   消息格式：username=角色=(seatNUm+1)  ； (seatNUm+1)-->意味轮到这个座位号的人抢地主
 	public void sendRobMsg(String msg) {
-		//if(robDownThread)
+		if(msg.equals("2")){//把其他地主更新为农民
+			if(leftPlayerRole.equals("地主")){
+				leftPlayerRole.setText("农民");
+			}
+			if(rightPlayerRole.equals("地主")){
+				rightPlayerRole.setText("农民");
+			}
+		}
 		playerRole.setText(msg.equals("1")?"农民":"地主");
 		playerRole.setVisible(true);
 		time.setText("倒计时");
@@ -558,10 +567,10 @@ public class LandlordsRoomWindow extends JFrame {
 		noRob.setVisible(false);
 		messageHandler.sendGameRobMsg(userName+"="+msg+"="+(seatNum+1));
 		LOGGER.info(userName+"========="+(seatNum+1));
-		if(isAllFarmer()){//主要针对最后一个抢地主的界面，而且全部是农民 就重启新的一轮准备
+/*		if(isAllFarmer()){//主要针对最后一个抢地主的界面，而且全部是农民 就重启新的一轮准备
 			//gameState.pullGameState();//针对最后一个抢地主的
 			restartGameReady();
-		}
+		}*/
 	}
 	//发牌
 	/**
@@ -820,5 +829,26 @@ public class LandlordsRoomWindow extends JFrame {
 			rightReady.setText("请准备");
 			leftReady.setVisible(false);
 			rightReady.setVisible(false);
+		}
+		public void startGamePlayThread() {
+			//if(playerRole.getText().equals("地主")){
+				donot.setVisible(false);
+			//}
+			out.setVisible(true);
+			time.setVisible(true);
+		}
+		public void setPlayCountDownThread(PlayCountDownThread dealCardsThread) {
+			this.playCountDown = dealCardsThread;
+		}
+		public void sendPlayCardMsg(boolean timeoutFLag) {
+			int seat_num = seatNum +1;
+			if(timeoutFLag){
+				//List<JLabel> ss = new ArrayList<JLabel>();
+				String msg = cards[cards.length-1].getText()+"="+seat_num;
+				cards[cards.length-1].setIcon(null);
+				messageHandler.sendPlayCardMsg(msg);
+			}else{
+				
+			}
 		}
 }

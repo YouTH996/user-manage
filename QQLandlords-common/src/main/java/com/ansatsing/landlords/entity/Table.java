@@ -18,6 +18,7 @@ public class Table {
 	private boolean isDeal =false;
 	private boolean isPlay =false;
 	private boolean isOver = false;
+	private Player landlord;//谁是地主
 	public String getCards() {
 		return cards;
 	}
@@ -65,6 +66,12 @@ public class Table {
 	}
 	public void setOver(boolean isOver) {
 		this.isOver = isOver;
+	}
+	public Player getLandlord() {
+		return landlord;
+	}
+	public void setLandlord(Player landlord) {
+		this.landlord = landlord;
 	}
 	
 }

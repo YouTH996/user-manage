@@ -128,4 +128,8 @@ public class SendMessageHandler {
 		}
 		printWriter.println(msg);
 	}
+	public void sendPlayCardMsg(String msg) {
+		// TODO Auto-generated method stub
+		
+	}
 }
