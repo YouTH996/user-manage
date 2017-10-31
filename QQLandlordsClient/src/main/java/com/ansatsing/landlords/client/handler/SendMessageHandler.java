@@ -110,7 +110,7 @@ public class SendMessageHandler {
 	 */
 	public void sendGameRobMsg(String msg){
 		if(msg != null && !msg.trim().equals("")){
-			sendMsg(SendMessagePack.packMsg(MsgType.GAME_ROB_MSG, msg));
+			sendMsg(SendMessagePack.packMsg(MsgType.SET_ROLE_MSG, msg));
 		}
 	}		
 	/**

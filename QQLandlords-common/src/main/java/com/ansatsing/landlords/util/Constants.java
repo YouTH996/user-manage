@@ -19,4 +19,6 @@ public class Constants {
 	public final static String GAME_ROB_MSG_FLAG = "SEND_ROB_MSG_FLAG";//("抢地主阶段发送抢地主情况给服务器的信息的标志");
 	public final static String START_READY_MSG_FLAG = "START_READY_MSG_FLAG";//启动游戏准备线程的信号标志
 	public final static String START_DEAL_MSG_FLAG = "START_DEAL_MSG_FLAG";//启动游戏发牌线程的信号标志
+	public final static String SET_ROLE_MSG_FLAG = "SET_ROLE_MSG_FLAG";//设置斗地主角色的信号标志
+	public final static String RESTART_READY_MSG_FLAG = "RESTART_READY_MSG_FLAG";//重启动游戏准备线程的信号标志
 }

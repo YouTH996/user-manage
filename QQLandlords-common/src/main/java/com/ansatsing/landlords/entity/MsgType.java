@@ -16,7 +16,9 @@ public enum MsgType {
 	SEND_CARDS_MSG("服务器端发送洗过的牌到客户端以供客户端发牌动作的信息"),
 	GAME_ROB_MSG("抢地主阶段发送抢地主情况给服务器的信息"),
 	START_READY_MSG("启动游戏准备线程的信息"),
-	START_DEAL_MSG("启动游戏发牌线程的信息");
+	RESTART_READY_MSG("重启动游戏准备线程的信息"),
+	START_DEAL_MSG("启动游戏发牌线程的信息"),
+	SET_ROLE_MSG("设置斗地主角色的信息");
 	private String description;
 	MsgType(String description) {
 		this.description =description;

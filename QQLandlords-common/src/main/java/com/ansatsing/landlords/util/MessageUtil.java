@@ -71,6 +71,10 @@ public class MessageUtil {
 				msg.setTYPE(MsgType.GAME_ROB_MSG);
 				msg.setMsg(message.substring(Constants.GAME_ROB_MSG_FLAG.length()));
 				return msg;
+			}else if(message.startsWith(Constants.SET_ROLE_MSG_FLAG)){
+				msg.setTYPE(MsgType.SET_ROLE_MSG);
+				msg.setMsg(message.substring(Constants.SET_ROLE_MSG_FLAG.length()));
+				return msg;
 			}else {//大厅群聊信息处理
 				msg.setTYPE(MsgType.SEND_ALL_MSG);
 				msg.setMsg(message);

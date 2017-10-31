@@ -61,9 +61,13 @@ public class ReceiveMessageHandler {
 			}else if(msg.startsWith(Constants.GAME_ROB_MSG_FLAG)) {
 				landlordsRoomWindow.setOtherPlayerRole(msg.substring(Constants.GAME_ROB_MSG_FLAG.length()));
 			}else if(msg.startsWith(Constants.START_READY_MSG_FLAG)){
-				landlordsRoomWindow.startGameReadyThread();
+				landlordsRoomWindow.startGameReadyThread(false);
+			}else if(msg.startsWith(Constants.RESTART_READY_MSG_FLAG)){
+				landlordsRoomWindow.startGameReadyThread(true);
 			}else if(msg.startsWith(Constants.START_DEAL_MSG_FLAG)){
 				landlordsRoomWindow.startGameDealThread(msg.substring(Constants.START_DEAL_MSG_FLAG.length()));
+			}else if(msg.startsWith(Constants.SET_ROLE_MSG_FLAG)) {
+				landlordsRoomWindow.setOtherPlayerRole(msg.substring(Constants.SET_ROLE_MSG_FLAG.length()));
 			}else{
 				gameLobbyWindow.setHistoryMsg(msg);
 			}

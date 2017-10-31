@@ -32,6 +32,8 @@ public class SendMessagePack {
 			return Constants.GAME_DEAL_MSG_FLAG+msg;
 		}else if(msgType == MsgType.GAME_ROB_MSG) {
 			return Constants.GAME_ROB_MSG_FLAG+msg;
+		}else if(msgType == MsgType.SET_ROLE_MSG) {
+			return Constants.SET_ROLE_MSG_FLAG+msg;
 		}
 		return tempMsg;
 	}

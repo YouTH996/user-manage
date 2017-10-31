@@ -84,6 +84,9 @@ public class ServerMessageHandler {
 					}
 				}
 				if(flag){
+					tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setDeal(true);
+					tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setReady(false);
+					tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setWait(false);
 					batchSendMsg(Constants.START_DEAL_MSG_FLAG+tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getCards(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), false);
 				}
 			}
@@ -91,8 +94,56 @@ public class ServerMessageHandler {
 			if(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())) != null) {
 				singleSendMsg(this.player, Constants.SEND_CARDS_MSG_FlAG+tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getCards());
 			}
-		}else if(message.getTYPE() == MsgType.GAME_ROB_MSG) {
-			batchSendMsg(Constants.GAME_ROB_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(),true);
+		}else if(message.getTYPE() == MsgType.SET_ROLE_MSG) {
+			if(this.player.getSeatNum() %3 == 0) {
+				tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setDeal(false);
+				tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setReady(false);
+				tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setWait(false);
+				tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setRob(true);
+			}
+			String tempStr[] = message.getMsg().split("=");
+			int roleFlag = Integer.parseInt(tempStr[1]);
+			this.player.setRoleFlag(roleFlag);
+			if(roleFlag  == 2) {
+				if((this.player.getSeatNum() -1) % 3== 0) {
+					playerMap.get(this.player.getSeatNum() - 1).setRoleFlag(1);
+				}else if((this.player.getSeatNum() +1) % 3== 0) {
+					playerMap.get(this.player.getSeatNum() - 1).setRoleFlag(1);
+					playerMap.get(this.player.getSeatNum() - 2).setRoleFlag(1);
+				}
+			}
+			batchSendMsg(Constants.SET_ROLE_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(),true);
+			
+			//当最后一个人抢完地主---》如果三个是农民 那启动准备线程;如果一个是地主 2个是农民 那启动 出牌线程
+			if((this.player.getSeatNum() + 1) % 3 == 0) {
+				if(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers().size() == 3) {
+					boolean flag = true;
+					for(Player _pPlayer :tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers()) {
+						if(_pPlayer.getRoleFlag() == 2) {
+							flag = false;
+							break;
+						}
+					}
+					if(flag) {//启动准备线程
+						for(Player _pPlayer :tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers()) {
+							_pPlayer.setReadFlag(0);
+						}
+						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setDeal(false);
+						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setReady(true);
+						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setWait(false);
+						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setRob(false);
+						batchSendMsg(Constants.RESTART_READY_MSG_FLAG, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), true);
+						
+					}else {//启动出牌线程
+						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setDeal(false);
+						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setReady(false);
+						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setWait(false);
+						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setRob(false);
+						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setPlay(true);
+						
+					}
+				}
+			}
 		}
 			
 	}
