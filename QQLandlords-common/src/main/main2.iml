@@ -7,7 +7,5 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="QQLandlords-common-0.0.1-SNAPSHOT" level="project" />
-    <orderEntry type="module" module-name="main2" />
   </component>
 </module>

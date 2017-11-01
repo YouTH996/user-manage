@@ -1,4 +1,0 @@
-1.PrintWriter的write()和println()两个方法的区别，尤其是dos窗口环境下输入，用write()方法程序没有反应，而println()则能正常运行。
-	原因：使用println()时，当你输入行分隔符(如回车)时，程序会帮你终止当前行，而write则不会。
-		这时候，write()跟println()的区别 和 print() 跟 println() 的区别是一样的。
-	
