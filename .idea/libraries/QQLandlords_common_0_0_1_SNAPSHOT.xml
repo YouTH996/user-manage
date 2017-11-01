@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="QQLandlords-common-0.0.1-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/QQLandlords-common/target/QQLandlords-common-0.0.1-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
