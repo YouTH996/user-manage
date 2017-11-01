@@ -129,7 +129,8 @@ public class SendMessageHandler {
 		printWriter.println(msg);
 	}
 	public void sendPlayCardMsg(String msg) {
-		// TODO Auto-generated method stub
-		
+		if(msg != null && !msg.trim().equals("")){
+			sendMsg(SendMessagePack.packMsg(MsgType.PLAY_CARD_MSG, msg));
+		}
 	}
 }

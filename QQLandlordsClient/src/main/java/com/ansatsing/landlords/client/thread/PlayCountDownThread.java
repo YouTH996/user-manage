@@ -41,7 +41,7 @@ public class PlayCountDownThread implements Runnable {
 		}
 		System.out.println("222Robcountdown==secondes = "+seconds);
 		if(seconds <= 0) {//如果牌友一直不点 按钮 ，就直接当农民
-			System.out.println("RobCountDownThread  seconds == =====================0");
+			System.out.println("PlayCountDownThread  seconds == =====================0");
 			landlordsRoomWindow.sendPlayCardMsg(true);
 			//if(landlordsRoomWindow.isa)
 		}

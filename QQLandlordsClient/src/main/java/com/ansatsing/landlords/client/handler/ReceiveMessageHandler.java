@@ -69,7 +69,7 @@ public class ReceiveMessageHandler {
 			}else if(msg.startsWith(Constants.SET_ROLE_MSG_FLAG)) {
 				landlordsRoomWindow.setOtherPlayerRole(msg.substring(Constants.SET_ROLE_MSG_FLAG.length()));
 			}else if(msg.startsWith(Constants.START_PLAY_MSG_FLAG)){
-				landlordsRoomWindow.startGamePlayThread();
+				landlordsRoomWindow.startGamePlayThread(msg.substring(Constants.START_PLAY_MSG_FLAG.length()));
 			}else{
 				gameLobbyWindow.setHistoryMsg(msg);
 			}

@@ -142,11 +142,14 @@ public class ServerMessageHandler {
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setWait(false);
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setRob(false);
 						tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setPlay(true);
-						//batchSendMsg(Constants.START_PLAY_MSG_FLAG, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), false);
-						singleSendMsg(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getLandlord(), Constants.START_PLAY_MSG_FLAG+"START");
+						int seat_num = tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getLandlord().getSeatNum();
+						batchSendMsg(Constants.START_PLAY_MSG_FLAG+seat_num, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), false);
+						//singleSendMsg(tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getLandlord(), Constants.START_PLAY_MSG_FLAG+"START");
 					}
 				}
 			}
+		}else if(message.getTYPE() == MsgType.PLAY_CARD_MSG) {
+			batchSendMsg(Constants.PLAY_CARD_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), true);
 		}
 			
 	}

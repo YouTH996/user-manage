@@ -34,6 +34,8 @@ public class SendMessagePack {
 			return Constants.GAME_ROB_MSG_FLAG+msg;
 		}else if(msgType == MsgType.SET_ROLE_MSG) {
 			return Constants.SET_ROLE_MSG_FLAG+msg;
+		}else if(msgType == MsgType.PLAY_CARD_MSG) {
+			return Constants.PLAY_CARD_MSG_FLAG+msg;
 		}
 		return tempMsg;
 	}

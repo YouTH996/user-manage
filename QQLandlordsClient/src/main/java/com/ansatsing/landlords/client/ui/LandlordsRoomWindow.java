@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -31,7 +30,6 @@ import com.ansatsing.landlords.client.thread.ReadyCountDownThread;
 import com.ansatsing.landlords.client.thread.RobCountDownThread;
 import com.ansatsing.landlords.entity.Card;
 import com.ansatsing.landlords.state.GameDealState;
-import com.ansatsing.landlords.state.GameOverState;
 import com.ansatsing.landlords.state.GamePlayState;
 import com.ansatsing.landlords.state.GameReadyState;
 import com.ansatsing.landlords.state.GameRobState;
@@ -39,6 +37,8 @@ import com.ansatsing.landlords.state.GameState;
 import com.ansatsing.landlords.state.GameWaitState;
 import com.ansatsing.landlords.util.LandlordsUtil;
 import com.ansatsing.landlords.util.PictureUtil;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 /**
  * 斗地主房间
  * @author sunyq
@@ -85,6 +85,25 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel leftPlayerRole;//农民还是地主---》自己的左边牌友
 	private JLabel rightPlayerRole;//农民还是地主--->自己的右边牌友
 	private PlayCountDownThread playCountDown;
+	
+	private JPanel southPanel;
+	private JPanel actionPanel;
+	private JPanel cardPanel;
+	
+	private JPanel leftPanel;
+	private JPanel leftCardPanel;
+	private JPanel leftActionPanel;
+	
+	private JPanel rightPanel;
+	private JPanel rightCardPanel;
+	private JPanel rightActionPanel;
+	
+	private JPanel topPanel;
+	private JPanel centerPanel;
+	
+	private List<String> playCards = new ArrayList<String>();//存储一次要出的牌
+	private int leftHaveCardNum = 17 ;//剩下牌张数
+	private int rightHaveCardNum = 17;//剩下牌张数
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -112,11 +131,11 @@ public class LandlordsRoomWindow extends JFrame {
 		childJpanel1.setLayout(new BorderLayout());
 		
 		//显示自己方向的面板
-		JPanel southPanel = new JPanel();
+		southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
-		JPanel actionPanel = new JPanel();//出牌，不要，提示，抢地主，不强等动作面板
+		 actionPanel = new JPanel();//出牌，不要，提示，抢地主，不强等动作面板
 		actionPanel.setPreferredSize(new Dimension(0, 20));
-		JPanel cardPanel = new JPanel();//显示纸牌的面板
+		cardPanel = new JPanel();//显示纸牌的面板
 		//cardPanel.setLayout(new BoxLayout(cardPanel,  BoxLayout.X_AXIS));
 		cardPanel.setLayout(null);
 		cardPanel.setPreferredSize(new Dimension(0, 215));
@@ -127,7 +146,7 @@ public class LandlordsRoomWindow extends JFrame {
 			newJabel.setBounds(385+(18)*i, 50, 105, 150);
 			cards[i] = newJabel;
 		}
-		for(int i=16;i>=0;i--){//不这步，牌的字母或者数字会被遮着
+		for(int i=19;i>=0;i--){//不这步，牌的字母或者数字会被遮着
 			cardPanel.add(cards[i]);
 		}
 		playerRole = new JLabel("角色");
@@ -157,13 +176,13 @@ public class LandlordsRoomWindow extends JFrame {
 		childJpanel1.add(southPanel, "South");
 		
 		//左边牌友
-		JPanel leftPanel = new JPanel();
+		 leftPanel = new JPanel();
 		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.X_AXIS));
-		JPanel leftCardPanel = new JPanel();
+		leftCardPanel = new JPanel();
 		//leftCardPanel.setLayout(new BoxLayout(leftCardPanel, BoxLayout.Y_AXIS));
 		leftCardPanel.setLayout(null);
 		leftCardPanel.setPreferredSize(new Dimension(100, 0));
-		JPanel leftActionPanel = new JPanel();
+		 leftActionPanel = new JPanel();
 		leftActionPanel.setPreferredSize(new Dimension(50, 0));
 		leftActionPanel.setLayout(null);
 		 leftTime = new JLabel("倒计时");
@@ -194,13 +213,13 @@ public class LandlordsRoomWindow extends JFrame {
 		childJpanel1.add(leftPanel,"West");
 		
 		//右边牌友
-		JPanel rightPanel = new JPanel();
+		 rightPanel = new JPanel();
 		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.X_AXIS));
-		JPanel rightCardPanel = new JPanel();
+		 rightCardPanel = new JPanel();
 		//rightCardPanel.setLayout(new BoxLayout(rightCardPanel, BoxLayout.Y_AXIS));
 		rightCardPanel.setLayout(null);
 		rightCardPanel.setPreferredSize(new Dimension(100, 0));
-		JPanel rightActionPanel = new JPanel();
+		 rightActionPanel = new JPanel();
 		rightActionPanel.setPreferredSize(new Dimension(50, 0));
 		rightActionPanel.setLayout(null);
 		 rightTime = new JLabel("倒计时");
@@ -232,7 +251,7 @@ public class LandlordsRoomWindow extends JFrame {
 		childJpanel1.add(rightPanel,"East");
 		
 		//上方三张底牌
-		JPanel topPanel = new JPanel();
+		 topPanel = new JPanel();
 		topPanel.setLayout(null);
 		topPanel.setPreferredSize(new Dimension(0, 130));
 		topCards = new JLabel[3];
@@ -246,6 +265,12 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 		//topPanel.setBackground(Color.RED);
 		childJpanel1.add(topPanel, "North");
+		
+		//中间
+		centerPanel = new JPanel();
+		centerPanel.setLayout(null);
+		centerPanel.setBackground(Color.red);
+		childJpanel1.add(centerPanel);
 		
 		childJpanel2 = new JPanel();
 		childJpanel2.setPreferredSize(new Dimension(350, 0));
@@ -289,8 +314,10 @@ public class LandlordsRoomWindow extends JFrame {
 					int y = tempLabel.getY();
 					if(y < 50){
 						y += 20;
+						playCards.add(tempLabel.getName());
 					}else{
 						y -= 20;
+						playCards.remove(tempLabel.getName());
 					}
 					tempLabel.setBounds(x, y, 105, 150);
 				}
@@ -552,10 +579,10 @@ public class LandlordsRoomWindow extends JFrame {
 	//把自己的抢地主信息通知其他2位牌友:   消息格式：username=角色=(seatNUm+1)  ； (seatNUm+1)-->意味轮到这个座位号的人抢地主
 	public void sendRobMsg(String msg) {
 		if(msg.equals("2")){//把其他地主更新为农民
-			if(leftPlayerRole.equals("地主")){
+			if(leftPlayerRole.getText().equals("地主")){
 				leftPlayerRole.setText("农民");
 			}
-			if(rightPlayerRole.equals("地主")){
+			if(rightPlayerRole.getText().equals("地主")){
 				rightPlayerRole.setText("农民");
 			}
 		}
@@ -581,7 +608,7 @@ public class LandlordsRoomWindow extends JFrame {
 	 */
 	public void dealCard(String str,int i) {
 		if(i>50){//发底牌
-			//topCards[i-51].setText(String.valueOf(i));
+			topCards[i-51].setName(String.valueOf(i));
 			topCards[i-51].setIcon(PictureUtil.getPicture("cards/back.png"));
 		}else{
 			if(i%3==0){//从左边第一个位置开始发牌，相对于游戏大厅里的位置！
@@ -607,11 +634,16 @@ public class LandlordsRoomWindow extends JFrame {
 				}
 			}
 		}
+		sortCardAndShow();
+	}
+	//排牌并显示牌
+	private void sortCardAndShow() {
 		//显示自己的牌
-		Collections.sort(cardList);
-		for(int j=0;j<cardList.size();j++) {
-			cards[j].setIcon(PictureUtil.getPicture("cards/"+cardList.get(j).getImage()+".jpg"));
-		}
+				Collections.sort(cardList);
+				for(int j=0;j<cardList.size();j++) {
+					cards[j].setName(cardList.get(j).getImage());
+					cards[j].setIcon(PictureUtil.getPicture("cards/"+cardList.get(j).getImage()+".jpg"));
+				}
 	}
 	//接受的其他牌友发来的信号时，首先判断是左边牌友还是右边牌友[是相对于自己的位置]
 	private boolean isLeftPlayer(int seat_num) {
@@ -698,8 +730,6 @@ public class LandlordsRoomWindow extends JFrame {
 				String role =str[1];
 				int seat_num = Integer.valueOf(str[2]);
 				if(leftUserName.getText().equals(username)) {
-					leftPlayerRole.setText(role.equals("1")?"农民":"地主");
-					leftPlayerRole.setVisible(true);
 					if(role.equals("2")) {//地主被后面的人抢了 那之前的地主角色就要变成农民
 						if(playerRole.getText().equals("地主")) {
 							playerRole.setText("农民");
@@ -708,9 +738,9 @@ public class LandlordsRoomWindow extends JFrame {
 							rightPlayerRole.setText("农民");
 						}						
 					}
+					leftPlayerRole.setText(role.equals("1")?"农民":"地主");
+					leftPlayerRole.setVisible(true);
 				}else if(rightUserName.getText().equals(username)){
-					rightPlayerRole.setText(role.equals("1")?"农民":"地主");
-					rightPlayerRole.setVisible(true);
 					if(role.equals("2")) {//地主被后面的人抢了 那之前的地主角色就要变成农民
 						if(playerRole.getText().equals("地主")) {
 							playerRole.setText("农民");
@@ -720,6 +750,8 @@ public class LandlordsRoomWindow extends JFrame {
 						}
 						
 					}
+					rightPlayerRole.setText(role.equals("1")?"农民":"地主");
+					rightPlayerRole.setVisible(true);
 				}
 				/*if(isAllFarmer()){
 					restartGameReady();
@@ -830,25 +862,101 @@ public class LandlordsRoomWindow extends JFrame {
 			leftReady.setVisible(false);
 			rightReady.setVisible(false);
 		}
-		public void startGamePlayThread() {
-			//if(playerRole.getText().equals("地主")){
+		public void startGamePlayThread(String msg) {
+			int seat_num = Integer.parseInt(msg);
+			for(int i=0;i<topCards.length;i++) {
+				String imageSrc = topCards[i].getName();
+				topCards[i].setIcon(PictureUtil.getPicture("cards/"+imageSrc+".jpg"));
+				if(seat_num == seatNum) {
+					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(imageSrc)));
+				}
+			}
+			
+			if(seat_num == seatNum) {
 				donot.setVisible(false);
-			//}
-			out.setVisible(true);
-			time.setVisible(true);
+				out.setVisible(true);
+				time.setVisible(true);
+				sortCardAndShow();
+				gameState = new GamePlayState(this);
+				gameState.handleWindow();
+			}else {//非地主界面 要把3张底牌加到地主位置
+				if(isLeftPlayer(seat_num)) {
+					leftCards[17].setIcon(PictureUtil.getPicture("cards/back.png"));
+					leftCards[18].setIcon(PictureUtil.getPicture("cards/back.png"));
+					leftCards[19].setIcon(PictureUtil.getPicture("cards/back.png"));
+					leftHaveCardNum +=3;
+				}else {
+					rightCards[17].setIcon(PictureUtil.getPicture("cards/back.png"));
+					rightCards[18].setIcon(PictureUtil.getPicture("cards/back.png"));
+					rightCards[19].setIcon(PictureUtil.getPicture("cards/back.png"));
+					rightHaveCardNum += 3;
+				}
+			}
 		}
 		public void setPlayCountDownThread(PlayCountDownThread dealCardsThread) {
 			this.playCountDown = dealCardsThread;
 		}
 		public void sendPlayCardMsg(boolean timeoutFLag) {
 			int seat_num = seatNum +1;
-			if(timeoutFLag){
+			String msg = null;
+			if(timeoutFLag){//超时出牌，就出右手边第一张牌
+				System.out.println("1111");
 				//List<JLabel> ss = new ArrayList<JLabel>();
-				String msg = cards[cards.length-1].getText()+"="+seat_num;
-				cards[cards.length-1].setIcon(null);
-				messageHandler.sendPlayCardMsg(msg);
-			}else{
+				msg = cards[cards.length-1].getName();
+				//cards[cards.length-1].setIcon(null);
+				cardPanel.remove(cards[cards.length-1]);
+				cardPanel.validate();//动态删除或者增加组件时，少了此行代码界面不变
+				cardPanel.repaint();//动态删除或者增加组件时，少了此行代码界面不变
+				cards[cards.length-1].setBounds(215, 100, 105, 150);
+				centerPanel.add(cards[cards.length-1]);
+				centerPanel.validate();//动态删除或者增加组件时，少了此行代码界面不变
+				centerPanel.repaint();//动态删除或者增加组件时，少了此行代码界面不变
+				System.out.println("2222");
+			}else{//非超时出牌
+				msg = Joiner.on(",").join(playCards);
+				//1删除要出的牌
+				for(int i=0;i<playCards.size();i++) {//删除要出的牌
+					cardList.remove(LandlordsUtil.generateCard(Integer.parseInt(playCards.get(i))));
+				}
+				//2重新渲染界面
+				for(int j=0;j<cardList.size();j++) {
+					cards[j].setName(cardList.get(j).getImage());
+					cards[j].setIcon(PictureUtil.getPicture("cards/"+cardList.get(j).getImage()+".jpg"));
 				
+				}
+				//3界面移除已经出牌的组件
+				for(int i = cardList.size();i<cards.length;i++ ) {
+					cardPanel.remove(cards[i]);
+				}
+				//4重绘界面
+				cardPanel.validate();
+				cardPanel.repaint();
+				//5要出的牌显示在界面中央
+				centerPanel.removeAll();
+				for(int i=0;i<playCards.size();i++) {
+					JLabel tempLabel = new JLabel();
+					tempLabel.setBounds(215+20*(i), 100, 105, 150);
+					tempLabel.setIcon(PictureUtil.getPicture("cards/"+playCards.get(i)+".jpg"));
+					centerPanel.add(tempLabel);
+				}
+				//6重绘界面
+				centerPanel.validate();
+				centerPanel.repaint();
 			}
+			messageHandler.sendPlayCardMsg(msg+"="+seat_num);
+			out.setVisible(false);
+			donot.setVisible(false);
+			time.setText("倒计时");
+			time.setVisible(false);
+			playCards.clear();
+		}
+		//显示上一个人出的牌 以及启动自己出牌线程
+		public void showCardAndPlayCard(String msg) {
+			String str[] = msg.split("=");
+			String showCard = str[0];
+			List<String> showCards = Splitter.on(",").splitToList(showCard);
+			int seat_num = Integer.parseInt(str[1]);
+			//1从他自己的界面移除上家出了的牌
+			
 		}
 }

@@ -100,6 +100,7 @@ public class LoginWidow extends JDialog {
 
 			// 最小化按钮
 			minButton = new JLabel();
+			minButton.setName("23");
 			content.add(minButton);
 			minButton.setBounds(290, 0, 30, 20);
 			minButton.setIcon(PictureUtil.getPicture("minimize.png"));

@@ -38,7 +38,7 @@ public class GamePlayState extends GameState {
 
 	@Override
 	public void handleWindow() {
-		PlayCountDownThread dealCardsThread = new PlayCountDownThread(landlordsRoomWindow,10);
+		PlayCountDownThread dealCardsThread = new PlayCountDownThread(landlordsRoomWindow,15);
 		landlordsRoomWindow.setPlayCountDownThread(dealCardsThread);
 		Thread thread = new Thread(dealCardsThread);
 		thread.start();
