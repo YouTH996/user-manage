@@ -104,6 +104,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private List<String> playCards = new ArrayList<String>();//存储一次要出的牌
 	private int leftHaveCardNum = 17 ;//剩下牌张数
 	private int rightHaveCardNum = 17;//剩下牌张数
+	private boolean isOutCard = true;//默认是出牌的
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -314,11 +315,13 @@ public class LandlordsRoomWindow extends JFrame {
 					int y = tempLabel.getY();
 					if(y < 50){
 						y += 20;
-						playCards.add(tempLabel.getName());
+						System.out.println("1111tempLabel.getName()tempLabel.getName()====>"+tempLabel.getName());
+						playCards.remove(tempLabel.getName());
 					}else{
 						y -= 20;
-						playCards.remove(tempLabel.getName());
+						playCards.add(tempLabel.getName());
 					}
+					System.out.println("22222tempLabel.getName()tempLabel.getName()====>"+tempLabel.getName());
 					tempLabel.setBounds(x, y, 105, 150);
 				}
 				
@@ -379,6 +382,22 @@ public class LandlordsRoomWindow extends JFrame {
 				}
 				
 				//sendRobMsg("1");
+			}
+		});
+		//出牌事件
+		out.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				isOutCard = true;
+				playCountDown.stop(5);
+			}
+		});
+		//不出牌事件
+		donot.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				isOutCard = false;
+				playCountDown.stop(5);
 			}
 		});
 	}
@@ -897,51 +916,58 @@ public class LandlordsRoomWindow extends JFrame {
 			this.playCountDown = dealCardsThread;
 		}
 		public void sendPlayCardMsg(boolean timeoutFLag) {
-			int seat_num = seatNum +1;
+			int seat_num = -1;
+			if((seatNum+1)%3==0){
+				seat_num = seatNum -2;
+			}else{
+				seat_num = seatNum +1;
+			}
 			String msg = null;
-			if(timeoutFLag){//超时出牌，就出右手边第一张牌
-				System.out.println("1111");
-				//List<JLabel> ss = new ArrayList<JLabel>();
-				msg = cards[cards.length-1].getName();
-				//cards[cards.length-1].setIcon(null);
-				cardPanel.remove(cards[cards.length-1]);
-				cardPanel.validate();//动态删除或者增加组件时，少了此行代码界面不变
-				cardPanel.repaint();//动态删除或者增加组件时，少了此行代码界面不变
-				cards[cards.length-1].setBounds(215, 100, 105, 150);
-				centerPanel.add(cards[cards.length-1]);
-				centerPanel.validate();//动态删除或者增加组件时，少了此行代码界面不变
-				centerPanel.repaint();//动态删除或者增加组件时，少了此行代码界面不变
-				System.out.println("2222");
+			if(timeoutFLag){//超时出牌，就出右手边第一张牌;因为不出牌也是通过发送时间为0来通知结束线程的
+				if(!isOutCard){
+					msg = "-1";//代表不出牌
+				}else{
+					//List<JLabel> ss = new ArrayList<JLabel>();
+					msg = cards[cards.length-1].getName();
+					//cards[cards.length-1].setIcon(null);
+					cardPanel.remove(cards[cards.length-1]);
+					cardPanel.validate();//动态删除或者增加组件时，少了此行代码界面不变
+					cardPanel.repaint();//动态删除或者增加组件时，少了此行代码界面不变
+					cards[cards.length-1].setBounds(215, 100, 105, 150);
+					centerPanel.add(cards[cards.length-1]);
+					centerPanel.validate();//动态删除或者增加组件时，少了此行代码界面不变
+					centerPanel.repaint();//动态删除或者增加组件时，少了此行代码界面不变
+				}
+
 			}else{//非超时出牌
-				msg = Joiner.on(",").join(playCards);
-				//1删除要出的牌
-				for(int i=0;i<playCards.size();i++) {//删除要出的牌
-					cardList.remove(LandlordsUtil.generateCard(Integer.parseInt(playCards.get(i))));
+				if(isOutCard){
+					System.out.println("playCards:=====>>>"+playCards.size());
+					msg = Joiner.on(",").join(playCards);
+					System.out.println("正常出牌："+msg);
+					//3界面移除已经出牌的组件
+					for(int i = cardList.size();i<cards.length;i++ ) {
+						cardPanel.remove(cards[i]);
+					}
+					//4重绘界面
+					cardPanel.validate();
+					cardPanel.repaint();
+					//1删除要出的牌
+					for(int i=0;i<playCards.size();i++) {//删除要出的牌
+						cardList.remove(LandlordsUtil.generateCard(Integer.parseInt(playCards.get(i))));
+					}
+					//2重新渲染界面
+					for(int j=0;j<cardList.size();j++) {
+						cards[j].setName(cardList.get(j).getImage());
+						cards[j].setIcon(PictureUtil.getPicture("cards/"+cardList.get(j).getImage()+".jpg"));
+
+					}
+
+					//5要出的牌显示在界面中央
+					showCenterCards();
+					playCards.clear();
+				}else{
+					msg = "-1";//代表不出牌
 				}
-				//2重新渲染界面
-				for(int j=0;j<cardList.size();j++) {
-					cards[j].setName(cardList.get(j).getImage());
-					cards[j].setIcon(PictureUtil.getPicture("cards/"+cardList.get(j).getImage()+".jpg"));
-				
-				}
-				//3界面移除已经出牌的组件
-				for(int i = cardList.size();i<cards.length;i++ ) {
-					cardPanel.remove(cards[i]);
-				}
-				//4重绘界面
-				cardPanel.validate();
-				cardPanel.repaint();
-				//5要出的牌显示在界面中央
-				centerPanel.removeAll();
-				for(int i=0;i<playCards.size();i++) {
-					JLabel tempLabel = new JLabel();
-					tempLabel.setBounds(215+20*(i), 100, 105, 150);
-					tempLabel.setIcon(PictureUtil.getPicture("cards/"+playCards.get(i)+".jpg"));
-					centerPanel.add(tempLabel);
-				}
-				//6重绘界面
-				centerPanel.validate();
-				centerPanel.repaint();
 			}
 			messageHandler.sendPlayCardMsg(msg+"="+seat_num);
 			out.setVisible(false);
@@ -949,14 +975,59 @@ public class LandlordsRoomWindow extends JFrame {
 			time.setText("倒计时");
 			time.setVisible(false);
 			playCards.clear();
+			initListener();
 		}
 		//显示上一个人出的牌 以及启动自己出牌线程
 		public void showCardAndPlayCard(String msg) {
 			String str[] = msg.split("=");
 			String showCard = str[0];
-			List<String> showCards = Splitter.on(",").splitToList(showCard);
 			int seat_num = Integer.parseInt(str[1]);
-			//1从他自己的界面移除上家出了的牌
-			
+			if(!showCard.equals("-1")){//上家出牌与不出牌
+				playCards = Splitter.on(",").splitToList(showCard);
+				//1从他自己的界面移除上家出了的牌
+				if(isLeftPlayer(seat_num -1)){
+					for(int i= leftHaveCardNum -1;i>=leftHaveCardNum-playCards.size();i--){
+						leftCardPanel.remove(leftCards[i]);
+					}
+					leftCardPanel.validate();
+					leftCardPanel.repaint();
+					leftHaveCardNum -=playCards.size();
+				}else{
+					for(int i= rightHaveCardNum -1;i>=rightHaveCardNum-playCards.size();i--){
+						rightCardPanel.remove(leftCards[i]);
+					}
+					rightCardPanel.validate();
+					rightCardPanel.repaint();
+					rightHaveCardNum -=playCards.size();
+				}
+				//2在中间面板显示上家出的牌
+				showCenterCards();
+			}
+
+			//playCards.clear();
+			//3启动本家出牌线程
+			if(seat_num == seatNum){
+				time.setVisible(true);
+				time.setText("倒计时");
+				out.setVisible(true);
+				donot.setVisible(true);
+				gameState = new GamePlayState(this);
+				gameState.handleWindow();
+			}
+			playCards.clear();
+			initListener();
 		}
+		//显示中间的牌
+	private void showCenterCards(){
+		centerPanel.removeAll();
+		for(int i=0;i<playCards.size();i++) {
+			JLabel tempLabel = new JLabel();
+			tempLabel.setBounds(215+20*(i), 100, 105, 150);
+			tempLabel.setIcon(PictureUtil.getPicture("cards/"+playCards.get(i)+".jpg"));
+			centerPanel.add(tempLabel);
+		}
+		//6重绘界面
+		centerPanel.validate();
+		centerPanel.repaint();
+	}
 }
