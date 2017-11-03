@@ -23,4 +23,5 @@ public class Constants {
 	public final static String RESTART_READY_MSG_FLAG = "RESTART_READY_MSG_FLAG";//重启动游戏准备线程的信号标志
 	public final static String START_PLAY_MSG_FLAG = "START_PLAY_MSG_FLAG";//启动打牌线程的信号标志
 	public final static String PLAY_CARD_MSG_FLAG = "PLAY_CARD_MSG_FLAG";//游戏出牌的信号标志
+	public final static String GAME_OVER_MSG_FLAG = "GAME_OVER_MSG_FLAG";//一轮游戏结束的信号标志
 }
