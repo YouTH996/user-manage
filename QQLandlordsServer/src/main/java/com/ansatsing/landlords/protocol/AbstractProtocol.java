@@ -19,7 +19,7 @@ public abstract class AbstractProtocol {
     protected Map<Integer, Player> playerMap;//一个座位对应一个玩家
     protected Map<Integer, Table> tableMap;//一桌对应一个table实体类对象
     protected Map<String, Player> userName2Player;
-    public abstract  void handleProt(String message);
+    public abstract  void handleProt();
 
     public void setPlayer(Player player) {
         this.player = player;

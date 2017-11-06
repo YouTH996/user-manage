@@ -16,7 +16,7 @@ public class GameReadyProt extends AbstractProtocol implements Serializable{
         this.readyFlag = readyFlag;
     }
 
-    public void handleProt(String message) {
+    public void handleProt() {
         System.out.println("服务器端处理游戏准备消息");
     }
 }

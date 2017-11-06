@@ -74,7 +74,7 @@ public class OutCardProt extends AbstractProtocol implements Serializable{
                 '}';
     }
 
-    public void handleProt(String message) {
-        batchSendMsg(message, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), true);
+    public void handleProt() {
+      //  batchSendMsg(message, tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), true);
     }
 }

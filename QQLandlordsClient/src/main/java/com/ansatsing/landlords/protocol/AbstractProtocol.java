@@ -23,6 +23,26 @@ public abstract class AbstractProtocol {
         this.landlordsRoomWindow = landlordsRoomWindow;
     }
 
+    public LandlordsRoomWindow getLandlordsRoomWindow() {
+        return landlordsRoomWindow;
+    }
+
+    public GameLobbyWindow getGameLobbyWindow() {
+        return gameLobbyWindow;
+    }
+
+    public LoginWidow getLoginWidow() {
+        return loginWidow;
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(Socket socket) {
+        this.socket = socket;
+    }
+
     public void setGameLobbyWindow(GameLobbyWindow gameLobbyWindow) {
         this.gameLobbyWindow = gameLobbyWindow;
     }

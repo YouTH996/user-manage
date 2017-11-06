@@ -1,16 +1,10 @@
 package com.ansatsing.landlords.client.ui;
 
-import java.awt.AWTException;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.MenuItem;
-import java.awt.Point;
-import java.awt.PopupMenu;
-//import java.awt.SystemTray;
-//import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import com.ansatsing.landlords.client.handler.SendMessageHandler;
+import com.ansatsing.landlords.util.PictureUtil;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -19,17 +13,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import javax.swing.BorderFactory;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-
-import com.ansatsing.landlords.client.handler.SendMessageHandler;
-import com.ansatsing.landlords.protocol.AbstractProtocol;
-import com.ansatsing.landlords.protocol.GameRegisterProt;
-import com.ansatsing.landlords.util.PictureUtil;
+//import java.awt.SystemTray;
+//import java.awt.TrayIcon;
 
 /**
  * QQ斗地主游戏登录界面
@@ -37,7 +22,7 @@ import com.ansatsing.landlords.util.PictureUtil;
  * @author ansatsing
  * @time 2017年10月20日 下午8:18:48
  */
-public class LoginWidow extends JDialog {
+public class LoginWidow_20171106 extends JDialog {
 	private JPanel content;// 面板
 	private JLabel title;// 窗口标题标签
 	private JLabel userNameLable;// 网名输入提示标签
@@ -53,7 +38,7 @@ public class LoginWidow extends JDialog {
 	PrintWriter printWriter = null;
 	private SendMessageHandler messageHandler;
 
-	public LoginWidow(Socket socket) {
+	public LoginWidow_20171106(Socket socket) {
 		initGUI();
 		//initTrayIcon();
 		initListener();
@@ -218,11 +203,6 @@ public class LoginWidow extends JDialog {
 				if(userNameField.getText().equals("")) {
 					errorTip.setText("网名不能为空!");
 				}else {
-					GameRegisterProt registerProt = new GameRegisterProt();
-					registerProt.setUserName(userNameField.getText().trim());
-					registerProt.sendMsg();
-					/////////////////////////下面信息没有无限扩展的老代码////////////////////////////
-					/*
 					try {
 						messageHandler.sendUsernameMSg(userNameField.getText().trim());
 						BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -244,21 +224,11 @@ public class LoginWidow extends JDialog {
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					}*/
+					}
 				}
 			}
 			
 		});
-	}
-	//当收到服务器返回的注册信息时 进行如下处理
-	public void handleGameRegister(boolean registerSuccessful){
-		if(registerSuccessful){
-			GameLobbyWindow qqGameWindow = new GameLobbyWindow(socket,userNameField.getText().trim());
-			dispose();//仅仅关闭窗体
-		}else{
-			errorTip.setText("这网名有人正在使用,请更换网名!");
-			userNameField.setText("");
-		}
 	}
 	private void exit() {
 		if(socket != null) {

@@ -1,37 +1,34 @@
 package com.ansatsing.landlords.server.socket;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.Iterator;
-import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
-import com.ansatsing.landlords.protocol.AbstractProtocol;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ansatsing.landlords.entity.Message;
 import com.ansatsing.landlords.entity.MsgType;
 import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.entity.Table;
 import com.ansatsing.landlords.util.MessageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Map;
+//为了信息的无限扩展而备份
 /**
  * qq斗地主服务器端网络IO处理中心
  * @author sunyq
  *
  */
-public class ServerHandlerTransferThread implements Runnable {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServerHandlerTransferThread.class);
+public class ServerHandlerTransferThread_20171106 implements Runnable {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServerHandlerTransferThread_20171106.class);
 	private Socket socket;
 	private Player player;
 	private ServerMessageHandler messageHandler;
 	private Map<String, Player> userName2Player;
 	private Map<Integer, Player> playerMap;//一个座位对应一个玩家
 	private Map<Integer, Table> tableMap;//一桌对应一个table实体类对象
-	public ServerHandlerTransferThread( Socket socket,Map<Integer, Player> playerMap,Map<Integer, Table> tableMap,Map<String, Player> _userName2Player) {
+	public ServerHandlerTransferThread_20171106(Socket socket, Map<Integer, Player> playerMap, Map<Integer, Table> tableMap, Map<String, Player> _userName2Player) {
 		this.socket = socket;
 		this.player = new Player();
 		this.player.setSocket(socket);
@@ -54,18 +51,7 @@ public class ServerHandlerTransferThread implements Runnable {
 				readMsg = bufferedReader.readLine();
 				if (!readMsg.equals("")) {
 					System.out.println((player.getUserName() == null ? "未登陆的":player.getUserName())+"发送了消息："+readMsg);
-					int endIdx = readMsg.indexOf("{");
-					String className = readMsg.substring(0,endIdx);
-					String classContent = readMsg.substring(endIdx);
-					Class class1 = Class.forName(className);
-					AbstractProtocol protocol = (AbstractProtocol) JSON.parseObject(classContent,class1);
-					protocol.setPlayer(player);
-					protocol.setPlayerMap(playerMap);
-					protocol.setTableMap(tableMap);
-					protocol.setUserName2Player(userName2Player);
-					protocol.handleProt();
-					//if()
-/*					message = MessageUtil.handle(readMsg);
+					message = MessageUtil.handle(readMsg);
 					if(message != null){
 						if(message.getTYPE() == MsgType.SYSTEM_EXIT_MSG) {//客户退出系统
 							if(player == null || player.getUserName() == null) {
@@ -82,17 +68,15 @@ public class ServerHandlerTransferThread implements Runnable {
 						}
 					}else{
 						LOGGER.info("message是空指针");
-					}*/
+					}
 				}
 			}
-			/*if(player != null && player.getUserName() != null) {
+			if(player != null && player.getUserName() != null) {
 				userName2Player.remove(player.getUserName());
 				messageHandler.batchSendMsg(player.getUserName()+"退出聊天室了!当前聊天室人数："+userName2Player.size(),userName2Player.values(),true);
-			}*/
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} finally {
 			if(bufferedReader != null) {
