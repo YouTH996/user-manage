@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import com.alibaba.fastjson.JSON;
+import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
+import com.ansatsing.landlords.client.ui.LoginWidow;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +19,41 @@ public class ClientReceiveThread implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClientReceiveThread.class);
 	private Socket socket;
 	private boolean isStop = false;
-	private GameLobbyWindow qqGameWindow;
+	private volatile GameLobbyWindow qqGameWindow;
 	private ReceiveMessageHandler receiveMessageHandler;
-	public ClientReceiveThread(Socket socket,GameLobbyWindow qqGameWindow) {
+	private volatile LoginWidow loginWidow;
+	private volatile LandlordsRoomWindow landlordsRoomWindow;
+	private AbstractProtocol protocol;
+	public ClientReceiveThread(Socket socket) {
 		this.socket = socket;
-		this.qqGameWindow = qqGameWindow;
-		this.receiveMessageHandler = new ReceiveMessageHandler(qqGameWindow);
+		//this.qqGameWindow = qqGameWindow;
+		//this.receiveMessageHandler = new ReceiveMessageHandler(qqGameWindow);
 	}
+
+	public GameLobbyWindow getQqGameWindow() {
+		return qqGameWindow;
+	}
+
+	public void setQqGameWindow(GameLobbyWindow qqGameWindow) {
+		this.qqGameWindow = qqGameWindow;
+	}
+
+	public LoginWidow getLoginWidow() {
+		return loginWidow;
+	}
+
+	public void setLoginWidow(LoginWidow loginWidow) {
+		this.loginWidow = loginWidow;
+	}
+
+	public LandlordsRoomWindow getLandlordsRoomWindow() {
+		return landlordsRoomWindow;
+	}
+
+	public void setLandlordsRoomWindow(LandlordsRoomWindow landlordsRoomWindow) {
+		this.landlordsRoomWindow = landlordsRoomWindow;
+	}
+
 	public void run() {
 		BufferedReader bufferedReader;
 		String readMsg = "";
@@ -43,9 +73,19 @@ public class ClientReceiveThread implements Runnable {
 						} catch (ClassNotFoundException e) {
 							e.printStackTrace();
 						}
-						AbstractProtocol protocol = (AbstractProtocol)JSON.parseObject(classContent,_class);
+						if(protocol != null){
+							if(protocol.getGameLobbyWindow() != null && this.qqGameWindow == null){
+								this.qqGameWindow = protocol.getGameLobbyWindow();
+							}
+							if(protocol.getLandlordsRoomWindow() != null && this.landlordsRoomWindow == null){
+								this.landlordsRoomWindow = protocol.getLandlordsRoomWindow();
+							}
+						}
+						protocol = (AbstractProtocol)JSON.parseObject(classContent,_class);
 						protocol.setSocket(socket);
-
+						protocol.setLoginWidow(loginWidow);
+						protocol.setGameLobbyWindow(qqGameWindow);
+						protocol.setLandlordsRoomWindow(landlordsRoomWindow);
 						protocol.handleProt();
 					}
 				}

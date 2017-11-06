@@ -1,30 +1,17 @@
 package com.ansatsing.landlords.client.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Polygon;
+import com.ansatsing.landlords.client.handler.SendMessageHandler;
+import com.ansatsing.landlords.client.thread.ClientReceiveThread;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.Socket;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.ansatsing.landlords.client.handler.ReceiveMessageHandler;
-import com.ansatsing.landlords.client.handler.SendMessageHandler;
-import com.ansatsing.landlords.client.thread.ClientReceiveThread;
 
 /**
  * QQ斗地主游戏大厅
@@ -32,19 +19,19 @@ import com.ansatsing.landlords.client.thread.ClientReceiveThread;
  * @author ansatsing
  * @time 2017年10月20日 下午8:14:18
  */
-public class GameLobbyWindow extends JFrame {
-	private final static Logger LOGGER = LoggerFactory.getLogger(GameLobbyWindow.class);
+public class GameLobbyWindow_20171106 extends JFrame {
+	/*private final static Logger LOGGER = LoggerFactory.getLogger(GameLobbyWindow_20171106.class);
 	private final int WIDTH = 1500;
 	private final int HEIGHT = 800;
 	private JPanel childJpanel1;// 主窗体左侧
 	private JPanel childJpanel2;// 主窗体右侧
 	private JScrollPane historyScroll;
-	/** 历史消息滚动条 */
+	*//** 历史消息滚动条 *//*
 	public JTextArea historyMsg;
-	/** 历史消息区域 */
+	*//** 历史消息区域 *//*
 	private JPanel sendPanel;
 	private JTextArea sendMsg;
-	/** 输入消息区域 */
+	*//** 输入消息区域 *//*
 	private JButton send;
 	private ClientReceiveThread qqClientHandler;
 	private JLabel seats[]; // 斗地主座位
@@ -54,22 +41,20 @@ public class GameLobbyWindow extends JFrame {
 	private LandlordsRoomWindow currentRoom;
 	private SendMessageHandler messageHandler;
 	private Socket socket;
-	/*
+	*//*
 	 * public static void main(String[] args) { Socket socket = null;
 	 * QQGameWindow qqGameWindow = new QQGameWindow(socket); }
-	 */
+	 *//*
 
-	public GameLobbyWindow(Socket socket, String userName) {
+	public GameLobbyWindow_20171106(Socket socket, String userName) {
 		setTitle("QQ斗地主--" + userName);
 		initGUI();
 		initListener();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
-		/////////////////////////////////////////////////////////////////
-		/*ClientReceiveThread qqClientHandler = new ClientReceiveThread(socket, this);
+		ClientReceiveThread qqClientHandler = new ClientReceiveThread(socket, this);
 		Thread thread = new Thread(qqClientHandler);
-		thread.start();*/
-		/////////////////////////////////////////////////////////////////
+		thread.start();
 		this.qqClientHandler = qqClientHandler;
 		this.userName = userName;
 		this.messageHandler = new SendMessageHandler(socket);
@@ -214,40 +199,40 @@ public class GameLobbyWindow extends JFrame {
 		}
 	}
 
-	/**
+	*//**
 	 * 显示收到的群聊消息
 	 * 
 	 * @param readMsg
-	 */
+	 *//*
 	public void setHistoryMsg(String readMsg) {
 		this.historyMsg.append(readMsg + "\n");
 	}
 
-	/**
+	*//**
 	 * 对号入座
 	 * 
 	 * @param seatNum
 	 * @param userName
-	 */
+	 *//*
 	public void setSeatName(int seatNum, String userName) {
 		seats[seatNum].setText(userName);
 	}
 
-	/**
+	*//**
 	 * 空出位置
 	 * 
 	 * @param seatNum
-	 */
+	 *//*
 	public void emptySeat(int seatNum) {
 		seats[seatNum].setText("空位");
 	}
 
-	/**
+	*//**
 	 * 关闭斗地主房间
-	 */
+	 *//*
 	private void closeLandlordsRoom() {
 		
 			messageHandler.sendExitSeatMsg(String.valueOf(currentRoom.getSeatNum()));
 			currentRoom.closeRoom();
-	}
+	}*/
 }

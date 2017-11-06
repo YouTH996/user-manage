@@ -40,7 +40,7 @@ public class GameRegisterProt  extends AbstractProtocol implements Serializable 
 
 
     public void handleProt() {
-        loginWidow.handleGameRegister(this.successful);
+        loginWidow.handleGameRegister(this.successful,this);
     }
 
     public void sendMsg() {

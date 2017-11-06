@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.ansatsing.landlords.client.thread.ClientReceiveThread;
 import com.ansatsing.landlords.client.ui.LoginWidow;
 
 public class QQClientApp {
@@ -15,7 +16,10 @@ public class QQClientApp {
 		try {
 			socket = new Socket(host, port);
 			LoginWidow loginWidow = new LoginWidow(socket);
-			
+			ClientReceiveThread qqClientHandler = new ClientReceiveThread(socket);
+			qqClientHandler.setLoginWidow(loginWidow);
+			Thread thread = new Thread(qqClientHandler);
+			thread.start();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
