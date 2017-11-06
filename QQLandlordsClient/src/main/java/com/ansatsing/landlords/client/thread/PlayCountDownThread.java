@@ -27,7 +27,7 @@ public class PlayCountDownThread implements Runnable {
 	public void run() {
 		while(!this.isStop){
 			setTimeLableText();
-			System.out.println("111Robcountdown==secondes = "+seconds);
+			//System.out.println("111PlayCountDownThread==secondes = "+seconds);
 			if(seconds == 0){
 				 break;
 			 }
@@ -39,9 +39,9 @@ public class PlayCountDownThread implements Runnable {
 	            }
 			 seconds--;
 		}
-		System.out.println("222Robcountdown==secondes = "+seconds);
+		//System.out.println("222PlayCountDownThread==secondes = "+seconds);
 		if(seconds <= 0) {//如果牌友一直不点 按钮 ，就直接当农民
-			System.out.println("PlayCountDownThread  seconds == =====================0");
+			//System.out.println("PlayCountDownThread  seconds == =====================0");
 			landlordsRoomWindow.sendPlayCardMsg(true);
 			//if(landlordsRoomWindow.isa)
 		}
@@ -50,7 +50,7 @@ public class PlayCountDownThread implements Runnable {
 		}
 	}
 	public void stop(int sec){
-		System.out.println("RobCountDownThread  stop() stop()stop()stop()stop()");
+		//System.out.println("PlayCountDownThread stop() stop()stop()stop()stop()");
 		this.isStop = true;
 		this.seconds = sec;
 	}

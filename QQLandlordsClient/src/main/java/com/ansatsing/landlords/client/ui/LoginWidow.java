@@ -7,8 +7,8 @@ import java.awt.Font;
 import java.awt.MenuItem;
 import java.awt.Point;
 import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.TrayIcon;
+//import java.awt.SystemTray;
+//import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -27,6 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
+import com.ansatsing.landlords.protocol.AbstractProtocol;
+import com.ansatsing.landlords.protocol.GameRegisterProt;
 import com.ansatsing.landlords.util.PictureUtil;
 
 /**
@@ -43,8 +45,8 @@ public class LoginWidow extends JDialog {
 	private JLabel minButton;// 最小化按钮
 	private JLabel exitButton;// 退出按钮
 	private JLabel loginButton;// 登录按钮
-	private SystemTray tray;//系统托盘
-	private TrayIcon icon;//系统托盘图片
+	//private SystemTray tray;//系统托盘
+	//private TrayIcon icon;//系统托盘图片
 	private Point point = new Point();//用于记录鼠标移动之前的位置
 	private Socket socket;
 	private JLabel errorTip;//提示信息
@@ -53,7 +55,7 @@ public class LoginWidow extends JDialog {
 
 	public LoginWidow(Socket socket) {
 		initGUI();
-		initTrayIcon();
+		//initTrayIcon();
 		initListener();
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -128,7 +130,7 @@ public class LoginWidow extends JDialog {
 		}
 	}
 	//win系统右下角下图标显示程序：设置托盘图标
-	private void initTrayIcon() {
+	/*private void initTrayIcon() {
 		if(SystemTray.isSupported()) {//系统托盘是否支持
 			tray = SystemTray.getSystemTray();
 			icon = new TrayIcon(PictureUtil.getPicture("/qq_icon.png").getImage(), "QQ游戏室");
@@ -166,7 +168,7 @@ public class LoginWidow extends JDialog {
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 	//窗口监听事件
 	private void initListener() {
 		//窗体被鼠标按下事件
@@ -182,7 +184,7 @@ public class LoginWidow extends JDialog {
 		//窗体被鼠标拖曳事件
 		this.addMouseMotionListener(new MouseAdapter() {
 
-			@Override
+			//@Override
 			public void mouseDragged(MouseEvent e) {
 				Point p = getLocation();
 				setLocation(p.x + e.getX() - point.x, p.y + e.getY() - point.y);
@@ -216,6 +218,11 @@ public class LoginWidow extends JDialog {
 				if(userNameField.getText().equals("")) {
 					errorTip.setText("网名不能为空!");
 				}else {
+					GameRegisterProt registerProt = new GameRegisterProt();
+					registerProt.setUserName(userNameField.getText().trim());
+					registerProt.sendMsg();
+					/////////////////////////下面信息没有无限扩展的老代码////////////////////////////
+					/*
 					try {
 						messageHandler.sendUsernameMSg(userNameField.getText().trim());
 						BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -237,7 +244,7 @@ public class LoginWidow extends JDialog {
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					}
+					}*/
 				}
 			}
 			

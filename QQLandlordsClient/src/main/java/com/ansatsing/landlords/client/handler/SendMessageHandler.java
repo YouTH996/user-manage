@@ -133,4 +133,10 @@ public class SendMessageHandler {
 			sendMsg(SendMessagePack.packMsg(MsgType.PLAY_CARD_MSG, msg));
 		}
 	}
+	//发送游戏结束信号
+    public void sendGameOverMsg(String msg) {
+		if(msg != null && !msg.trim().equals("")){
+			sendMsg(SendMessagePack.packMsg(MsgType.GAME_OVER_MSG, msg));
+		}
+    }
 }

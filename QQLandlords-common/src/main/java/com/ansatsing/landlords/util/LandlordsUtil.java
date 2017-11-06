@@ -1,18 +1,14 @@
 package com.ansatsing.landlords.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
+import com.alibaba.fastjson.JSON;
+import com.ansatsing.landlords.entity.Card;
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ansatsing.landlords.entity.Card;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
+import java.io.File;
+import java.net.URL;
+import java.util.*;
 
 public class LandlordsUtil {
 	private final static Logger LOGGER = LoggerFactory.getLogger(LandlordsUtil.class);
@@ -106,8 +102,39 @@ public class LandlordsUtil {
 			return card;
 		}
 	}
-	public static void main(String[] args) {
-		for(int i=0;i<10;i++)
-		System.out.println(LandlordsUtil.getRondomCards());
+	//获取所以协议类的类全名
+	public static Set<String> getAllProtFullName(){
+		Set<String> classNames = new LinkedHashSet<String>();
+		String protDirName =Constants.PROT_PACK_NAME.replace(".","/");
+		URL url =  Thread.currentThread().getContextClassLoader().getResource(protDirName);
+		File file = new File(url.toString().substring(5));
+		if(file.isDirectory()){
+			File[] files = file.listFiles();
+			for(File currentFile:files){
+				if(currentFile.isFile()){
+					// 如果是java类文件 去掉后面的.class 只留下类名
+					String className = currentFile.getName().substring(0, currentFile.getName().length() - 6);
+					String entityName = Constants.PROT_PACK_NAME + '.' + className;
+					//System.out.println("检测到类名：packageName="+packageName+" >>>> "+entityName);
+					classNames.add(entityName);
+				}
+			}
+		}
+		return classNames;
+	}
+	public static void main(String[] args) throws ClassNotFoundException {
+/*		Set<String> classNames = getAllProtFullName();
+		*//*for(String str:classNames){
+			System.out.println(str);
+		}*//*
+		OutCardProt outCardProt = new OutCardProt(4,"4,3,2",5, "ansatsing", false);
+		String jsonStr = outCardProt.getClass().getName()+JSON.toJSONString(outCardProt);
+		//System.out.println(jsonStr);
+		//System.out.println(outCardProt);
+		int endIdx = jsonStr.indexOf("{");
+		String className = jsonStr.substring(0,endIdx);
+		String classContent = jsonStr.substring(endIdx);
+		Class class1 = Class.forName(className);
+		JSON.parseObject(classContent,class1);*/
 	}
 }

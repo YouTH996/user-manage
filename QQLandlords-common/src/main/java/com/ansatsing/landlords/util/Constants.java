@@ -1,6 +1,7 @@
 package com.ansatsing.landlords.util;
 
 public class Constants {
+	public final  static String PROT_PACK_NAME = "com.ansatsing.landlords.entity.protocol";//斗地主协议包名
 	public final static Integer CARDS[] = new Integer[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54};
 	public  final static String SYSTEM_EXIT_MSG_FLAG = "SYSTEM_EXIT_MSG_FLAG";//客户端退出时发送这样的消息从而告诉服务器要把相应的线程停止。
 	public final static String USER_NAME_MSG_FLAG = "name-@";//用户名信息标志

@@ -150,8 +150,17 @@ public class ServerMessageHandler {
 			}
 		}else if(message.getTYPE() == MsgType.PLAY_CARD_MSG) {
 			batchSendMsg(Constants.PLAY_CARD_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), true);
+		}else if(message.getTYPE() == MsgType.GAME_OVER_MSG) {
+			//batchSendMsg(Constants.PLAY_CARD_MSG_FLAG+message.getMsg(), tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).getPlayers(), true);
+			player.setReadFlag(0);
+			player.setRoleFlag(0);
+			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setWait(false);
+			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setReady(true);
+			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setDeal(false);
+			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setOver(false);
+			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setPlay(false);
+			tableMap.get(LandlordsUtil.getTableNum(player.getSeatNum())).setLandlord(null);
 		}
-			
 	}
 
 	/**
@@ -191,7 +200,6 @@ public class ServerMessageHandler {
 	}
 	/**
 	 * 找同桌的其他牌友的座位号
-	 * @param seatNum
 	 * @param userName
 	 * @return
 	 */
