@@ -19,8 +19,8 @@ public class GameReadyProt extends AbstractProtocol implements Serializable{
     public void handleProt() {
 
     }
-
-    protected void sendMsg() {
+    @Override
+    public void sendMsg() {
 
     }
 }

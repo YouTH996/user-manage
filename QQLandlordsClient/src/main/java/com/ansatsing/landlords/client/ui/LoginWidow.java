@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
+import com.ansatsing.landlords.client.thread.ClientReceiveThread;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
 import com.ansatsing.landlords.protocol.GameRegisterProt;
 import com.ansatsing.landlords.util.PictureUtil;
@@ -52,8 +53,9 @@ public class LoginWidow extends JDialog {
 	private JLabel errorTip;//提示信息
 	PrintWriter printWriter = null;
 	private SendMessageHandler messageHandler;
+	private ClientReceiveThread qqClientHandler;
 
-	public LoginWidow(Socket socket) {
+	public LoginWidow(Socket socket,ClientReceiveThread qqClientHandler) {
 		initGUI();
 		//initTrayIcon();
 		initListener();
@@ -61,6 +63,7 @@ public class LoginWidow extends JDialog {
 		setVisible(true);
 		this.socket = socket;
 		this.messageHandler = new SendMessageHandler(socket);
+		this.qqClientHandler = qqClientHandler;
 	}
 
 	// 窗口初始化
@@ -218,8 +221,7 @@ public class LoginWidow extends JDialog {
 				if(userNameField.getText().equals("")) {
 					errorTip.setText("网名不能为空!");
 				}else {
-					GameRegisterProt registerProt = new GameRegisterProt();
-					registerProt.setUserName(userNameField.getText().trim());
+					GameRegisterProt registerProt = new GameRegisterProt(userNameField.getText().trim(),socket);
 					registerProt.sendMsg();
 					/////////////////////////下面信息没有无限扩展的老代码////////////////////////////
 					/*
@@ -253,7 +255,7 @@ public class LoginWidow extends JDialog {
 	//当收到服务器返回的注册信息时 进行如下处理
 	public void handleGameRegister(boolean registerSuccessful,AbstractProtocol protocol){
 		if(registerSuccessful){
-			GameLobbyWindow qqGameWindow = new GameLobbyWindow(socket,userNameField.getText().trim());
+			GameLobbyWindow qqGameWindow = new GameLobbyWindow(socket,userNameField.getText().trim(),qqClientHandler);
 			protocol.setGameLobbyWindow(qqGameWindow);
 			dispose();//仅仅关闭窗体
 		}else{

@@ -18,8 +18,8 @@ public class SystemExitProt  extends AbstractProtocol implements Serializable {
     public void handleProt() {
 
     }
-
-    protected void sendMsg() {
+    @Override
+    public void sendMsg() {
         super.sendMsg(JSON.toJSONString(this));
     }
 }

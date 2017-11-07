@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.ansatsing.landlords.protocol.ExitSeatProt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -430,7 +431,13 @@ public class LandlordsRoomWindow extends JFrame {
 			JOptionPane.showMessageDialog(null, "斗地主中不许中途退出！！", "信息警告", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		messageHandler.sendExitSeatMsg(String.valueOf(seatNum));
+		///////////////////////////////////////////////////////////
+		ExitSeatProt exitSeatProt = new ExitSeatProt();
+		exitSeatProt.setSeatNum(seatNum);
+		exitSeatProt.setUserName(userName);
+		exitSeatProt.sendMsg();
+		//messageHandler.sendExitSeatMsg(String.valueOf(seatNum));
+		/////////////////////////////////////////////////////////////
 		seat.setText("空位");
 		if(countDownThread != null){
 			//countDownThread.stop();//关闭准备倒计时线程

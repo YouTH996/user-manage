@@ -48,18 +48,19 @@ public class GameRegisterProt extends AbstractProtocol implements Serializable {
         }else {
             String userName = this.userName;
             player.setUserName(userName);
-            singleSendMsg(player,"这个网名可以啦!");
-            batchSendMsg(userName+"骑着野母猪大摇大摆的溜进聊天室......大家给点面子欢迎欢迎！！！",userName2Player.values(),true);
+            this.successful = true;
+            this.responseMsg = "这个网名可以啦!";
+            singleSendMsg(player,this.getClass().getName()+ JSON.toJSONString(this));
+            //System.out.println();
+            //batchSendMsg(userName+"骑着野母猪大摇大摆的溜进聊天室......大家给点面子欢迎欢迎！！！",userName2Player.values(),true);
             userName2Player.put(userName, player);
-            if(playerMap.size() > 0){//初始化游戏大厅座位情况
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(Constants.INIT_SEAT_MSG_FLAG);
-                for(Integer seatNum:playerMap.keySet()){
-                    stringBuilder.append(seatNum+"="+playerMap.get(seatNum).getUserName()+",");
-                }
-                stringBuilder.deleteCharAt(stringBuilder.length()-1);
-                //String initSeat = Constants.INIT_SEAT_MSG_FLAG+Joiner.on(",").join(enterSeatList);
-                singleSendMsg(player, stringBuilder.toString());
+            if(playerMap.size() > 0) {//初始化游戏大厅座位情况
+                AbstractProtocol initSeatProt = new InitSeatProt();
+                initSeatProt.setUserName2Player(this.userName2Player);
+                initSeatProt.setTableMap(this.tableMap);
+                initSeatProt.setPlayerMap(playerMap);
+                initSeatProt.setPlayer(player);
+                initSeatProt.handleProt();
             }
         }
     }

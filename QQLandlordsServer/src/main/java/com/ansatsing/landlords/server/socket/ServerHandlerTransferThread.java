@@ -57,44 +57,29 @@ public class ServerHandlerTransferThread implements Runnable {
 					int endIdx = readMsg.indexOf("{");
 					String className = readMsg.substring(0,endIdx);
 					String classContent = readMsg.substring(endIdx);
-					Class class1 = Class.forName(className);
-					AbstractProtocol protocol = (AbstractProtocol) JSON.parseObject(classContent,class1);
-					protocol.setPlayer(player);
-					protocol.setPlayerMap(playerMap);
-					protocol.setTableMap(tableMap);
-					protocol.setUserName2Player(userName2Player);
-					protocol.handleProt();
-					//if()
-/*					message = MessageUtil.handle(readMsg);
-					if(message != null){
-						if(message.getTYPE() == MsgType.SYSTEM_EXIT_MSG) {//客户退出系统
-							if(player == null || player.getUserName() == null) {
-								System.out.println("一位牌友正试图进入QQ斗地主游戏厅，但最后还是走了。。。");
-							}else {
-								System.out.println(player.getUserName()+"牌友下线走了。。。。");
-							}
+					Class class1 = null;
+					try{
+						class1 = Class.forName(className);
+					}catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+					if(class1 != null){
+						AbstractProtocol protocol = (AbstractProtocol) JSON.parseObject(classContent,class1);
+						protocol.setPlayer(player);
+						protocol.setPlayerMap(playerMap);
+						protocol.setTableMap(tableMap);
+						protocol.setUserName2Player(userName2Player);
+						protocol.handleProt();
+						if(className.equals("com.ansatsing.landlords.protocol.SystemExitProt")){
 							break;
-						}else{
-							System.out.println("userName2Player  size:=======   "+userName2Player.size());
-							System.out.println("playerMap  size:=======   "+playerMap.size());
-							System.out.println("tableMap  size:=======   "+tableMap.size());
-							messageHandler.handleMessage(message);
 						}
-					}else{
-						LOGGER.info("message是空指针");
-					}*/
+					}
 				}
 			}
-			/*if(player != null && player.getUserName() != null) {
-				userName2Player.remove(player.getUserName());
-				messageHandler.batchSendMsg(player.getUserName()+"退出聊天室了!当前聊天室人数："+userName2Player.size(),userName2Player.values(),true);
-			}*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} finally {
+		}  finally {
 			if(bufferedReader != null) {
 				try {
 					bufferedReader.close();

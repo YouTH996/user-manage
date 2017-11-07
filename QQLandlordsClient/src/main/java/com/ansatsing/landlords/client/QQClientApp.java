@@ -15,8 +15,8 @@ public class QQClientApp {
 		Socket socket = null;
 		try {
 			socket = new Socket(host, port);
-			LoginWidow loginWidow = new LoginWidow(socket);
 			ClientReceiveThread qqClientHandler = new ClientReceiveThread(socket);
+			LoginWidow loginWidow = new LoginWidow(socket,qqClientHandler);
 			qqClientHandler.setLoginWidow(loginWidow);
 			Thread thread = new Thread(qqClientHandler);
 			thread.start();

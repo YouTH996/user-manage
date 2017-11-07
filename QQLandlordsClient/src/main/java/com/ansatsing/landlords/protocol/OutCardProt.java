@@ -66,8 +66,8 @@ public class OutCardProt extends AbstractProtocol implements Serializable{
     public void handleProt() {
         System.out.println("处理信息："+this.userName);
     }
-
-    protected void sendMsg() {
+    @Override
+    public void sendMsg() {
         System.out.println("发送信息："+this.getClass().getName()+ JSON.toJSONString(this));
         super.sendMsg(this.getClass().getName()+ JSON.toJSONString(this));
     }

@@ -4,6 +4,7 @@ import com.ansatsing.landlords.client.ui.GameLobbyWindow;
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 import com.ansatsing.landlords.client.ui.LoginWidow;
 
+import java.beans.Transient;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -26,15 +27,15 @@ public abstract class AbstractProtocol {
     public LandlordsRoomWindow getLandlordsRoomWindow() {
         return landlordsRoomWindow;
     }
-
+    @Transient
     public GameLobbyWindow getGameLobbyWindow() {
         return gameLobbyWindow;
     }
-
+    @Transient
     public LoginWidow getLoginWidow() {
         return loginWidow;
     }
-
+    @Transient
     public Socket getSocket() {
         return socket;
     }
@@ -51,7 +52,9 @@ public abstract class AbstractProtocol {
         this.loginWidow = loginWidow;
     }
     //发送信息到服务器端
-    protected abstract void sendMsg();
+    public  void sendMsg(){
+
+    }
     protected void sendMsg(String msg) {
         System.out.println("客户端向服务器发送信息："+msg);
         PrintWriter printWriter= null;

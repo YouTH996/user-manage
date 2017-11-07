@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.ansatsing.landlords.protocol.EnterSeatProt;
+import com.ansatsing.landlords.protocol.ExitSeatProt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,13 +61,14 @@ public class GameLobbyWindow extends JFrame {
 	 * QQGameWindow qqGameWindow = new QQGameWindow(socket); }
 	 */
 
-	public GameLobbyWindow(Socket socket, String userName) {
+	public GameLobbyWindow(Socket socket, String userName,ClientReceiveThread qqClientHandler) {
 		setTitle("QQ斗地主--" + userName);
 		initGUI();
 		initListener();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		/////////////////////////////////////////////////////////////////
+		this.qqClientHandler = qqClientHandler;
 		/*ClientReceiveThread qqClientHandler = new ClientReceiveThread(socket, this);
 		Thread thread = new Thread(qqClientHandler);
 		thread.start();*/
@@ -204,8 +207,14 @@ public class GameLobbyWindow extends JFrame {
 						}
 						jLabelTemp.setText(userName);
 						currentRoom = new LandlordsRoomWindow(jLabelTemp, seatNum,userName,socket);
-						messageHandler.sendEnterSeatMsg(seatNum + "");
-						qqClientHandler.getReceiveMessageHandler().setLandlordsRoomWindow(currentRoom);
+						///////////////////////20171107//////////////////////////////////////////
+						EnterSeatProt  enterSeatProt= new EnterSeatProt(seatNum,userName,socket);
+						enterSeatProt.sendMsg();
+						qqClientHandler .setLandlordsRoomWindow(currentRoom);
+						/*messageHandler.sendEnterSeatMsg(seatNum + "");
+						qqClientHandler.getReceiveMessageHandler().setLandlordsRoomWindow(currentRoom);*/
+
+						/////////////////////////////////////////////////////////////////////
 					} else {
 						JOptionPane.showMessageDialog(null, "该位置有人", "信息警告", JOptionPane.WARNING_MESSAGE);
 					}
@@ -246,8 +255,13 @@ public class GameLobbyWindow extends JFrame {
 	 * 关闭斗地主房间
 	 */
 	private void closeLandlordsRoom() {
-		
-			messageHandler.sendExitSeatMsg(String.valueOf(currentRoom.getSeatNum()));
+		////////////////////////////////////////////////////////////////////
+			//messageHandler.sendExitSeatMsg(String.valueOf(currentRoom.getSeatNum()));
+		ExitSeatProt exitSeatProt = new ExitSeatProt();
+		exitSeatProt.setSeatNum(currentRoom.getSeatNum());
+		exitSeatProt.setUserName(userName);
+		exitSeatProt.sendMsg();
+			/////////////////////////////////////////////////////////////////////////////
 			currentRoom.closeRoom();
 	}
 }

@@ -23,6 +23,7 @@ import java.net.Socket;
  * @time 2017年10月20日 下午8:18:48
  */
 public class LoginWidow_20171106 extends JDialog {
+
 	private JPanel content;// 面板
 	private JLabel title;// 窗口标题标签
 	private JLabel userNameLable;// 网名输入提示标签
@@ -214,7 +215,7 @@ public class LoginWidow_20171106 extends JDialog {
 							}
 						}
 						if(readMsg.equals("这个网名可以啦!")) {//进入聊天室
-							GameLobbyWindow qqGameWindow = new GameLobbyWindow(socket,userNameField.getText().trim());
+	////////////	GameLobbyWindow qqGameWindow = new GameLobbyWindow(socket,userNameField.getText().trim());
 							//System.exit(0);
 							dispose();//仅仅关闭窗体
 						}else {//重新输入网名
