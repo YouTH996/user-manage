@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.ansatsing.landlords.protocol.ChatMsgProt;
 import com.ansatsing.landlords.protocol.EnterSeatProt;
 import com.ansatsing.landlords.protocol.ExitSeatProt;
 import org.slf4j.Logger;
@@ -179,7 +180,11 @@ public class GameLobbyWindow extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (!sendMsg.getText().trim().equals("")) {
-					String msg = sendMsg.getText().trim();
+					////////////////////////////////////////////////////////
+					ChatMsgProt chatMsgProt = new ChatMsgProt(1,userName,sendMsg.getText().trim(),socket);
+					chatMsgProt.sendMsg();
+					setHistoryMsg("你说:" + sendMsg.getText().trim());
+					/*String msg = sendMsg.getText().trim();
 					msg = msg.replaceAll("：", ":");
 					messageHandler.sendAllChatMsg(msg);
 					if (msg.startsWith("@")) {
@@ -188,7 +193,8 @@ public class GameLobbyWindow extends JFrame {
 						setHistoryMsg("你悄悄对" + name + "说:" + msg);
 					} else {
 						setHistoryMsg("你说:" + msg);
-					}
+					}*/
+					//////////////////////////////////////////////////
 				}
 			}
 
