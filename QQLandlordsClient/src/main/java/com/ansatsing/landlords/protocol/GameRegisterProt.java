@@ -49,12 +49,7 @@ public class GameRegisterProt  extends AbstractProtocol implements Serializable 
     }
 
     public void handleProt() {
-        if(successful){
             loginWidow.handleGameRegister(this.successful,this);
-        }else{
-
-        }
-
     }
     @Override
     public void sendMsg() {

@@ -1,6 +1,7 @@
 package com.ansatsing.landlords.protocol;
 
 import com.alibaba.fastjson.JSON;
+import com.ansatsing.landlords.util.LandlordsUtil;
 
 import java.io.Serializable;
 import java.net.Socket;
@@ -8,21 +9,11 @@ import java.net.Socket;
 /**
  * 群聊发送消息协议:暂时不搞私聊了
  */
-public class ChatMsgProt  extends AbstractProtocol implements Serializable {
+public class ChatMsgProt extends AbstractProtocol implements Serializable {
     private int chatFlag;//1游戏大厅群聊 2斗地主房间群聊
     private String userName;
     private String msg;
     private int seatNum;
-    public ChatMsgProt(int chatFlag, String userName, String msg, Socket socket) {
-        this.chatFlag = chatFlag;
-        this.userName = userName;
-        this.msg = msg;
-        super.socket = socket;
-    }
-    public ChatMsgProt() {
-
-    }
-
 
     public int getSeatNum() {
         return seatNum;
@@ -31,6 +22,7 @@ public class ChatMsgProt  extends AbstractProtocol implements Serializable {
     public void setSeatNum(int seatNum) {
         this.seatNum = seatNum;
     }
+
     public int getChatFlag() {
         return chatFlag;
     }
@@ -58,14 +50,9 @@ public class ChatMsgProt  extends AbstractProtocol implements Serializable {
     @Override
     public void handleProt() {
         if(chatFlag == 1){
-            gameLobbyWindow.setHistoryMsg(userName+"说:"+msg);
-        }else  if(chatFlag == 2){
-            landlordsRoomWindow.setHistoryMsg(userName+"说:"+msg);
+            super.batchSendMsg(this.getClass().getName()+JSON.toJSONString(this),userName2Player.values(),true);
+        }else if(chatFlag == 2){
+            super.batchSendMsg(this.getClass().getName()+JSON.toJSONString(this),tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers(),true);
         }
-    }
-
-    @Override
-    public void sendMsg() {
-        super.sendMsg(this.getClass().getName()+ JSON.toJSONString(this));
     }
 }

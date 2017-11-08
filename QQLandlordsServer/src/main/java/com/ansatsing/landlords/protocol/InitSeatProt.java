@@ -20,7 +20,7 @@ public class InitSeatProt  extends AbstractProtocol implements Serializable {
     public void setSeatMap(Map<Integer, String> seatMap) {
         this.seatMap = seatMap;
     }
-
+    @Override
     public void handleProt() {
         if(playerMap.size() > 0){//初始化游戏大厅座位情况
             for(Integer seatNum:playerMap.keySet()){

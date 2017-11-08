@@ -14,7 +14,7 @@ public class SystemExitProt extends AbstractProtocol implements Serializable {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
+    @Override
     public void handleProt() {
         if(player != null && player.getUserName() != null) {
             userName2Player.remove(userName);

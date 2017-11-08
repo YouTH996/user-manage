@@ -212,7 +212,7 @@ public class GameLobbyWindow extends JFrame {
 							closeLandlordsRoom();
 						}
 						jLabelTemp.setText(userName);
-						currentRoom = new LandlordsRoomWindow(jLabelTemp, seatNum,userName,socket);
+						currentRoom = new LandlordsRoomWindow(jLabelTemp, seatNum,userName,socket,GameLobbyWindow.this);
 						///////////////////////20171107//////////////////////////////////////////
 						EnterSeatProt  enterSeatProt= new EnterSeatProt(seatNum,userName,socket);
 						enterSeatProt.sendMsg();
@@ -263,11 +263,12 @@ public class GameLobbyWindow extends JFrame {
 	private void closeLandlordsRoom() {
 		////////////////////////////////////////////////////////////////////
 			//messageHandler.sendExitSeatMsg(String.valueOf(currentRoom.getSeatNum()));
-		ExitSeatProt exitSeatProt = new ExitSeatProt();
-		exitSeatProt.setSeatNum(currentRoom.getSeatNum());
-		exitSeatProt.setUserName(userName);
+		ExitSeatProt exitSeatProt = new ExitSeatProt(currentRoom.getSeatNum(),userName,socket);
 		exitSeatProt.sendMsg();
 			/////////////////////////////////////////////////////////////////////////////
 			currentRoom.closeRoom();
+	}
+	public void setLandlordsRoomtoNull(){
+		currentRoom = null;
 	}
 }

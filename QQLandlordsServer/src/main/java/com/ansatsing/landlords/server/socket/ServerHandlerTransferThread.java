@@ -52,6 +52,7 @@ public class ServerHandlerTransferThread implements Runnable {
 			String readMsg = "";
 			while (true) {
 				readMsg = bufferedReader.readLine();
+				//这个位置应该加一个协议过滤器，非法协议直接跳过
 				if (!readMsg.equals("")) {
 					System.out.println((player.getUserName() == null ? "未登陆的":player.getUserName())+"发送了消息："+readMsg);
 					int endIdx = readMsg.indexOf("{");

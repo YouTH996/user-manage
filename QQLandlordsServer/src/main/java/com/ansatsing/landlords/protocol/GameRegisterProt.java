@@ -39,7 +39,7 @@ public class GameRegisterProt extends AbstractProtocol implements Serializable {
     public void setResponseMsg(String responseMsg) {
         this.responseMsg = responseMsg;
     }
-
+    @Override
     public void handleProt() {
         if(checkDuplicatedUserName(this.userName)){//处理重复网名
             this.successful = false;

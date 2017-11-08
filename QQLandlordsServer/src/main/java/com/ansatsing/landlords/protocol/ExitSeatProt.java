@@ -25,7 +25,7 @@ public class ExitSeatProt extends AbstractProtocol implements Serializable {
     public void setSeatNum(int seatNum) {
         this.seatNum = seatNum;
     }
-
+    @Override
     public void handleProt() {
         if(playerMap.containsKey(seatNum)){
             playerMap.remove(seatNum);
@@ -33,14 +33,9 @@ public class ExitSeatProt extends AbstractProtocol implements Serializable {
         //游戏大厅座位信息清除
         batchSendMsg(this.getClass().getName()+JSON.toJSONString(this),userName2Player.values(),true);
 
-        //斗地主房间里座位信息在牌友间互通
-       /* if(tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers().size() > 1){
-            //1将自己的退出房间的信息发给的牌友
-            batchSendMsg(Constants.EXIT_ROOM_MSG_FLAG+player.getUserName(), tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers(),true);
-        }
         //2 清除自己
         tableMap.get(LandlordsUtil.getTableNum(seatNum)).getPlayers().remove(player);
         player.setSeatNum(-1);
-        player.setReadFlag(0);*/
+        player.setReadFlag(0);
     }
 }
