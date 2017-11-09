@@ -15,6 +15,16 @@ public class OutCard implements Comparable<OutCard>{
     private int outCardNum;//出的牌的点数
     private String cards;//出的牌
     private int seatNum;//出牌的位置
+    private int cardTotal;//出的牌的数量
+
+    public int getCardTotal() {
+        return cardTotal;
+    }
+
+    public void setCardTotal(int cardTotal) {
+        this.cardTotal = cardTotal;
+    }
+
     public int getPlayCardType() {
         return playCardType;
     }

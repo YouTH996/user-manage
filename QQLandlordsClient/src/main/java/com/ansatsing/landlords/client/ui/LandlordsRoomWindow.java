@@ -447,6 +447,12 @@ public class LandlordsRoomWindow extends JFrame {
 							JOptionPane.showMessageDialog(null, "出的牌不符号游戏规则", "信息警告", JOptionPane.WARNING_MESSAGE);
 							return;
 						}
+						if(lastOutCard.getPlayCardType() == 4){//针对一条龙的牌，出牌的数量必须一致
+							if(currentOutCard.getCardTotal() != lastOutCard.getCardTotal()){
+								JOptionPane.showMessageDialog(null, "出的牌不符号游戏规则", "信息警告", JOptionPane.WARNING_MESSAGE);
+								return;
+							}
+						}
 						if( currentOutCard.compareTo(lastOutCard) < 1){
 							JOptionPane.showMessageDialog(null, "出的牌必须比上家的牌大", "信息警告", JOptionPane.WARNING_MESSAGE);
 							return;

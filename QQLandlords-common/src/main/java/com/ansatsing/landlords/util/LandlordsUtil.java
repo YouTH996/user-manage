@@ -183,8 +183,9 @@ public class LandlordsUtil {
 			}else if(cardTotal == 6){//判断4带2以及 6张牌组成的一条龙
 				if(isStraightCards(cards)){//345678
 					outCard.setPlayCardType(4);
-					outCard.setOutCardNum(cards.get(2).getNumber());
 					Collections.reverse(cards);
+					outCard.setOutCardNum(cards.get(0).getNumber());
+					outCard.setCardTotal(cardTotal);
 					outCard.setCards(Joiner.on(",").join(cards));
 					return outCard;
 				}else if(is4with2(cards)){//444433
@@ -209,8 +210,9 @@ public class LandlordsUtil {
 			}else if(cardTotal == 5 || cardTotal > 6){//456789
 				if(isStraightCards(cards)){
 					outCard.setPlayCardType(4);
-					outCard.setOutCardNum(cards.get(2).getNumber());
 					Collections.reverse(cards);
+					outCard.setOutCardNum(cards.get(0).getNumber());
+					outCard.setCardTotal(cardTotal);
 					outCard.setCards(Joiner.on(",").join(cards));
 					return outCard;
 				}
