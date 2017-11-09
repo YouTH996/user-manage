@@ -14,7 +14,7 @@ public class PlayCardProt extends AbstractProtocol implements Serializable {
     private String cards;//出的什么牌
     private int nextSeatNum = -1;//下个出牌的位置；-1代表游戏结束
     private boolean isLandlord;//出牌人是否是地主；以便判断己方是否赢了
-
+    private int seatNum;//出牌人的位置编号
     public int getNextSeatNum() {
         return nextSeatNum;
     }
@@ -42,6 +42,13 @@ public class PlayCardProt extends AbstractProtocol implements Serializable {
     public PlayCardProt() {
     }
 
+    public int getSeatNum() {
+        return seatNum;
+    }
+
+    public void setSeatNum(int seatNum) {
+        this.seatNum = seatNum;
+    }
 
     @Override
     public void handleProt(){

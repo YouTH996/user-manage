@@ -50,6 +50,12 @@ public class Card implements Comparable<Card>{
 			return 1;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return image;
+	}
+
 	public static void main(String[] args) {
 		String cards = LandlordsUtil.getRondomCards();//产生一副随机牌，以图片的地址里的数字作为值，产生格式如：2,4,1,....
 		List<String> cardList = Splitter.on(",").splitToList(cards);
@@ -58,10 +64,11 @@ public class Card implements Comparable<Card>{
 		for(String cString:cardList) {
 			card = LandlordsUtil.generateCard(Integer.valueOf(cString));
 			list.add(card);
-		}
+		}System.out.println(list.get(4).compareTo(list.get(6)));
 		for(Card card2 : list) {
 			System.out.print(card2.getImage()+"-");
 		}
+
 		Collections.sort(list/*,new CardComparator()*/);
 		System.out.println("=================排序后=====================");
 		for(Card card2 : list) {

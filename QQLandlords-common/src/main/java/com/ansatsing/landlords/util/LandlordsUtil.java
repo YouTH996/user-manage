@@ -2,6 +2,7 @@ package com.ansatsing.landlords.util;
 
 import com.alibaba.fastjson.JSON;
 import com.ansatsing.landlords.entity.Card;
+import com.ansatsing.landlords.entity.OutCard;
 import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +122,139 @@ public class LandlordsUtil {
 			}
 		}
 		return classNames;
+	}
+
+	/**
+	 * 判断出的牌是什么类型
+	 * 		0代表单牌								1
+	 * 		1代表对子								2
+	 * 		2代表3带1								4
+	 * 		3代表4张相同的牌带2张牌					6
+	 * 		4代表一条龙，至少5张牌 最多12			5-12
+	 * 		5代表普通炸弹，4张相同的牌				4
+	 * 		6代表王炸								2
+	 * @param cardList
+	 * @return
+	 */
+	public static OutCard  generateOutCard(List<String> cardList){
+		int playCardType = -1;
+		OutCard outCard = new OutCard();
+		if(cardList != null && cardList.size() > 0){
+			int cardTotal = cardList.size();
+			List<Card> cards = new ArrayList<Card>();
+			for(int i=0;i<cardTotal;i++){
+				cards.add(generateCard(Integer.parseInt(cardList.get(i))));
+			}
+			Collections.sort(cards);//排序
+			if(cardTotal == 1){//单牌
+				outCard.setPlayCardType(0);
+				outCard.setOutCardNum(cards.get(0).getNumber());
+				outCard.setCards(cardList.get(0));
+				return outCard;
+			}else if(cardTotal == 2){//判断对子或者王炸
+				if(cards.get(0).getNumber() == cards.get(1).getNumber()){
+					outCard.setPlayCardType(1);
+					outCard.setOutCardNum(cards.get(0).getNumber());
+					outCard.setCards(Joiner.on(",").join(cardList));
+					return outCard;
+				}else if(cards.get(0).getNumber() == 17 && cards.get(1).getNumber() == 16){
+					outCard.setPlayCardType(6);
+					outCard.setOutCardNum(18);//18最大的一张牌
+					outCard.setCards(Joiner.on(",").join(cardList));
+					return outCard;
+				}
+			}else if(cardTotal == 4){//判断3带1 以及普通炸弹
+				if(cards.get(0).getNumber() == cards.get(1).getNumber() && cards.get(1).getNumber() == cards.get(2).getNumber() && cards.get(2).getNumber() == cards.get(3).getNumber()){
+					outCard.setPlayCardType(5);
+					outCard.setOutCardNum(cards.get(0).getNumber());
+					outCard.setCards(Joiner.on(",").join(cardList));
+					return outCard;
+				}else if((cards.get(0).getNumber() != cards.get(1).getNumber() && cards.get(1).getNumber() == cards.get(2).getNumber() && cards.get(2).getNumber() == cards.get(3).getNumber())
+						||(cards.get(0).getNumber() == cards.get(1).getNumber() && cards.get(1).getNumber() == cards.get(2).getNumber() && cards.get(2).getNumber() != cards.get(3).getNumber())){
+					outCard.setPlayCardType(2);
+					outCard.setOutCardNum(cards.get(2).getNumber());
+					if(cards.get(0).getNumber() != cards.get(1).getNumber()){//6555-->5556
+						Card card = cards.get(0);
+						cards.remove(0);
+						cards.add(card);
+					}
+					outCard.setCards(Joiner.on(",").join(cards));
+					return outCard;
+				}
+			}else if(cardTotal == 6){//判断4带2以及 6张牌组成的一条龙
+				if(isStraightCards(cards)){//345678
+					outCard.setPlayCardType(4);
+					outCard.setOutCardNum(cards.get(2).getNumber());
+					Collections.reverse(cards);
+					outCard.setCards(Joiner.on(",").join(cards));
+					return outCard;
+				}else if(is4with2(cards)){//444433
+					outCard.setPlayCardType(6);
+					outCard.setOutCardNum(cards.get(2).getNumber());
+					if(cards.get(0).getNumber() != cards.get(1).getNumber() && cards.get(1).getNumber() == cards.get(2).getNumber()){
+						//755554-->555547
+						Card card = cards.get(0);
+						cards.remove(0);
+						cards.add(card);
+					}else if( cards.get(1).getNumber()!= cards.get(2).getNumber()){//875555
+						Card card1 = cards.get(0);
+						Card card2 = cards.get(1);
+						cards.remove(0);
+						cards.remove(1);
+						cards.add(card1);
+						cards.add(card2);
+					}
+					outCard.setCards(Joiner.on(",").join(cardList));
+					return outCard;
+				}
+			}else if(cardTotal == 5 || cardTotal > 6){//456789
+				if(isStraightCards(cards)){
+					outCard.setPlayCardType(4);
+					outCard.setOutCardNum(cards.get(2).getNumber());
+					Collections.reverse(cards);
+					outCard.setCards(Joiner.on(",").join(cards));
+					return outCard;
+				}
+			}
+		}
+		outCard.setPlayCardType(playCardType);
+		return outCard;
+	}
+	private static boolean isStraightCards(List<Card> cards){
+		if(cards != null)
+		{
+			if(cards.size() <5){
+				return false;
+			}
+			for(int i=0;i<cards.size();i++){
+				if(cards.get(0).getNumber()!= (cards.get(i).getNumber()+i)){
+					return  false;
+				}
+			}
+			return true;
+		}else{
+			return false;
+		}
+	}
+	private static  boolean is4with2(List<Card> cards){
+		//766665
+		if(cards.get(0).getNumber()!= cards.get(1).getNumber()&&cards.get(1).getNumber()== cards.get(2).getNumber()
+				&&cards.get(2).getNumber()== cards.get(3).getNumber()&&cards.get(3).getNumber()== cards.get(4).getNumber()
+				&&cards.get(4).getNumber()!= cards.get(5).getNumber()){
+			return true;
+		}
+		//666654
+		if(cards.get(0).getNumber()== cards.get(1).getNumber()&&cards.get(1).getNumber()== cards.get(2).getNumber()
+				&&cards.get(2).getNumber()== cards.get(3).getNumber()&&cards.get(3).getNumber()!= cards.get(4).getNumber()){
+			return true;
+		}
+		//876666
+		if(cards.get(1).getNumber()!= cards.get(2).getNumber()
+				&&cards.get(2).getNumber()== cards.get(3).getNumber()&&cards.get(3).getNumber()!= cards.get(4).getNumber()
+				&&cards.get(4).getNumber()== cards.get(5).getNumber()){
+			return true;
+		}
+		return false;
 	}
 	public static void main(String[] args) throws ClassNotFoundException {
 /*		Set<String> classNames = getAllProtFullName();

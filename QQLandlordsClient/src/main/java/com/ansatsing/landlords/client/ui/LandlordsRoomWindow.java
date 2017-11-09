@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.ansatsing.landlords.entity.OutCard;
 import com.ansatsing.landlords.protocol.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +109,8 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel playResult ;//斗地主输赢显示器
 	private Socket socket;
 	private GameLobbyWindow gameLobbyWindow;
+	private OutCard lastOutCard;//上家出的牌
+	private OutCard currentOutCard;//当前位置出的牌
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -426,6 +429,34 @@ public class LandlordsRoomWindow extends JFrame {
 		out.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				System.out.println("点击出牌时，当前要出的牌是："+Joiner.on(",").join(playCards));
+				 currentOutCard = LandlordsUtil.generateOutCard(playCards);
+				if(playerRole.getText().equals("地主") && cardList.size() == 20){//判断一轮游戏是否是第一次出牌
+					//System.out.println("2LandlordsUtil.getPlayCardType(playCards):"+LandlordsUtil.getPlayCardType(playCards));
+					if(currentOutCard.getPlayCardType() == -1){
+						JOptionPane.showMessageDialog(null, "出的牌不符号游戏规则", "信息警告", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+				}else{
+					//System.out.println("lastOutCard.getCards():::"+lastOutCard.getCards());
+					if(lastOutCard != null && lastOutCard.getSeatNum() != seatNum){
+						System.out.println("currentOutCard.compareTo(lastOutCard):::"+currentOutCard.compareTo(lastOutCard));
+						System.out.println("currentOutCard.getPlayCardType()==="+currentOutCard.getPlayCardType());
+						if(currentOutCard.getPlayCardType() == -1){
+							JOptionPane.showMessageDialog(null, "出的牌不符号游戏规则", "信息警告", JOptionPane.WARNING_MESSAGE);
+							return;
+						}
+						if( currentOutCard.compareTo(lastOutCard) < 1){
+							JOptionPane.showMessageDialog(null, "出的牌必须比上家的牌大", "信息警告", JOptionPane.WARNING_MESSAGE);
+							return;
+						}
+					}else{
+						if(currentOutCard.getPlayCardType() == -1){
+							JOptionPane.showMessageDialog(null, "出的牌不符号游戏规则", "信息警告", JOptionPane.WARNING_MESSAGE);
+							return;
+						}
+					}
+				}
 				isOutCard = true;
 				playCountDown.stop(5);
 			}
@@ -917,13 +948,6 @@ public class LandlordsRoomWindow extends JFrame {
 				startRob(seat_num);
 			}
 		}
-		//判断是不是全部是农民
-		public boolean isAllFarmer(){
-			if(playerRole.getText().equals("农民") && leftPlayerRole.getText().equals("农民") && rightPlayerRole.getText().equals("农民")){
-				return true;
-			}
-			return false;
-		}
 		//全部是农民重启新一轮游戏准备
 		public void restartGameReady(){
 			//要把未准备的信息 告知服务器端，因为新的一轮 每个人的准备状态信息都是未准备
@@ -1056,6 +1080,16 @@ public class LandlordsRoomWindow extends JFrame {
 					rightCards[19].setIcon(PictureUtil.getPicture("cards/back.png"));
 					rightHaveCardNum += 3;
 				}
+				//清除农民界面多余3张牌的鼠标监听事件
+				for(int i=17;i<20;i++){
+					cards[i].setName("-1");
+					cards[i].setIcon(null);
+					cards[i].setBounds(385+(18)*i+105, 50, 0, 0);
+					if(cards[i].getMouseListeners().length > 0){
+						cards[i].removeMouseListener(cards[i].getMouseListeners()[0]);//移除绑定鼠标事件
+					}
+				}
+
 			}
 		}
 		public void setPlayCountDownThread(PlayCountDownThread dealCardsThread) {
@@ -1073,29 +1107,26 @@ public class LandlordsRoomWindow extends JFrame {
 				if(!isOutCard){
 					msg = "-1";//代表不出牌
 				}else{
-					int idex = cardList.size()-1;
-					//System.out.println("时间超时自动出最右边第一张牌："+cards[idex].getName());
-					String strArr[] = cards[idex].getName().split("=");
-					msg = strArr[1];
-					cards[idex].setIcon(null);
-					cards[idex].setName("-1");//代表牌出了
-					cards[idex].removeMouseListener(cards[idex].getMouseListeners()[0]);//移除绑定鼠标事件
-					System.out.println("最右边第一张牌的地址数字："+msg);
-					//cards[i].setIcon(PictureUtil.getPicture("cards/"+cardList.get(i).getImage()+".jpg"));
-					centerCards[5].setIcon(PictureUtil.getPicture("cards/"+msg+".jpg"));
-					cardList.remove(idex);
+					if(playerRole.getText().equals("地主") && cardList.size() == 20){//只有地主第一次出牌时超时默认出最右边那张牌，其他情况超时不出牌
+						int idex = cardList.size()-1;
+						//System.out.println("时间超时自动出最右边第一张牌："+cards[idex].getName());
+						String strArr[] = cards[idex].getName().split("=");
+						msg = strArr[1];
+						cards[idex].setIcon(null);
+						cards[idex].setName("-1");//代表牌出了
+						cards[idex].removeMouseListener(cards[idex].getMouseListeners()[0]);//移除绑定鼠标事件
+						System.out.println("最右边第一张牌的地址数字："+msg);
+						//cards[i].setIcon(PictureUtil.getPicture("cards/"+cardList.get(i).getImage()+".jpg"));
+						centerCards[5].setIcon(PictureUtil.getPicture("cards/"+msg+".jpg"));
+						cardList.remove(idex);
+						showCenterCards();
+					}else{//其他情况超时不出牌
+						msg = "-1";//代表不出牌
+					}
 				}
 			}else{//非超时出牌
 				if(isOutCard){
-					//System.out.println("playCards:=====>>>"+playCards.size());
 					msg = Joiner.on(",").join(playCards);
-				//	System.out.println("正常出牌："+msg);
-					//1从cardList移除打出的牌
-					/*for(int i=0;i<playCards.size();i++) {//删除要出的牌
-						*//*if(cardList.contains(LandlordsUtil.generateCard(Integer.parseInt(playCards.get(i))))){//这下面的代码是不会执行，根本就没有包含这样的对象
-							cardList.remove(LandlordsUtil.generateCard(Integer.parseInt(playCards.get(i))));
-						}*//*
-					}*/
 					Iterator<Card> iterator = cardList.iterator();
 					while(iterator.hasNext()){
 						Card card = iterator.next();
@@ -1122,6 +1153,7 @@ public class LandlordsRoomWindow extends JFrame {
 						if(i>=cardList.size()){//针对已经出了的牌的显示背景图片设置为null
 							cards[i].setName("-1");
 							cards[i].setIcon(null);
+							cards[i].setBounds(385+(18)*i+105, 50, 0, 0);
 							if(cards[i].getMouseListeners().length > 0){
 								cards[i].removeMouseListener(cards[i].getMouseListeners()[0]);//移除绑定鼠标事件
 							}
@@ -1131,10 +1163,11 @@ public class LandlordsRoomWindow extends JFrame {
 						}
 					}
 					//3中间面板显示自己出的牌
+					showCenterCards();
 				}else{
 					msg = "-1";//代表不出牌
 				}
-				showCenterCards();
+
 			}
 			//牌全部出完，您就赢了并且结束本轮游戏，发起本轮游戏结束信号给服务器端
 			if(cardList.size() == 0){
@@ -1167,7 +1200,7 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 		}
 		//显示上一个人出的牌 以及启动自己出牌线程
-		public void showCardAndPlayCard(String showCard,int seat_num,boolean isLandlord) {
+		public void showCardAndPlayCard(String showCard,int seat_num,boolean isLandlord,int currentSeatNum) {
 			//String str[] = msg.split("=");
 			//String showCard = str[0];
 			//int seat_num = Integer.parseInt(str[1]);
@@ -1191,8 +1224,11 @@ public class LandlordsRoomWindow extends JFrame {
 					centerCards[i].setIcon(null);
 				}
 				//3在中间面板显示上家出的牌
+				lastOutCard = LandlordsUtil.generateOutCard(playCards);
+				lastOutCard.setSeatNum(currentSeatNum);
 				showCenterCards();
 			}
+			playCards.clear();
 			//3启动本家出牌线程
 			if(seat_num == seatNum){
 				time.setVisible(true);
@@ -1202,7 +1238,7 @@ public class LandlordsRoomWindow extends JFrame {
 				gameState = new GamePlayState(this);
 				gameState.handleWindow();
 			}
-			playCards.clear();
+
 			//游戏结束,发送信号
 			if(seat_num == -1){
 				///////////////////////////////////////////////////
@@ -1245,10 +1281,7 @@ public class LandlordsRoomWindow extends JFrame {
 					}
 					rightHaveCardNum -=playCards.size();
 				}
-				//2清理中间面板之前的显示
-				for(int i=0;i<centerCards.length;i++){
-					centerCards[i].setIcon(null);
-				}
+
 				//3在中间面板显示上家出的牌
 				showCenterCards();
 			}
@@ -1261,7 +1294,7 @@ public class LandlordsRoomWindow extends JFrame {
 				gameState = new GamePlayState(this);
 				gameState.handleWindow();
 			}
-			playCards.clear();
+			//playCards.clear();
 			//游戏结束,发送信号
 			if(seat_num == -1){
 				messageHandler.sendGameDealMsg(userName+"="+seatNum);
@@ -1271,13 +1304,19 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 		//显示中间的牌
 	private void showCenterCards(){
+		//2清理中间面板之前的显示
+		for(int i=0;i<centerCards.length;i++){
+			centerCards[i].setIcon(null);
+		}
+		List<String> showList = Splitter.on(",").splitToList(LandlordsUtil.generateOutCard(playCards).getCards());
 		int startIdx=(12-playCards.size())/2;//为了显示的尽量在中间
 		for(int i=startIdx;i<12;i++) {
 			if(i<startIdx+playCards.size())
-			centerCards[i].setIcon(PictureUtil.getPicture("cards/"+playCards.get(i-startIdx)+".jpg"));
+			centerCards[i].setIcon(PictureUtil.getPicture("cards/"+showList.get(i-startIdx)+".jpg"));
 			else
 				break;
 		}
+
 	}
 	//隐藏角色label
 	private void hideRole(){
