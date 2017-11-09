@@ -3,6 +3,7 @@ package com.ansatsing.landlords.protocol;
 import com.alibaba.fastjson.JSON;
 
 import java.io.Serializable;
+import java.net.Socket;
 
 public class SystemExitProt  extends AbstractProtocol implements Serializable {
     private String userName;
@@ -15,11 +16,22 @@ public class SystemExitProt  extends AbstractProtocol implements Serializable {
         this.userName = userName;
     }
 
+    public SystemExitProt() {
+    }
+
+    public SystemExitProt(String userName,Socket socket) {
+        this.userName = userName;
+        super.socket = socket;
+    }
+    public SystemExitProt(Socket socket) {
+        super.socket = socket;
+    }
+
     public void handleProt() {
 
     }
     @Override
     public void sendMsg() {
-        super.sendMsg(JSON.toJSONString(this));
+        super.sendMsg(this.getClass().getName()+JSON.toJSONString(this));
     }
 }

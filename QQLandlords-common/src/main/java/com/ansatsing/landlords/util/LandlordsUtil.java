@@ -1,6 +1,5 @@
 package com.ansatsing.landlords.util;
 
-import com.alibaba.fastjson.JSON;
 import com.ansatsing.landlords.entity.Card;
 import com.ansatsing.landlords.entity.OutCard;
 import com.google.common.base.Joiner;

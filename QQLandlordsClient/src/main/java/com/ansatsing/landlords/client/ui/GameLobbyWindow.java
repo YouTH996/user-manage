@@ -22,6 +22,7 @@ import javax.swing.JTextArea;
 import com.ansatsing.landlords.protocol.ChatMsgProt;
 import com.ansatsing.landlords.protocol.EnterSeatProt;
 import com.ansatsing.landlords.protocol.ExitSeatProt;
+import com.ansatsing.landlords.protocol.SystemExitProt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +171,9 @@ public class GameLobbyWindow extends JFrame {
 				if(currentRoom != null) {
 					closeLandlordsRoom();
 				}
-				messageHandler.sendSystemExitMsg();
+				//messageHandler.sendSystemExitMsg();
+				SystemExitProt systemExitProt = new SystemExitProt(userName,socket);
+				systemExitProt.sendMsg();
 				qqClientHandler.stop();// 收信息的线程停止
 			}
 		});

@@ -30,6 +30,7 @@ import com.ansatsing.landlords.client.handler.SendMessageHandler;
 import com.ansatsing.landlords.client.thread.ClientReceiveThread;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
 import com.ansatsing.landlords.protocol.GameRegisterProt;
+import com.ansatsing.landlords.protocol.SystemExitProt;
 import com.ansatsing.landlords.util.PictureUtil;
 
 /**
@@ -220,6 +221,7 @@ public class LoginWidow extends JDialog {
 			public void mouseClicked(MouseEvent e) {
 				if(userNameField.getText().equals("")) {
 					errorTip.setText("网名不能为空!");
+					return ;
 				}else {
 					GameRegisterProt registerProt = new GameRegisterProt(userNameField.getText().trim(),socket);
 					registerProt.sendMsg();
@@ -265,13 +267,9 @@ public class LoginWidow extends JDialog {
 	}
 	private void exit() {
 		if(socket != null) {
-			try {
-				messageHandler.sendSystemExitMsg();
-				socket.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+				SystemExitProt systemExitProt = new SystemExitProt(socket);
+				systemExitProt.sendMsg();
+				qqClientHandler.stop();
 		}
 		System.exit(0);
 	}

@@ -1105,19 +1105,25 @@ public class LandlordsRoomWindow extends JFrame {
 				if(!isOutCard){
 					msg = "-1";//代表不出牌
 				}else{
-					if(playerRole.getText().equals("地主") && cardList.size() == 20){//只有地主第一次出牌时超时默认出最右边那张牌，其他情况超时不出牌
+					if((playerRole.getText().equals("地主") && cardList.size() == 20) || (lastOutCard == null)){
+						//只有地主第一次出牌时超时默认出最右边那张牌，其他情况超时不出牌
+						//或者出的牌没人要的起，那超时也必须要出牌
+						cardsIdx.clear();
+						playCards.clear();
+						//2清理中间面板之前的显示
+						for(int i=0;i<centerCards.length;i++){
+							centerCards[i].setIcon(null);
+						}
 						int idex = cardList.size()-1;
 						//System.out.println("时间超时自动出最右边第一张牌："+cards[idex].getName());
 						String strArr[] = cards[idex].getName().split("=");
 						msg = strArr[1];
 						cards[idex].setIcon(null);
 						cards[idex].setName("-1");//代表牌出了
+						cards[idex].setBounds(385+(18)*idex+105, 50, 0, 0);
 						cards[idex].removeMouseListener(cards[idex].getMouseListeners()[0]);//移除绑定鼠标事件
-						System.out.println("最右边第一张牌的地址数字："+msg);
-						//cards[i].setIcon(PictureUtil.getPicture("cards/"+cardList.get(i).getImage()+".jpg"));
 						centerCards[5].setIcon(PictureUtil.getPicture("cards/"+msg+".jpg"));
 						cardList.remove(idex);
-						showCenterCards();
 					}else{//其他情况超时不出牌
 						msg = "-1";//代表不出牌
 					}
@@ -1206,25 +1212,25 @@ public class LandlordsRoomWindow extends JFrame {
 				playCards.clear();
 				playCards = new ArrayList<String>(Splitter.on(",").splitToList(showCard));
 				//1从他自己的界面移除上家出了的牌
-				System.out.println("1leftHaveCardNum="+leftHaveCardNum);
-				System.out.println("1rightHaveCardNum="+rightHaveCardNum);
-				System.out.println("playCards.size()="+playCards.size());
-				System.out.println("currentSeatNum="+playCards.size());
+				//System.out.println("1leftHaveCardNum="+leftHaveCardNum);
+				//System.out.println("1rightHaveCardNum="+rightHaveCardNum);
+				//System.out.println("playCards.size()="+playCards.size());
+				//System.out.println("currentSeatNum="+playCards.size());
 				if(isLeftPlayer(currentSeatNum)){
-					System.out.println("左边消牌");
+					//System.out.println("左边消牌");
 					for(int i= leftHaveCardNum -1;i>=leftHaveCardNum-playCards.size();i--){
 						leftCards[i].setIcon(null);
 					}
 					leftHaveCardNum -=playCards.size();
 				}else{
-					System.out.println("右边消牌");
+					//System.out.println("右边消牌");
 					for(int i= rightHaveCardNum -1;i>=rightHaveCardNum-playCards.size();i--){
 						rightCards[i].setIcon(null);
 					}
 					rightHaveCardNum -=playCards.size();
 				}
-				System.out.println("2leftHaveCardNum="+leftHaveCardNum);
-				System.out.println("2rightHaveCardNum="+rightHaveCardNum);
+				//System.out.println("2leftHaveCardNum="+leftHaveCardNum);
+				//System.out.println("2rightHaveCardNum="+rightHaveCardNum);
 				//2清理中间面板之前的显示
 				for(int i=0;i<centerCards.length;i++){
 					centerCards[i].setIcon(null);
@@ -1237,10 +1243,14 @@ public class LandlordsRoomWindow extends JFrame {
 			playCards.clear();
 			//3启动本家出牌线程
 			if(seat_num == seatNum){
+				if(lastOutCard == null){
+					donot.setVisible(false);
+				}else{
+					donot.setVisible(true);
+				}
 				time.setVisible(true);
 				time.setText("倒计时");
 				out.setVisible(true);
-				donot.setVisible(true);
 				gameState = new GamePlayState(this);
 				gameState.handleWindow();
 			}

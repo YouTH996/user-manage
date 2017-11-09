@@ -18,7 +18,8 @@ public class SystemExitProt extends AbstractProtocol implements Serializable {
     public void handleProt() {
         if(player != null && player.getUserName() != null) {
             userName2Player.remove(userName);
-            // batchSendMsg(player.getUserName()+"退出聊天室了!当前聊天室人数："+userName2Player.size(),userName2Player.values(),true);
+            System.out.println(player.getUserName()+"退出游戏室！");
         }
+        System.out.println("有人退出游戏室！");
     }
 }
