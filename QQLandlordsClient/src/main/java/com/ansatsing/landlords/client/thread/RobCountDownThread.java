@@ -15,7 +15,7 @@ import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
  * @author ansatsing
  * @time 2017年10月23日 下午9:09:00
  */
-public class RobCountDownThread implements Runnable {
+public class RobCountDownThread/* implements Runnable */{
 	private final static Logger LOGGER = LoggerFactory.getLogger(RobCountDownThread.class);
 	private LandlordsRoomWindow landlordsRoomWindow;
 	private volatile int seconds;
@@ -27,7 +27,6 @@ public class RobCountDownThread implements Runnable {
 	public void run() {
 		while(!this.isStop){
 			setTimeLableText();
-			System.out.println("111Robcountdown==secondes = "+seconds);
 			if(seconds == 0){
 				 break;
 			 }
@@ -39,18 +38,14 @@ public class RobCountDownThread implements Runnable {
 	            }
 			 seconds--;
 		}
-		System.out.println("222Robcountdown==secondes = "+seconds);
 		if(seconds <= 0) {//如果牌友一直不点 按钮 ，就直接当农民
-			System.out.println("RobCountDownThread  seconds == =====================0");
 			landlordsRoomWindow.sendRobMsg("1");
-			//if(landlordsRoomWindow.isa)
 		}
 		if(seconds > 0 ) {
 			landlordsRoomWindow.sendRobMsg("2");
 		}
 	}
 	public void stop(int sec){
-		System.out.println("RobCountDownThread  stop() stop()stop()stop()stop()");
 		this.isStop = true;
 		this.seconds = sec;
 	}

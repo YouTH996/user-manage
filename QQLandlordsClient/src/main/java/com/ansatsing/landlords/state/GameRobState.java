@@ -36,10 +36,11 @@ public class GameRobState extends GameState {
 	}
 	@Override
 	public void handleWindow() {
-		RobCountDownThread dealCardsThread = new RobCountDownThread(landlordsRoomWindow,10);
+		RobCountDownThread dealCardsThread = new RobCountDownThread(landlordsRoomWindow,15);
 		landlordsRoomWindow.setRobDownThread(dealCardsThread);
-		Thread thread = new Thread(dealCardsThread);
-		thread.start();
+		dealCardsThread.run();
+		/*Thread thread = new Thread(dealCardsThread);
+		thread.start()*/;
 	}
 
 }

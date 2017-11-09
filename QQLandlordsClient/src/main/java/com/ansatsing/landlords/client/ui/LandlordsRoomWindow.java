@@ -429,6 +429,7 @@ public class LandlordsRoomWindow extends JFrame {
 		out.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				/***************************************下面是游戏规则过滤代码**************************************/
 				System.out.println("点击出牌时，当前要出的牌是："+Joiner.on(",").join(playCards));
 				 currentOutCard = LandlordsUtil.generateOutCard(playCards);
 				if(playerRole.getText().equals("地主") && cardList.size() == 20){//判断一轮游戏是否是第一次出牌
@@ -457,6 +458,7 @@ public class LandlordsRoomWindow extends JFrame {
 						}
 					}
 				}
+				/****************************************上面是游戏规则过滤代码*************************************/
 				isOutCard = true;
 				playCountDown.stop(5);
 			}
@@ -905,10 +907,6 @@ public class LandlordsRoomWindow extends JFrame {
 					rightPlayerRole.setText(role.equals("1")?"农民":"地主");
 					rightPlayerRole.setVisible(true);
 				}
-				/*if(isAllFarmer()){
-					restartGameReady();
-					return ;
-				}*/
 				startRob(seat_num);
 		}
 		public void setOtherPlayerRole(String msg){
@@ -1176,10 +1174,12 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 			////////////////////////////////////////////////////
 			boolean isLandord = playerRole.equals("地主")?true:false;
-			PlayCardProt playCardProt = new PlayCardProt(isLandord,seat_num,msg,socket);
+			PlayCardProt playCardProt = new PlayCardProt(isLandord,seat_num,msg,socket,this.seatNum);
 			playCardProt.sendMsg();
 			//messageHandler.sendPlayCardMsg(msg+"="+seat_num);
 			///////////////////////////////////////////////////
+			lastOutCard = null;//这步很重要，每次出了牌就要把保存上家出的牌的变量清空！不清空的话会出现bug:牌出第一轮大家都要，
+								//但到了第二轮2家都要不起，那轮到你自己出牌的时候就会出现提示：必须出比上家大的牌！那不是搞笑吗？？
 
 			out.setVisible(false);
 			donot.setVisible(false);
@@ -1198,27 +1198,33 @@ public class LandlordsRoomWindow extends JFrame {
 				playResult.setText("您赢了！");
 				startGameReadyThread(true);
 			}
+			recoverLocation();//牌位置复原
 		}
 		//显示上一个人出的牌 以及启动自己出牌线程
 		public void showCardAndPlayCard(String showCard,int seat_num,boolean isLandlord,int currentSeatNum) {
-			//String str[] = msg.split("=");
-			//String showCard = str[0];
-			//int seat_num = Integer.parseInt(str[1]);
 			if(!showCard.equals("-1")){//上家出牌与不出牌
 				playCards.clear();
 				playCards = new ArrayList<String>(Splitter.on(",").splitToList(showCard));
 				//1从他自己的界面移除上家出了的牌
-				if(isLeftPlayer(seat_num -1)){
+				System.out.println("1leftHaveCardNum="+leftHaveCardNum);
+				System.out.println("1rightHaveCardNum="+rightHaveCardNum);
+				System.out.println("playCards.size()="+playCards.size());
+				System.out.println("currentSeatNum="+playCards.size());
+				if(isLeftPlayer(currentSeatNum)){
+					System.out.println("左边消牌");
 					for(int i= leftHaveCardNum -1;i>=leftHaveCardNum-playCards.size();i--){
 						leftCards[i].setIcon(null);
 					}
 					leftHaveCardNum -=playCards.size();
 				}else{
+					System.out.println("右边消牌");
 					for(int i= rightHaveCardNum -1;i>=rightHaveCardNum-playCards.size();i--){
-						leftCards[i].setIcon(null);
+						rightCards[i].setIcon(null);
 					}
 					rightHaveCardNum -=playCards.size();
 				}
+				System.out.println("2leftHaveCardNum="+leftHaveCardNum);
+				System.out.println("2rightHaveCardNum="+rightHaveCardNum);
 				//2清理中间面板之前的显示
 				for(int i=0;i<centerCards.length;i++){
 					centerCards[i].setIcon(null);
@@ -1341,5 +1347,16 @@ public class LandlordsRoomWindow extends JFrame {
 		time.setVisible(true);
 		leftTime.setVisible(true);
 		rightTime.setVisible(true);
+	}
+	//上移的牌位置复原，尤其是不要的时候，或者超时不出的时候，牌都必须复原位置，而且playCards变量必须清空，否则会出现bug
+	private void recoverLocation(){
+		if(cardsIdx.size() > 0){
+			for(String idx: cardsIdx){
+				int i = Integer.parseInt(idx);
+				cards[i].setBounds(385+(18)*i, 50, 105, 150);
+			}
+			cardsIdx.clear();
+			playCards.clear();
+		}
 	}
 }
