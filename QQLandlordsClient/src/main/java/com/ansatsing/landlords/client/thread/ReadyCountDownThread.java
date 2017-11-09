@@ -20,16 +20,14 @@ public class ReadyCountDownThread implements Runnable {
 	private volatile boolean leftStop = false;
 	private volatile boolean isAllSitted = true;
 	public ReadyCountDownThread(LandlordsRoomWindow landlordsRoomWindow,int seconds){
-		//System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<ReadyCountDownThread()>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		this.landlordsRoomWindow = landlordsRoomWindow;
 		this.leftStop = landlordsRoomWindow.leftIsReady();
 		this.rightStop = landlordsRoomWindow.rightIsReady();
 		this.isStop = landlordsRoomWindow.isReady();
 		this.seconds = seconds;
-		//System.out.println("111+++++++leftStop=="+leftStop+"         rightStop==="+rightStop+"    istop==="+isStop);
+
 	}
 	public void run() {
-		//System.out.println("222+++++++leftStop=="+leftStop+"         rightStop==="+rightStop+"    istop==="+isStop);
 		while((!isStop || !rightStop || !leftStop) && isAllSitted){//3人有一人未准备 同时 3个位置都有人
 			setTimeLableText();
 			 try {
@@ -42,14 +40,6 @@ public class ReadyCountDownThread implements Runnable {
 				 break;
 			 }
 		}
-		/*if(seconds > 0 && landlordsRoomWindow.isReady() && landlordsRoomWindow.leftIsReady()&&landlordsRoomWindow.rightIsReady()){//说明3人都准备好了，那就向服务器发送请求发牌的信号
-			landlordsRoomWindow.sendDealMsg();
-		}else if(seconds == 0) {
-			if(!isStop) {
-				System.out.println("ReadyCountDownThreadReadyCountDownThrea    closeRoom");
-				landlordsRoomWindow.closeRoom();
-			}
-		}*/
 		 if(seconds == 0) {
 				if(!isStop) {
 					landlordsRoomWindow.closeRoom();
@@ -57,7 +47,6 @@ public class ReadyCountDownThread implements Runnable {
 			}
 	}
 	public void stop(){
-		//System.out.println("ReadyCountDownThreadReadyCountDownThrea    stop()");
 		isStop = true;
 	}
 	public void stopRight(){
@@ -75,11 +64,9 @@ public class ReadyCountDownThread implements Runnable {
 			landlordsRoomWindow.setTime(String.valueOf(seconds));
 		}
 		if(!rightStop){
-			//System.out.println("RightTimeRightTimeRightTime="+seconds);
 			landlordsRoomWindow.setRightTime(String.valueOf(seconds));
 		}
 		if(!leftStop){
-			//System.out.println("LeftTimeLeftTimeLeftTime="+seconds);
 			landlordsRoomWindow.setLeftTime(String.valueOf(seconds));
 		}
 		
