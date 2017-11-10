@@ -14,7 +14,7 @@ import com.google.common.base.Splitter;
  * @author ansatsing
  * @time 2017年10月25日 下午9:18:06
  */
-public class DealCardsThread implements Runnable {
+public class DealCardsThread /*implements Runnable */{
 	private LandlordsRoomWindow landlordsRoomWindow;
 	public DealCardsThread(LandlordsRoomWindow landlordsRoomWindow) {
 		this.landlordsRoomWindow = landlordsRoomWindow;

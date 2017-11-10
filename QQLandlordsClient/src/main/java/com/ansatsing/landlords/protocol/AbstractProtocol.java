@@ -6,6 +6,7 @@ import com.ansatsing.landlords.client.ui.LoginWidow;
 
 import java.beans.Transient;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -59,7 +60,8 @@ public abstract class AbstractProtocol {
         System.out.println("客户端向服务器发送信息："+msg);
         PrintWriter printWriter= null;
         try {
-            printWriter =  new PrintWriter(socket.getOutputStream(), true);
+           // printWriter =  new PrintWriter(socket.getOutputStream(), true);//解决中文乱码问题
+            printWriter =  new PrintWriter( new OutputStreamWriter(socket.getOutputStream(), "UTF-8"),true );
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

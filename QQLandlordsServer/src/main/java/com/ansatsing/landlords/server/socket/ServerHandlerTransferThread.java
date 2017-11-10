@@ -51,7 +51,7 @@ public class ServerHandlerTransferThread implements Runnable {
 		PrintWriter printWriter = null;
 		Message message = null;
 		try {
-			bufferedReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+			bufferedReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream(),"UTF-8"));
 			String readMsg = "";
 			while (true) {
 				readMsg = bufferedReader.readLine();

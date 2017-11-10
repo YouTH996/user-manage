@@ -1,5 +1,6 @@
 package com.ansatsing.landlords.server;
 
+import com.ansatsing.landlords.server.netty.NettyServer;
 import com.ansatsing.landlords.server.socket.SocketServer;
 
 /**
@@ -12,6 +13,7 @@ public class QQServerApp {
 	public static void main(String[] args) {
 		int port = 6789;
 		IServer server = new SocketServer();
+		//IServer server = new NettyServer();
 		server.startServer(port);
 	}
 

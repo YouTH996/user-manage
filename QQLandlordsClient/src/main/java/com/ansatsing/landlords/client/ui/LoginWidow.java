@@ -283,6 +283,7 @@ public class LoginWidow extends JDialog {
 	//启动信息接收线程
 	private void startReceiveThread(){
 		String host = "39.108.166.35";
+		//String host = "localhost";
 		int port = 6789;
 		Socket socket = null;
 		try {

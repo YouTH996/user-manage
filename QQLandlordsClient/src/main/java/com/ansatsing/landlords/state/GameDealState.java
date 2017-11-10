@@ -38,8 +38,9 @@ public class GameDealState extends GameState {
 	@Override
 	public void handleWindow() {
 		DealCardsThread dealCardsThread = new DealCardsThread(landlordsRoomWindow);
-		Thread thread = new Thread(dealCardsThread);
-		thread.start();
+		dealCardsThread.run();
+		/*Thread thread = new Thread(dealCardsThread);
+		thread.start();*/
 	}
 
 }

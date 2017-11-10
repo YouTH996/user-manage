@@ -58,7 +58,7 @@ public class ClientReceiveThread implements Runnable {
 		BufferedReader bufferedReader;
 		String readMsg = "";
 		try {
-			bufferedReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+			bufferedReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream(),"UTF-8"));
 			while(!isStop) {
 				readMsg = bufferedReader.readLine();
 				if(readMsg != null){

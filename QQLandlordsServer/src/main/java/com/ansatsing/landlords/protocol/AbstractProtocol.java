@@ -7,6 +7,7 @@ import com.ansatsing.landlords.util.LandlordsUtil;
 import io.netty.buffer.ByteBufAllocator;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Map;
@@ -60,7 +61,7 @@ public abstract class AbstractProtocol {
         if(_player.getSocket() != null) {
             PrintWriter printWriter;
             try {
-                printWriter = new PrintWriter(_player.getSocket().getOutputStream(), true);
+                printWriter =  new PrintWriter( new OutputStreamWriter(_player.getSocket().getOutputStream(), "UTF-8"),true );
                 printWriter.println(sendMsg);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
