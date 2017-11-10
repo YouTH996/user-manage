@@ -391,6 +391,7 @@ public class LandlordsRoomWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				recoverLocationWhenGameOver();//这步没有打完一论游戏时，牌显示界面就会出问题
 				/////////////////////////////////
 				GameReadyProt gameReadyProt = new GameReadyProt(1,seatNum,socket);
 				gameReadyProt.sendMsg();
@@ -568,6 +569,7 @@ public class LandlordsRoomWindow extends JFrame {
 	public void startGameReadyThread(boolean restart){
 		if(restart) {
 			//界面恢复到准备状态的界面，主要是针对 都不当地主进入下一轮的情况
+
 			playerRole.setText("角色");
 			leftPlayerRole.setText("角色");
 			rightPlayerRole.setText("角色");
@@ -1181,7 +1183,6 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 			//牌全部出完，您就赢了并且结束本轮游戏，发起本轮游戏结束信号给服务器端
 			if(cardList.size() == 0){
-				playResult.setText("您赢了！");
 				seat_num = -1;//作为告诉其他牌友本来游戏结束的信号
 			}
 			////////////////////////////////////////////////////
@@ -1374,5 +1375,15 @@ public class LandlordsRoomWindow extends JFrame {
 			cardsIdx.clear();
 			playCards.clear();
 		}
+	}
+	//当一轮游戏结束时，恢复cards里所有JLabel的位置到当初时位置，以及大小也要恢复
+	private void recoverLocationWhenGameOver(){
+		for(int i = 0;i<20;i++){
+			cards[i].setIcon(null);
+			cards[i].setBounds(385+(18)*i, 50, 105, 150);
+			leftCards[i].setIcon(null);
+			rightCards[i].setIcon(null);
+		}
+
 	}
 }
