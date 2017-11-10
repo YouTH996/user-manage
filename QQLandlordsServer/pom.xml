@@ -7,11 +7,39 @@
   </parent>
   <artifactId>QQLandlordsServer</artifactId>
   <name>QQ斗地主服务端</name>
-  	<dependencies>
-  		<dependency>
-  			<groupId>com.ansatsing</groupId>
-  			<artifactId>QQLandlords-common</artifactId>
-  			<version>0.0.1-SNAPSHOT</version>
-  		</dependency>
-  	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>com.ansatsing</groupId>
+            <artifactId>QQLandlords-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <!-- 此处指定main方法入口的class -->
+                            <mainClass>com.ansatsing.landlords.server.QQServerApp</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assembly</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

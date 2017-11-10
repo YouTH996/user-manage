@@ -9,15 +9,13 @@ import java.awt.Point;
 import java.awt.PopupMenu;
 //import java.awt.SystemTray;
 //import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -56,15 +54,15 @@ public class LoginWidow extends JDialog {
 	private SendMessageHandler messageHandler;
 	private ClientReceiveThread qqClientHandler;
 
-	public LoginWidow(Socket socket,ClientReceiveThread qqClientHandler) {
+	public LoginWidow(/*Socket socket,ClientReceiveThread qqClientHandler*/) {
 		initGUI();
 		//initTrayIcon();
 		initListener();
 		setLocationRelativeTo(null);
 		setVisible(true);
-		this.socket = socket;
+		//this.socket = socket;
 		this.messageHandler = new SendMessageHandler(socket);
-		this.qqClientHandler = qqClientHandler;
+		//this.qqClientHandler = qqClientHandler;
 	}
 
 	// 窗口初始化
@@ -175,6 +173,12 @@ public class LoginWidow extends JDialog {
 	}*/
 	//窗口监听事件
 	private void initListener() {
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				exit();
+			}
+		});
 		//窗体被鼠标按下事件
 		this.addMouseListener(new MouseAdapter() {
 
@@ -223,6 +227,9 @@ public class LoginWidow extends JDialog {
 					errorTip.setText("网名不能为空!");
 					return ;
 				}else {
+					if(qqClientHandler == null){
+						startReceiveThread();
+					}
 					GameRegisterProt registerProt = new GameRegisterProt(userNameField.getText().trim(),socket);
 					registerProt.sendMsg();
 					/////////////////////////下面信息没有无限扩展的老代码////////////////////////////
@@ -272,5 +279,25 @@ public class LoginWidow extends JDialog {
 				qqClientHandler.stop();
 		}
 		System.exit(0);
+	}
+	//启动信息接收线程
+	private void startReceiveThread(){
+		String host = "39.108.166.35";
+		int port = 6789;
+		Socket socket = null;
+		try {
+			socket = new Socket(host, port);
+			qqClientHandler = new ClientReceiveThread(socket);
+			qqClientHandler.setLoginWidow(this);
+			this.socket = socket;
+			Thread thread = new Thread(qqClientHandler);
+			thread.start();
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 	}
 }

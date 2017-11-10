@@ -25,6 +25,15 @@ public class ExitSeatProt extends AbstractProtocol implements Serializable {
     public void setSeatNum(int seatNum) {
         this.seatNum = seatNum;
     }
+
+    public ExitSeatProt(int seatNum, String userName) {
+        this.seatNum = seatNum;
+        this.userName = userName;
+    }
+
+    public ExitSeatProt() {
+    }
+
     @Override
     public void handleProt() {
         if(playerMap.containsKey(seatNum)){

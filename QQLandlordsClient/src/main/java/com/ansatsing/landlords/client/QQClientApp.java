@@ -10,7 +10,7 @@ import com.ansatsing.landlords.client.ui.LoginWidow;
 public class QQClientApp {
 
 	public static void main(String[] args) {
-		String host = "127.0.0.1";
+		/*String host = "39.108.166.35";
 		int port = 6789;
 		Socket socket = null;
 		try {
@@ -26,7 +26,8 @@ public class QQClientApp {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		LoginWidow loginWidow = new LoginWidow();
 	}
 
 }

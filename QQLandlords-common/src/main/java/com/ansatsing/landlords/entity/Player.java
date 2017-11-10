@@ -6,7 +6,7 @@ import io.netty.channel.Channel;
 
 public class Player {
 	private String userName;
-	private int seatNum;//座位号
+	private int seatNum = -1;//座位号
 	private Socket socket;
 	private Channel channel;
 	private int readFlag = 0;//0没有准备好    1准备好了

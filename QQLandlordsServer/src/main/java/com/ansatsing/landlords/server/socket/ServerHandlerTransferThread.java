@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Iterator;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
+import com.ansatsing.landlords.protocol.ExitSeatProt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ public class ServerHandlerTransferThread implements Runnable {
 	private Map<String, Player> userName2Player;
 	private Map<Integer, Player> playerMap;//一个座位对应一个玩家
 	private Map<Integer, Table> tableMap;//一桌对应一个table实体类对象
+	private AbstractProtocol protocol;
 	public ServerHandlerTransferThread( Socket socket,Map<Integer, Player> playerMap,Map<Integer, Table> tableMap,Map<String, Player> _userName2Player) {
 		this.socket = socket;
 		this.player = new Player();
@@ -65,7 +68,7 @@ public class ServerHandlerTransferThread implements Runnable {
 						e.printStackTrace();
 					}
 					if(class1 != null){
-						AbstractProtocol protocol = (AbstractProtocol) JSON.parseObject(classContent,class1);
+						protocol = (AbstractProtocol) JSON.parseObject(classContent,class1);
 						protocol.setPlayer(player);
 						protocol.setPlayerMap(playerMap);
 						protocol.setTableMap(tableMap);
@@ -80,7 +83,21 @@ public class ServerHandlerTransferThread implements Runnable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}  finally {
+		} finally {
+			if(player!=null){
+				System.out.println("player.getSeatNum():"+player.getSeatNum());
+				if(player.getSeatNum() > -1){
+					protocol = new ExitSeatProt(player.getSeatNum(),player.getUserName());
+					protocol.setPlayer(player);
+					protocol.setPlayerMap(playerMap);
+					protocol.setTableMap(tableMap);
+					protocol.setUserName2Player(userName2Player);
+					protocol.handleProt();
+				}
+				if(player.getUserName() != null){
+					userName2Player.remove(player.getUserName());
+				}
+			}
 			if(bufferedReader != null) {
 				try {
 					bufferedReader.close();
