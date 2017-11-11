@@ -26,8 +26,9 @@ public class DealCardsThread /*implements Runnable */{
 		List<String> card = Splitter.on(",").splitToList(landlordsRoomWindow.getServerCards());
 		for(int i=0;i<card.size();i++){
 			try {
-				landlordsRoomWindow.dealCard(card.get(i),i);
 				TimeUnit.MILLISECONDS.sleep(150);
+				landlordsRoomWindow.dealCard(card.get(i),i);
+
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

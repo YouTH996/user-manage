@@ -591,6 +591,7 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 	}
 	public void startGameReadyThread(boolean restart){
+        cardList.clear();//每次游戏结束清理变量
 		if(restart) {
 			//界面恢复到准备状态的界面，主要是针对 都不当地主进入下一轮的情况
 
@@ -1227,6 +1228,7 @@ public class LandlordsRoomWindow extends JFrame {
 		playCards.clear();
 		cardsIdx.clear();
 		if(cardList.size() == 0){
+            cardList.clear();//每次游戏结束清理变量
 			///////////////////////////////////////////////////
 			GameOverProt gameOverProt = new GameOverProt(socket);
 			gameOverProt.sendMsg();
@@ -1317,6 +1319,7 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 			playResult.setVisible(true);
 			hideRole();
+            cardList.clear();//每次游戏结束清理变量
 			startGameReadyThread(true);
 		}
 	}
@@ -1356,6 +1359,7 @@ public class LandlordsRoomWindow extends JFrame {
 		//playCards.clear();
 		//游戏结束,发送信号
 		if(seat_num == -1){
+            cardList.clear();
 			messageHandler.sendGameDealMsg(userName+"="+seatNum);
 			hideRole();
 			startGameReadyThread(true);
