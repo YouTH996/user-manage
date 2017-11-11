@@ -56,6 +56,7 @@ public class LoginWidow extends JDialog {
 
 	public LoginWidow(/*Socket socket,ClientReceiveThread qqClientHandler*/) {
 		initGUI();
+		//pack();
 		//initTrayIcon();
 		initListener();
 		setLocationRelativeTo(null);
@@ -63,6 +64,7 @@ public class LoginWidow extends JDialog {
 		//this.socket = socket;
 		this.messageHandler = new SendMessageHandler(socket);
 		//this.qqClientHandler = qqClientHandler;
+
 	}
 
 	// 窗口初始化

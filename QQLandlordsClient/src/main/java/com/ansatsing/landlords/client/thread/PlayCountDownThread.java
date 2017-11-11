@@ -39,7 +39,7 @@ public class PlayCountDownThread/* implements Runnable*/ {
 	            }
 			 seconds--;
 		}
-		if(seconds <= 0) {//如果牌友一直不点 按钮 ，就直接当农民
+		if(seconds <= 0) {
 			landlordsRoomWindow.sendPlayCardMsg(true);
 		}
 		if(seconds > 0 ) {

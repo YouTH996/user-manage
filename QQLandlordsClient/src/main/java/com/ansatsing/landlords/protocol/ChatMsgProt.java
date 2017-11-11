@@ -13,6 +13,13 @@ public class ChatMsgProt  extends AbstractProtocol implements Serializable {
     private String userName;
     private String msg;
     private int seatNum;
+    public ChatMsgProt(int chatFlag, String userName, String msg,int seatNum, Socket socket) {
+        this.chatFlag = chatFlag;
+        this.userName = userName;
+        this.msg = msg;
+        super.socket = socket;
+        this.seatNum = seatNum;
+    }
     public ChatMsgProt(int chatFlag, String userName, String msg, Socket socket) {
         this.chatFlag = chatFlag;
         this.userName = userName;

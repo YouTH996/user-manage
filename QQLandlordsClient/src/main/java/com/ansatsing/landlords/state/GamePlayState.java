@@ -3,6 +3,7 @@ package com.ansatsing.landlords.state;
 import com.ansatsing.landlords.client.thread.PlayCountDownThread;
 import com.ansatsing.landlords.client.thread.RobCountDownThread;
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
+import com.ansatsing.landlords.util.Constants;
 
 /**
  * 游戏出牌状态：
@@ -38,7 +39,7 @@ public class GamePlayState extends GameState {
 
 	@Override
 	public void handleWindow() {
-		PlayCountDownThread dealCardsThread = new PlayCountDownThread(landlordsRoomWindow,25);
+		PlayCountDownThread dealCardsThread = new PlayCountDownThread(landlordsRoomWindow, Constants.PLAY_CARD_TIMEOUT);
 		landlordsRoomWindow.setPlayCountDownThread(dealCardsThread);
 		dealCardsThread.run();
 		/*Thread thread = new Thread(dealCardsThread);
