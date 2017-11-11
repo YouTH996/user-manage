@@ -1212,7 +1212,7 @@ public class LandlordsRoomWindow extends JFrame {
 			seat_num = -1;//作为告诉其他牌友本来游戏结束的信号
 		}
 		////////////////////////////////////////////////////
-		boolean isLandord = playerRole.equals("地主")?true:false;
+		boolean isLandord = playerRole.getText().equals("地主")?true:false;
 		PlayCardProt playCardProt = new PlayCardProt(isLandord,seat_num,msg,socket,this.seatNum);
 		playCardProt.sendMsg();
 		//messageHandler.sendPlayCardMsg(msg+"="+seat_num);
