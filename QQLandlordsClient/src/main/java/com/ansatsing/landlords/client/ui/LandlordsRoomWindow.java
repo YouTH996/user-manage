@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.ansatsing.landlords.client.thread.PlayCountDownThread;
 import com.ansatsing.landlords.entity.OutCard;
 import com.ansatsing.landlords.protocol.*;
 import com.ansatsing.landlords.util.Constants;
@@ -25,9 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
-import com.ansatsing.landlords.client.thread.PlayCountDownThread;
+import com.ansatsing.landlords.client.thread.PlayCountDown;
 import com.ansatsing.landlords.client.thread.ReadyCountDownThread;
-import com.ansatsing.landlords.client.thread.RobCountDownThread;
+import com.ansatsing.landlords.client.thread.RobCountDown;
 import com.ansatsing.landlords.entity.Card;
 import com.ansatsing.landlords.state.GameDealState;
 import com.ansatsing.landlords.state.GamePlayState;
@@ -73,7 +74,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel out;
 	private JLabel ready;
 	private ReadyCountDownThread countDownThread;
-	private RobCountDownThread robDownThread;
+	private RobCountDown robDownThread;
 	private JLabel rightTime;
 	private JLabel leftTime;
 	private JLabel leftReady;
@@ -84,7 +85,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel playerRole;//农民还是地主--->自己
 	private JLabel leftPlayerRole;//农民还是地主---》自己的左边牌友
 	private JLabel rightPlayerRole;//农民还是地主--->自己的右边牌友
-	private PlayCountDownThread playCountDown;
+	private PlayCountDown playCountDown;
 
 	private JPanel southPanel;
 	private JPanel actionPanel;
@@ -115,7 +116,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private double widthFactor = (double) 350/1500;//由于之前是通过宽度1500高度800这样设计窗体导致分辨率低的电脑一些东西无法显示
 	private int cardsX ;//自己牌的第一张拍的x坐标
 	private int cardsY;
-	private volatile  boolean  playTimeoutStopable = false;//停止其他人打牌倒计时！
+	private PlayCountDownThread playCountDownThread;
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -1050,7 +1051,7 @@ public class LandlordsRoomWindow extends JFrame {
 			return false;
 		}
 	}
-	public void setRobDownThread(RobCountDownThread robDownThread) {
+	public void setRobDownThread(RobCountDown robDownThread) {
 		this.robDownThread = robDownThread;
 	}
 	//启动发牌线程
@@ -1100,7 +1101,6 @@ public class LandlordsRoomWindow extends JFrame {
 			gameState = new GamePlayState(this);
 			gameState.handleWindow();
 		}else {//非地主界面 要把3张底牌加到地主位置
-
 			if(isLeftPlayer(seat_num)) {
 				leftCards[17].setIcon(PictureUtil.getPicture("cards/back.png"));
 				leftCards[18].setIcon(PictureUtil.getPicture("cards/back.png"));
@@ -1122,10 +1122,10 @@ public class LandlordsRoomWindow extends JFrame {
 				}
 			}
 			System.out.println("抢完地主playTimeOutShow(seat_num);"+seat_num);
-			playTimeOutShow(seat_num);
+			startPlayCountDownTHread(seat_num);
 		}
 	}
-	public void setPlayCountDownThread(PlayCountDownThread dealCardsThread) {
+	public void setPlayCountDownThread(PlayCountDown dealCardsThread) {
 		this.playCountDown = dealCardsThread;
 	}
 	public void sendPlayCardMsg(boolean timeoutFLag) {
@@ -1241,13 +1241,13 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 		recoverLocation();//牌位置复原
 		if(seat_num != -1){
-			System.out.println("出排放playTimeOutShow(seat_num);"+seat_num);
-			playTimeOutShow(seat_num);
+			System.out.println("出牌完playTimeOutShow(seat_num);"+seat_num);
+			startPlayCountDownTHread(seat_num);
 		}
 	}
 	//显示上一个人出的牌 以及启动自己出牌线程
 	public void showCardAndPlayCard(String showCard,int seat_num,boolean isLandlord,int currentSeatNum) {
-		this.playTimeoutStopable = true;//停止别人打牌倒计时
+		stopPlayCountDownThread();
 		if(!showCard.equals("-1")){//上家出牌与不出牌
 			playCards.clear();
 			playCards = new ArrayList<String>(Splitter.on(",").splitToList(showCard));
@@ -1294,10 +1294,9 @@ public class LandlordsRoomWindow extends JFrame {
 			out.setVisible(true);
 			gameState = new GamePlayState(this);
 			gameState.handleWindow();
-		}else if(seat_num != -1){//出牌那家给他启动倒计时
-			//this.playTimeoutStopable = false;//如果还是别人出牌 就要设置信号为false
-			System.out.println("显示playTimeOutShow(seat_num);"+seat_num);
-			playTimeOutShow(seat_num);
+		}if(seat_num != -1){
+			System.out.println("显示完拍playTimeOutShow(seat_num);"+seat_num);
+			startPlayCountDownTHread(seat_num);
 		}
 
 		//游戏结束,发送信号
@@ -1426,46 +1425,27 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 
 	}
-	//当别人出牌时自己界面出牌那位置出现倒计时 功能
-	private void playTimeOutShow(int seat_num) {
-		int playTimeOut = Constants.PLAY_CARD_TIMEOUT;
-		this.playTimeoutStopable = false;//如果还是别人出牌 就要设置信号为false
-		if(isLeftPlayer(seat_num)){
-			//System.out.println("left:playTimeOut"+playTimeOut);
-			//leftTime.setVisible(true);
-			while (!playTimeoutStopable){
-				//System.out.println("left:playTimeOut"+playTimeOut);
-				leftTime.setText(String.valueOf(playTimeOut));
-				if(playTimeOut == 0){
-					break;
-				}
-				try {
-					TimeUnit.SECONDS.sleep(1);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				playTimeOut--;
-			}
-			leftTime.setText("倒计时");
-			//leftTime.setVisible(false);*/
+	public void setRightOrLeftTime(int seconds,boolean isLeftPlayer) {
+		if(isLeftPlayer){
+			leftTime.setText(String.valueOf(seconds));
 		}else{
-			//System.out.println("right:playTimeOut"+playTimeOut);
-			//rightTime.setVisible(true);
-			while (!playTimeoutStopable){
-				//System.out.println("right:playTimeOut"+playTimeOut);
-				rightTime.setText(String.valueOf(playTimeOut));
-				if(playTimeOut == 0){
-					break;
-				}
-				try {
-					TimeUnit.SECONDS.sleep(1);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				playTimeOut--;
-			}
-			rightTime.setText("倒计时");
-			//rightTime.setVisible(false);
+			rightTime.setText(String.valueOf(seconds));
 		}
+	}
+	public void stopPlayCountDownThread(){
+		if(playCountDownThread !=null){
+			if(playCountDownThread.isLeftPlayer()){
+				leftTime.setText("倒计时");
+			}else{
+				rightTime.setText("倒计时");
+			}
+			playCountDownThread.stop();
+			playCountDownThread = null;
+		}
+	}
+	private void startPlayCountDownTHread(int seat_num){
+			playCountDownThread = new PlayCountDownThread(this,Constants.PLAY_CARD_TIMEOUT,isLeftPlayer(seat_num));
+			Thread thread = new Thread(playCountDownThread);
+			thread.start();
 	}
 }
