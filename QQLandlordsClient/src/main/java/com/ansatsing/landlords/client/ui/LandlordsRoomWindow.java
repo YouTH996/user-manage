@@ -117,6 +117,7 @@ public class LandlordsRoomWindow extends JFrame {
 	private int cardsX ;//自己牌的第一张拍的x坐标
 	private int cardsY;
 	private PlayCountDownThread playCountDownThread;
+	//private List<String> otherPlayCards = new ArrayList<>();//
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
@@ -418,6 +419,10 @@ public class LandlordsRoomWindow extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				recoverLocationWhenGameOver();//这步没有打完一论游戏时，牌显示界面就会出问题
+				//2清理中间面板之前的显示
+				for(int i=0;i<centerCards.length;i++){
+					centerCards[i].setIcon(null);
+				}
 				/////////////////////////////////
 				GameReadyProt gameReadyProt = new GameReadyProt(1,seatNum,socket);
 				gameReadyProt.sendMsg();
@@ -1202,7 +1207,7 @@ public class LandlordsRoomWindow extends JFrame {
 					}
 				}
 				//3中间面板显示自己出的牌
-				showCenterCards();
+				showCenterCards(playCards);
 			}else{
 				msg = "-1";//代表不出牌
 			}
@@ -1250,8 +1255,7 @@ public class LandlordsRoomWindow extends JFrame {
 		LOGGER.info("showCard:"+showCard+" seat_num:"+seat_num+"  currentSeatNum:"+currentSeatNum);
 		stopPlayCountDownThread();
 		if(!showCard.equals("-1")){//上家出牌与不出牌
-			playCards.clear();
-			playCards = new ArrayList<String>(Splitter.on(",").splitToList(showCard));
+			List<String> _playCards = new ArrayList<String>(Splitter.on(",").splitToList(showCard));
 			//1从他自己的界面移除上家出了的牌
 			//System.out.println("1leftHaveCardNum="+leftHaveCardNum);
 			//System.out.println("1rightHaveCardNum="+rightHaveCardNum);
@@ -1259,16 +1263,16 @@ public class LandlordsRoomWindow extends JFrame {
 			//System.out.println("currentSeatNum="+playCards.size());
 			if(isLeftPlayer(currentSeatNum)){
 				//System.out.println("左边消牌");
-				for(int i= leftHaveCardNum -1;i>=leftHaveCardNum-playCards.size();i--){
+				for(int i= leftHaveCardNum -1;i>=leftHaveCardNum-_playCards.size();i--){
 					leftCards[i].setIcon(null);
 				}
-				leftHaveCardNum -=playCards.size();
+				leftHaveCardNum -=_playCards.size();
 			}else{
 				//System.out.println("右边消牌");
-				for(int i= rightHaveCardNum -1;i>=rightHaveCardNum-playCards.size();i--){
+				for(int i= rightHaveCardNum -1;i>=rightHaveCardNum-_playCards.size();i--){
 					rightCards[i].setIcon(null);
 				}
-				rightHaveCardNum -=playCards.size();
+				rightHaveCardNum -=_playCards.size();
 			}
 			//System.out.println("2leftHaveCardNum="+leftHaveCardNum);
 			//System.out.println("2rightHaveCardNum="+rightHaveCardNum);
@@ -1277,11 +1281,10 @@ public class LandlordsRoomWindow extends JFrame {
 				centerCards[i].setIcon(null);
 			}
 			//3在中间面板显示上家出的牌
-			lastOutCard = LandlordsUtil.generateOutCard(playCards);
+			lastOutCard = LandlordsUtil.generateOutCard(_playCards);
 			lastOutCard.setSeatNum(currentSeatNum);
-			showCenterCards();
+			showCenterCards(_playCards);
 		}
-		playCards.clear();
 		//3启动本家出牌线程
 
 		if(seat_num == seatNum){
@@ -1325,15 +1328,15 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 	}
 	//显示中间的牌
-	private void showCenterCards(){
+	private void showCenterCards(List<String> play_cards){
 		//2清理中间面板之前的显示
 		for(int i=0;i<centerCards.length;i++){
 			centerCards[i].setIcon(null);
 		}
-		List<String> showList = Splitter.on(",").splitToList(LandlordsUtil.generateOutCard(playCards).getCards());
+		List<String> showList = Splitter.on(",").splitToList(LandlordsUtil.generateOutCard(play_cards).getCards());
 		int startIdx=(12-playCards.size())/2;//为了显示的尽量在中间
 		for(int i=startIdx;i<12;i++) {
-			if(i<startIdx+playCards.size())
+			if(i<startIdx+play_cards.size())
 				centerCards[i].setIcon(PictureUtil.getPicture("cards/"+showList.get(i-startIdx)+".jpg"));
 			else
 				break;
