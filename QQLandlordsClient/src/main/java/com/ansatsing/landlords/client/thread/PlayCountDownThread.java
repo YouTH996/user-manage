@@ -19,11 +19,13 @@ public class PlayCountDownThread implements Runnable {
 	private volatile boolean isStop = false;
 	private boolean isLeftPlayer;
 	public PlayCountDownThread(LandlordsRoomWindow landlordsRoomWindow, int seconds,boolean isLeftPlayer){
+		LOGGER.info("PlayCountDownThread构造函数");
 		this.landlordsRoomWindow = landlordsRoomWindow;
 		this.seconds = seconds;
 		this.isLeftPlayer =isLeftPlayer;
 	}
 	public void run() {
+		LOGGER.info("牌友出拍倒计时开始：位置："+isLeftPlayer);
 		while(!this.isStop){
 			setTimeLableText();
 			 try {
@@ -33,6 +35,7 @@ public class PlayCountDownThread implements Runnable {
 	            }
 			 seconds--;
 		}
+		LOGGER.info("牌友出拍倒计时结束：位置："+isLeftPlayer);
 	}
 
 	public boolean isLeftPlayer() {

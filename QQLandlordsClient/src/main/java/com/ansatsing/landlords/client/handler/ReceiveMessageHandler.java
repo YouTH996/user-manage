@@ -71,7 +71,7 @@ public class ReceiveMessageHandler {
 			}else if(msg.startsWith(Constants.START_PLAY_MSG_FLAG)){
 				landlordsRoomWindow.startGamePlayThread(msg.substring(Constants.START_PLAY_MSG_FLAG.length()));
 			}else if(msg.startsWith(Constants.PLAY_CARD_MSG_FLAG)){
-				landlordsRoomWindow.showCardAndPlayCard(msg.substring(Constants.PLAY_CARD_MSG_FLAG.length()));
+				//landlordsRoomWindow.showCardAndPlayCard(msg.substring(Constants.PLAY_CARD_MSG_FLAG.length()));
 			}else{
 				gameLobbyWindow.setHistoryMsg(msg);
 			}

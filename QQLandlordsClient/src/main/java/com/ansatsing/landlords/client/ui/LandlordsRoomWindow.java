@@ -1183,9 +1183,9 @@ public class LandlordsRoomWindow extends JFrame {
 				for(int i=0;i<cardsIdx.size();i++) {
 					int idx = Integer.parseInt(cardsIdx.get(i));
 					JLabel tempLabel = cards[idx];
-					int x = tempLabel.getX();
-					int y = tempLabel.getY()+20;
-					tempLabel.setBounds(x, y, 105, 150);
+					//int x = tempLabel.getX();
+					//int y = tempLabel.getY()+20;
+					tempLabel.setBounds(cardsX+Constants.CARD_PADDING*idx, cardsY, Constants.CARD_WIDTH, Constants.CARD_HEIGHT);
 				}
 				//3从显示牌界面移除已经出的牌
 				for(int i=0;i<cards.length;i++){
@@ -1241,12 +1241,13 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 		recoverLocation();//牌位置复原
 		if(seat_num != -1){
-			System.out.println("出牌完playTimeOutShow(seat_num);"+seat_num);
+			LOGGER.info("出牌完playTimeOutShow(seat_num);"+seat_num);
 			startPlayCountDownTHread(seat_num);
 		}
 	}
 	//显示上一个人出的牌 以及启动自己出牌线程
 	public void showCardAndPlayCard(String showCard,int seat_num,boolean isLandlord,int currentSeatNum) {
+		LOGGER.info("showCard:"+showCard+" seat_num:"+seat_num+"  currentSeatNum:"+currentSeatNum);
 		stopPlayCountDownThread();
 		if(!showCard.equals("-1")){//上家出牌与不出牌
 			playCards.clear();
@@ -1294,8 +1295,9 @@ public class LandlordsRoomWindow extends JFrame {
 			out.setVisible(true);
 			gameState = new GamePlayState(this);
 			gameState.handleWindow();
-		}if(seat_num != -1){
-			System.out.println("显示完拍playTimeOutShow(seat_num);"+seat_num);
+		}
+		if(seat_num != -1 && seat_num != seatNum){
+			LOGGER.info("显示完拍playTimeOutShow(seat_num);"+seat_num);
 			startPlayCountDownTHread(seat_num);
 		}
 
@@ -1319,48 +1321,6 @@ public class LandlordsRoomWindow extends JFrame {
 			playResult.setVisible(true);
 			hideRole();
             cardList.clear();//每次游戏结束清理变量
-			startGameReadyThread(true);
-		}
-	}
-
-	public void showCardAndPlayCard(String msg) {
-		String str[] = msg.split("=");
-		String showCard = str[0];
-		int seat_num = Integer.parseInt(str[1]);
-		if(!showCard.equals("-1")){//上家出牌与不出牌
-			playCards.clear();
-			playCards = new ArrayList<String>(Splitter.on(",").splitToList(showCard));
-			//1从他自己的界面移除上家出了的牌
-			if(isLeftPlayer(seat_num -1)){
-				for(int i= leftHaveCardNum -1;i>=leftHaveCardNum-playCards.size();i--){
-					leftCards[i].setIcon(null);
-				}
-				leftHaveCardNum -=playCards.size();
-			}else{
-				for(int i= rightHaveCardNum -1;i>=rightHaveCardNum-playCards.size();i--){
-					leftCards[i].setIcon(null);
-				}
-				rightHaveCardNum -=playCards.size();
-			}
-
-			//3在中间面板显示上家出的牌
-			showCenterCards();
-		}
-		//3启动本家出牌线程
-		if(seat_num == seatNum){
-			time.setVisible(true);
-			time.setText("倒计时");
-			out.setVisible(true);
-			donot.setVisible(true);
-			gameState = new GamePlayState(this);
-			gameState.handleWindow();
-		}
-		//playCards.clear();
-		//游戏结束,发送信号
-		if(seat_num == -1){
-            cardList.clear();
-			messageHandler.sendGameDealMsg(userName+"="+seatNum);
-			hideRole();
 			startGameReadyThread(true);
 		}
 	}
@@ -1434,16 +1394,22 @@ public class LandlordsRoomWindow extends JFrame {
 	}
 	public void stopPlayCountDownThread(){
 		if(playCountDownThread !=null){
+			playCountDownThread.stop();
+			LOGGER.info("stopPlayCountDownThreadstopPlayCountDownThreadstopPlayCountDownThread");
 			if(playCountDownThread.isLeftPlayer()){
 				leftTime.setText("倒计时");
 			}else{
 				rightTime.setText("倒计时");
 			}
-			playCountDownThread.stop();
+
 			playCountDownThread = null;
 		}
 	}
 	private void startPlayCountDownTHread(int seat_num){
+		LOGGER.info("启动牌友倒计时，位置："+seat_num+"  左边还是右边："+(isLeftPlayer(seat_num)?"left":"right"));
+		if(playCountDownThread != null){
+			playCountDownThread.stop();
+		}
 			playCountDownThread = new PlayCountDownThread(this,Constants.PLAY_CARD_TIMEOUT,isLeftPlayer(seat_num));
 			Thread thread = new Thread(playCountDownThread);
 			thread.start();
