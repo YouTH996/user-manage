@@ -3,6 +3,8 @@ package com.ansatsing.landlords.protocol;
 import com.ansatsing.landlords.client.ui.GameLobbyWindow;
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 import com.ansatsing.landlords.client.ui.LoginWidow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.Transient;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.net.Socket;
  * 协议抽象类
  */
 public abstract class AbstractProtocol {
+    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractProtocol.class);
     protected LandlordsRoomWindow landlordsRoomWindow;
     protected GameLobbyWindow gameLobbyWindow;
     protected LoginWidow loginWidow;
@@ -57,7 +60,7 @@ public abstract class AbstractProtocol {
 
     }
     protected void sendMsg(String msg) {
-        System.out.println("客户端向服务器发送信息："+msg);
+        LOGGER.info("客户端向服务器发送信息："+msg);
         PrintWriter printWriter= null;
         try {
            // printWriter =  new PrintWriter(socket.getOutputStream(), true);//解决中文乱码问题

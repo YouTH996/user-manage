@@ -65,9 +65,9 @@ public class ChatMsgProt  extends AbstractProtocol implements Serializable {
     @Override
     public void handleProt() {
         if(chatFlag == 1){
-            gameLobbyWindow.setHistoryMsg(userName+"说:"+msg);
+            gameLobbyWindow.setHistoryMsg(msg);
         }else  if(chatFlag == 2){
-            landlordsRoomWindow.setHistoryMsg(userName+"说:"+msg);
+            landlordsRoomWindow.setHistoryMsg(msg);
         }
     }
 

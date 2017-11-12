@@ -184,7 +184,7 @@ public class GameLobbyWindow extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (!sendMsg.getText().trim().equals("")) {
 					////////////////////////////////////////////////////////
-					ChatMsgProt chatMsgProt = new ChatMsgProt(1,userName,sendMsg.getText().trim(),socket);
+					ChatMsgProt chatMsgProt = new ChatMsgProt(1,userName,userName+"说："+sendMsg.getText().trim(),socket);
 					chatMsgProt.sendMsg();
 					setHistoryMsg("你说:" + sendMsg.getText().trim());
 					/*String msg = sendMsg.getText().trim();

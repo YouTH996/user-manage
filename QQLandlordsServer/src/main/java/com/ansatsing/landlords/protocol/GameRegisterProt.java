@@ -53,7 +53,13 @@ public class GameRegisterProt extends AbstractProtocol implements Serializable {
             singleSendMsg(player,this.getClass().getName()+ JSON.toJSONString(this));
             player.setSeatNum(-1);
             //System.out.println();
-            //batchSendMsg(userName+"骑着野母猪大摇大摆的溜进聊天室......大家给点面子欢迎欢迎！！！",userName2Player.values(),true);
+            AbstractProtocol chatMsgProt=new ChatMsgProt(1, userName, userName+"骑着母猪大摇大摆溜进游戏室!", -1);
+            chatMsgProt.setUserName2Player(this.userName2Player);
+            chatMsgProt.setTableMap(this.tableMap);
+            chatMsgProt.setPlayerMap(playerMap);
+            chatMsgProt.setPlayer(player);
+            chatMsgProt.handleProt();
+           // batchSendMsg(userName+"骑着野母猪大摇大摆的溜进聊天室......大家给点面子欢迎欢迎！！！",userName2Player.values(),true);
             userName2Player.put(userName, player);
             if(playerMap.size() > 0) {//初始化游戏大厅座位情况
                 AbstractProtocol initSeatProt = new InitSeatProt();

@@ -41,7 +41,6 @@ public class ServerHandlerTransferThread implements Runnable {
 		this.userName2Player = _userName2Player;
 		this.tableMap = tableMap;
 		this.playerMap = playerMap;
-		if(tableMap == null) LOGGER.info("tableMapnullllllllllllllllllllllllllllll");
 		messageHandler = new ServerMessageHandler(this.player,playerMap,tableMap,_userName2Player);
 	}
 
@@ -57,7 +56,7 @@ public class ServerHandlerTransferThread implements Runnable {
 				readMsg = bufferedReader.readLine();
 				//这个位置应该加一个协议过滤器，非法协议直接跳过
 				if (!readMsg.equals("")) {
-					System.out.println((player.getUserName() == null ? "未登陆的":player.getUserName())+"发送了消息："+readMsg);
+					LOGGER.info((player.getUserName() == null ? "未登陆的":player.getUserName())+"发送了消息："+readMsg);
 					int endIdx = readMsg.indexOf("{");
 					String className = readMsg.substring(0,endIdx);
 					String classContent = readMsg.substring(endIdx);
@@ -85,7 +84,7 @@ public class ServerHandlerTransferThread implements Runnable {
 			e.printStackTrace();
 		} finally {
 			if(player!=null){
-				System.out.println("player.getSeatNum():"+player.getSeatNum());
+				LOGGER.info("退出系统时,player.getSeatNum():"+player.getSeatNum());
 				if(player.getSeatNum() > -1){
 					protocol = new ExitSeatProt(player.getSeatNum(),player.getUserName());
 					protocol.setPlayer(player);
@@ -96,6 +95,7 @@ public class ServerHandlerTransferThread implements Runnable {
 				}
 				if(player.getUserName() != null){
 					userName2Player.remove(player.getUserName());
+					LOGGER.info(player.getUserName()+"退出系统了");
 				}
 			}
 			if(bufferedReader != null) {

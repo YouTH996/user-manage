@@ -393,7 +393,7 @@ public class LandlordsRoomWindow extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (!sendMsg.getText().trim().equals("")) {
 					////////////////////////////////////////////
-					ChatMsgProt chatMsgProt = new ChatMsgProt(2,userName,sendMsg.getText().trim(),seatNum,socket);
+					ChatMsgProt chatMsgProt = new ChatMsgProt(2,userName,userName+"说："+sendMsg.getText().trim(),seatNum,socket);
 					chatMsgProt.sendMsg();
 					setHistoryMsg("你说:" + sendMsg.getText().trim());
 					/*String msg = sendMsg.getText().trim();
@@ -837,6 +837,7 @@ public class LandlordsRoomWindow extends JFrame {
 		//显示自己的牌
 		Collections.sort(cardList);
 		//	System.out.println("每发一张牌时：cardList.size()==="+cardList.size());
+		LOGGER.info("每次发牌时，牌的组成："+Joiner.on(",").join(cardList));
 		for(int j=0;j<cardList.size();j++) {
 			cards[j].setName(j+"="+cardList.get(j).getImage());//下标索引=纸牌图片地址索引，这样设计以便出牌完纸牌位置复原，主要针对方法sendPlayCardMsg
 			cards[j].setIcon(PictureUtil.getPicture("cards/"+cardList.get(j).getImage()+".jpg"));

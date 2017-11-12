@@ -47,6 +47,16 @@ public class ChatMsgProt extends AbstractProtocol implements Serializable {
         this.msg = msg;
     }
 
+    public ChatMsgProt() {
+    }
+
+    public ChatMsgProt(int chatFlag, String userName, String msg, int seatNum) {
+        this.chatFlag = chatFlag;
+        this.userName = userName;
+        this.msg = msg;
+        this.seatNum = seatNum;
+    }
+
     @Override
     public void handleProt() {
         if(chatFlag == 1){

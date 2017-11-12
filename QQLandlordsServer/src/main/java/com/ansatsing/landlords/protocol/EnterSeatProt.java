@@ -34,6 +34,7 @@ public class EnterSeatProt extends AbstractProtocol implements Serializable {
     public void handleProt() {
         player.setSeatNum(seatNum);
         playerMap.put(seatNum, player);
+        LOGGER.info("每次入座位时，userName2Player.size():"+userName2Player.size());
         batchSendMsg(this.getClass().getName()+JSON.toJSONString(this),userName2Player.values(),true);
 
         //确定是哪一桌？

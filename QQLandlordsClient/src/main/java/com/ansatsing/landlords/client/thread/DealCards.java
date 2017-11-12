@@ -14,15 +14,12 @@ import com.google.common.base.Splitter;
  * @author ansatsing
  * @time 2017年10月25日 下午9:18:06
  */
-public class DealCards /*implements Runnable */{
+public class DealCards {
 	private LandlordsRoomWindow landlordsRoomWindow;
 	public DealCards(LandlordsRoomWindow landlordsRoomWindow) {
 		this.landlordsRoomWindow = landlordsRoomWindow;
 	}
 	public void run() {
-		if(landlordsRoomWindow.getServerCards() == null) {
-			System.out.println("DealCardsThreadDealCardsThreadDealCardsThreadDealCardsThreadnulllllllllllllllllll");
-		}
 		List<String> card = Splitter.on(",").splitToList(landlordsRoomWindow.getServerCards());
 		for(int i=0;i<card.size();i++){
 			try {
