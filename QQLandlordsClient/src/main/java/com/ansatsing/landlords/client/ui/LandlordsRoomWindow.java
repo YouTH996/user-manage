@@ -1162,7 +1162,7 @@ public class LandlordsRoomWindow extends JFrame {
 					cards[idex].setIcon(null);
 					cards[idex].setName("-1");//代表牌出了
 					cards[idex].setBounds(cardsX+(18)*idex+105, 50, 0, 0);
-					cards[idex].removeMouseListener(cards[idex].getMouseListeners()[0]);//移除绑定鼠标事件
+					//cards[idex].removeMouseListener(cards[idex].getMouseListeners()[0]);//移除绑定鼠标事件
 					centerCards[5].setIcon(PictureUtil.getPicture("cards/"+msg+".jpg"));
 					cardList.remove(idex);
 				}else{//其他情况超时不出牌
@@ -1199,9 +1199,9 @@ public class LandlordsRoomWindow extends JFrame {
 						cards[i].setName("-1");
 						cards[i].setIcon(null);
 						cards[i].setBounds(385+(18)*i+105, 50, 0, 0);
-						if(cards[i].getMouseListeners().length > 0){
+						/*if(cards[i].getMouseListeners().length > 0){
 							cards[i].removeMouseListener(cards[i].getMouseListeners()[0]);//移除绑定鼠标事件
-						}
+						}*/
 					}else{//余下的牌
 						cards[i].setName(i+"="+cardList.get(i).getImage());
 						cards[i].setIcon(PictureUtil.getPicture("cards/"+cardList.get(i).getImage()+".jpg"));
