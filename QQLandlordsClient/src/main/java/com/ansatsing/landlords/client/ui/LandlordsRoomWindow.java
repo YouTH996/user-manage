@@ -802,7 +802,7 @@ public class LandlordsRoomWindow extends JFrame {
 	 */
 	public void dealCard(String str,int i) {
 		if(i>50){//发底牌
-			topCards[i-51].setName(String.valueOf(i));
+			topCards[i-51].setName(str);
 			topCards[i-51].setIcon(PictureUtil.getPicture("cards/back.png"));
 		}else{
 			if(i%3==0){//从左边第一个位置开始发牌，相对于游戏大厅里的位置！

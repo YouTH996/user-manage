@@ -31,7 +31,7 @@ public class DealCards {
 				e.printStackTrace();
 			}
 		}
-		if(landlordsRoomWindow.getSeatNum() % 3 == 0) {//从左边位置开始轮流抢地主
+		if(landlordsRoomWindow.getSeatNum() % 3 == 0) {//从左边位置开始轮流抢地主 相对于大厅里的座位
 			landlordsRoomWindow.hideAllReadyLable();
 			landlordsRoomWindow.startRob(landlordsRoomWindow.getSeatNum());
 		}

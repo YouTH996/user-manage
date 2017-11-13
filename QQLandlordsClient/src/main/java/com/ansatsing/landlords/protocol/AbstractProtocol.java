@@ -70,5 +70,6 @@ public abstract class AbstractProtocol {
             e.printStackTrace();
         }
         printWriter.println(msg);
+       // printWriter.close();//不能关闭 关闭了 就彻底完蛋了
     }
 }
