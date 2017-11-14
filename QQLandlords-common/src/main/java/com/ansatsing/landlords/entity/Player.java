@@ -13,7 +13,7 @@ public class Player {
 	private int roleFlag = 0;//0无角色 1农民角色 2地主角色
 	private int gameStatus;//1代表斗地主游戏中；0代表不是
 	private boolean unnormalExited;//true代表非正常退出，false代表正在退出
-	private long lastReveHeatTime;
+	private long lastReveHeatTime;//最后一次收到心跳包协议的时间：单位毫秒
 	public String getUserName() {
 		return userName;
 	}
