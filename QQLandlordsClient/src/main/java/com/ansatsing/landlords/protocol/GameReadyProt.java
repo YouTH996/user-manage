@@ -35,7 +35,7 @@ public class GameReadyProt extends AbstractProtocol implements Serializable{
 
     public GameReadyProt() {
     }
-
+    @Override
     public void handleProt() {
         landlordsRoomWindow.setGameReady(seatNum,readyFlag);
     }

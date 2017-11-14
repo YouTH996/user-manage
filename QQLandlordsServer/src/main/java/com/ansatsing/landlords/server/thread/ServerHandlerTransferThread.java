@@ -1,4 +1,4 @@
-package com.ansatsing.landlords.server.socket;
+package com.ansatsing.landlords.server.thread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,20 +6,19 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
 import com.ansatsing.landlords.protocol.ExitSeatProt;
+import com.ansatsing.landlords.server.socket.ServerMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ansatsing.landlords.entity.Message;
-import com.ansatsing.landlords.entity.MsgType;
 import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.entity.Table;
-import com.ansatsing.landlords.util.MessageUtil;
+
 /**
  * qq斗地主服务器端网络IO处理中心
  * @author sunyq
@@ -34,6 +33,7 @@ public class ServerHandlerTransferThread implements Runnable {
 	private Map<Integer, Player> playerMap;//一个座位对应一个玩家
 	private Map<Integer, Table> tableMap;//一桌对应一个table实体类对象
 	private AbstractProtocol protocol;
+//	private long lastReveHeatTime = System.currentTimeMillis();//最后一次收到心跳包的时间
 	public ServerHandlerTransferThread( Socket socket,Map<Integer, Player> playerMap,Map<Integer, Table> tableMap,Map<String, Player> _userName2Player) {
 		this.socket = socket;
 		this.player = new Player();
@@ -60,6 +60,10 @@ public class ServerHandlerTransferThread implements Runnable {
 					int endIdx = readMsg.indexOf("{");
 					String className = readMsg.substring(0,endIdx);
 					String classContent = readMsg.substring(endIdx);
+					if(className.equals("com.ansatsing.landlords.protocol.HeartBeatProt")){
+						player.setLastReveHeatTime( System.currentTimeMillis());
+						continue;
+					}
 					Class class1 = null;
 					try{
 						class1 = Class.forName(className);
@@ -79,13 +83,20 @@ public class ServerHandlerTransferThread implements Runnable {
 					}
 				}
 			}
-		} catch (IOException e) {
+		} catch (SocketException e1) {
+			e1.printStackTrace();
+			if(player != null && player.getUserName() != null)
+			LOGGER.info(player.getUserName()+"掉线了");
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if(player!=null){
 				LOGGER.info("退出系统时,player.getSeatNum():"+player.getSeatNum());
 				if(player.getSeatNum() > -1){
+					if(player.getGameStatus() == 1){//在游戏中的处理逻辑
+						//todo
+					}
 					protocol = new ExitSeatProt(player.getSeatNum(),player.getUserName());
 					protocol.setPlayer(player);
 					protocol.setPlayerMap(playerMap);
@@ -95,7 +106,7 @@ public class ServerHandlerTransferThread implements Runnable {
 				}
 				if(player.getUserName() != null){
 					userName2Player.remove(player.getUserName());
-					LOGGER.info(player.getUserName()+"退出系统了");
+					LOGGER.info(player.getUserName()+(player.isUnnormalExited()?"异常":"正常")+"退出系统了");
 				}
 			}
 			if(bufferedReader != null) {

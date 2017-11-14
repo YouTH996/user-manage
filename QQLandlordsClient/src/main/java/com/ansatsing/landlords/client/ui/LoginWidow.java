@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -24,8 +25,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import com.ansatsing.landlords.client.IClient;
+import com.ansatsing.landlords.client.SocketClient;
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
 import com.ansatsing.landlords.client.thread.ClientReceiveThread;
+import com.ansatsing.landlords.client.thread.HeartBeatThread;
+import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
 import com.ansatsing.landlords.protocol.GameRegisterProt;
 import com.ansatsing.landlords.protocol.SystemExitProt;
@@ -50,10 +55,10 @@ public class LoginWidow extends JDialog {
 	private Point point = new Point();//用于记录鼠标移动之前的位置
 	private Socket socket;
 	private JLabel errorTip;//提示信息
-	PrintWriter printWriter = null;
 	private SendMessageHandler messageHandler;
 	private ClientReceiveThread qqClientHandler;
-
+	private Player player;
+	private HeartBeatThread heartBeatThread;
 	public LoginWidow(/*Socket socket,ClientReceiveThread qqClientHandler*/) {
 		initGUI();
 		//pack();
@@ -230,10 +235,14 @@ public class LoginWidow extends JDialog {
 					return ;
 				}else {
 					if(qqClientHandler == null){
-						startReceiveThread();
+						player = new Player();
+						startReceiveThread(player);
 					}
-					GameRegisterProt registerProt = new GameRegisterProt(userNameField.getText().trim(),socket);
-					registerProt.sendMsg();
+					if(player.getSocket() != null){
+						GameRegisterProt registerProt = new GameRegisterProt(userNameField.getText().trim(),player.getSocket());
+						registerProt.sendMsg();
+					}
+
 					/////////////////////////下面信息没有无限扩展的老代码////////////////////////////
 					/*
 					try {
@@ -266,8 +275,11 @@ public class LoginWidow extends JDialog {
 	//当收到服务器返回的注册信息时 进行如下处理
 	public void handleGameRegister(boolean registerSuccessful,AbstractProtocol protocol){
 		if(registerSuccessful){
-			GameLobbyWindow qqGameWindow = new GameLobbyWindow(socket,userNameField.getText().trim(),qqClientHandler);
+			 heartBeatThread = new HeartBeatThread(player);
+			GameLobbyWindow qqGameWindow = new GameLobbyWindow(player.getSocket(),userNameField.getText().trim(),qqClientHandler);
 			protocol.setGameLobbyWindow(qqGameWindow);
+
+			new Thread(heartBeatThread).start();
 			dispose();//仅仅关闭窗体
 		}else{
 			errorTip.setText("这网名有人正在使用,请更换网名!");
@@ -276,6 +288,7 @@ public class LoginWidow extends JDialog {
 	}
 	private void exit() {
 		if(socket != null) {
+				heartBeatThread.stop();
 				SystemExitProt systemExitProt = new SystemExitProt(socket);
 				systemExitProt.sendMsg();
 				qqClientHandler.stop();
@@ -283,14 +296,26 @@ public class LoginWidow extends JDialog {
 		System.exit(0);
 	}
 	//启动信息接收线程
-	private void startReceiveThread(){
-		String host = "39.108.166.35";
+	private void startReceiveThread(Player player){
+		try{
+			IClient iClient = new SocketClient(player);
+			iClient.connectServer();
+			qqClientHandler = new ClientReceiveThread(player.getSocket(),player);
+			qqClientHandler.setLoginWidow(this);
+			Thread thread = new Thread(qqClientHandler);
+			thread.start();
+		}catch (Exception e){
+			errorTip.setText("游戏服务器未开启！");
+			return;
+		}
+		///////////////////////////////////////////////////
+		/*String host = "39.108.166.35";
 		//String host = "localhost";
 		int port = 6789;
 		Socket socket = null;
 		try {
 			socket = new Socket(host, port);
-			qqClientHandler = new ClientReceiveThread(socket);
+			qqClientHandler = new ClientReceiveThread(socket,player);
 			qqClientHandler.setLoginWidow(this);
 			this.socket = socket;
 			Thread thread = new Thread(qqClientHandler);
@@ -301,6 +326,7 @@ public class LoginWidow extends JDialog {
 		} catch (IOException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
-		}
+		}*/
+		//////////////////////////////////////////////////////
 	}
 }

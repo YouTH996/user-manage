@@ -11,8 +11,35 @@ public class Player {
 	private Channel channel;
 	private int readFlag = 0;//0没有准备好    1准备好了
 	private int roleFlag = 0;//0无角色 1农民角色 2地主角色
+	private int gameStatus;//1代表斗地主游戏中；0代表不是
+	private boolean unnormalExited;//true代表非正常退出，false代表正在退出
+	private long lastReveHeatTime;
 	public String getUserName() {
 		return userName;
+	}
+
+	public int getGameStatus() {
+		return gameStatus;
+	}
+
+	public boolean isUnnormalExited() {
+		return unnormalExited;
+	}
+
+	public long getLastReveHeatTime() {
+		return lastReveHeatTime;
+	}
+
+	public void setLastReveHeatTime(long lastReveHeatTime) {
+		this.lastReveHeatTime = lastReveHeatTime;
+	}
+
+	public void setUnnormalExited(boolean unnormalExited) {
+		this.unnormalExited = unnormalExited;
+	}
+
+	public void setGameStatus(int gameStatus) {
+		this.gameStatus = gameStatus;
 	}
 
 	public void setUserName(String userName) {

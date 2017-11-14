@@ -24,7 +24,7 @@ public class ExitSeatProt extends AbstractProtocol implements Serializable {
     public void setSeatNum(int seatNum) {
         this.seatNum = seatNum;
     }
-
+    @Override
     public void handleProt() {
         gameLobbyWindow.emptySeat(seatNum);
         if(landlordsRoomWindow != null)

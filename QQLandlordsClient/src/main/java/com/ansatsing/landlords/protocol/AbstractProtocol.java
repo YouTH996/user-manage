@@ -1,8 +1,11 @@
 package com.ansatsing.landlords.protocol;
 
+import com.ansatsing.landlords.client.NettyServerListener;
 import com.ansatsing.landlords.client.ui.GameLobbyWindow;
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 import com.ansatsing.landlords.client.ui.LoginWidow;
+import com.ansatsing.landlords.entity.Player;
+import io.netty.buffer.ByteBufAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +24,24 @@ public abstract class AbstractProtocol {
     protected GameLobbyWindow gameLobbyWindow;
     protected LoginWidow loginWidow;
     protected Socket socket;
+    protected Player player;
     //从服务器端收到信息然后进行信息处理
-    public abstract void handleProt();
+    public void handleProt(){
+
+    }
 
     public void setLandlordsRoomWindow(LandlordsRoomWindow landlordsRoomWindow) {
         this.landlordsRoomWindow = landlordsRoomWindow;
     }
+    @Transient
+    public Player getPlayer() {
+        return player;
+    }
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+    @Transient
     public LandlordsRoomWindow getLandlordsRoomWindow() {
         return landlordsRoomWindow;
     }
@@ -61,15 +75,35 @@ public abstract class AbstractProtocol {
     }
     protected void sendMsg(String msg) {
         LOGGER.info("客户端向服务器发送信息："+msg);
-        PrintWriter printWriter= null;
-        try {
-           // printWriter =  new PrintWriter(socket.getOutputStream(), true);//解决中文乱码问题
-            printWriter =  new PrintWriter( new OutputStreamWriter(socket.getOutputStream(), "UTF-8"),true );
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        if(player == null){
+            PrintWriter printWriter= null;
+            try {
+                // printWriter =  new PrintWriter(socket.getOutputStream(), true);//解决中文乱码问题
+                printWriter =  new PrintWriter( new OutputStreamWriter(socket.getOutputStream(), "UTF-8"),true );
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            printWriter.println(msg);
+            // printWriter.close();//不能关闭 关闭了 就彻底完蛋了
+        }else{
+            if(player.getSocket() != null){
+                PrintWriter printWriter= null;
+                try {
+                    // printWriter =  new PrintWriter(socket.getOutputStream(), true);//解决中文乱码问题
+                    printWriter =  new PrintWriter( new OutputStreamWriter(player.getSocket().getOutputStream(), "UTF-8"),true );
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                printWriter.println(msg);
+                // printWriter.close();//不能关闭 关闭了 就彻底完蛋了
+            }else if(player.getChannel()!= null){
+                player.getChannel().writeAndFlush(ByteBufAllocator.DEFAULT.buffer()
+                        .writeBytes(msg.getBytes()))
+                        .addListener(new NettyServerListener());
+                System.out.println("发送的消息：" + msg.getBytes().length + msg);
+            }
         }
-        printWriter.println(msg);
-       // printWriter.close();//不能关闭 关闭了 就彻底完蛋了
     }
 }

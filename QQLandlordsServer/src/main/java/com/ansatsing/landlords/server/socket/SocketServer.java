@@ -11,6 +11,8 @@ import javax.net.ServerSocketFactory;
 import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.entity.Table;
 import com.ansatsing.landlords.server.IServer;
+import com.ansatsing.landlords.server.thread.HeartBeatMonitor;
+import com.ansatsing.landlords.server.thread.ServerHandlerTransferThread;
 
 public class SocketServer implements IServer {
 
@@ -23,6 +25,8 @@ public class SocketServer implements IServer {
 		try {
 			serverSocket = ServerSocketFactory.getDefault().createServerSocket(6789);
 			System.out.println("===============QQ斗地主服务器已经开启=================");
+			HeartBeatMonitor heartBeatMonitor = new HeartBeatMonitor(playerMap);
+			new Thread(heartBeatMonitor).start();
 			while(true) {
 				Socket socket = serverSocket.accept();
 				System.out.println(">>>>>>>一位网友连接成功！当前在线人数为："+(userName2Player.size()+1)+"当前在座人数："+playerMap.size());

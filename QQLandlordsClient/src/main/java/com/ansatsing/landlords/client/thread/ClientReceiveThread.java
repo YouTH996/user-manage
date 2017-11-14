@@ -8,6 +8,7 @@ import java.net.Socket;
 import com.alibaba.fastjson.JSON;
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 import com.ansatsing.landlords.client.ui.LoginWidow;
+import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +25,10 @@ public class ClientReceiveThread implements Runnable {
 	private volatile LoginWidow loginWidow;
 	private volatile LandlordsRoomWindow landlordsRoomWindow;
 	private AbstractProtocol protocol;
-	public ClientReceiveThread(Socket socket) {
+	private Player player;
+	public ClientReceiveThread(Socket socket, Player player) {
 		this.socket = socket;
+		this.player = player;
 		//this.qqGameWindow = qqGameWindow;
 		//this.receiveMessageHandler = new ReceiveMessageHandler(qqGameWindow);
 	}

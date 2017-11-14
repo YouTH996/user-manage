@@ -20,7 +20,7 @@ public class InitSeatProt extends AbstractProtocol implements Serializable {
     public void setSeatMap(Map<Integer, String> seatMap) {
         this.seatMap = seatMap;
     }
-
+    @Override
     public void handleProt() {
         if(seatMap.size() > 0){
             Iterator iterator = seatMap.entrySet().iterator();
