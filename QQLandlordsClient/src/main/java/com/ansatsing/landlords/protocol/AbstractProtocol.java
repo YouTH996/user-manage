@@ -74,6 +74,7 @@ public abstract class AbstractProtocol {
 
     }
     protected void sendMsg(String msg) {
+        if(!msg.contains("HeartBeatProt"))
         LOGGER.info("客户端向服务器发送信息："+msg);
         if(player == null){
             PrintWriter printWriter= null;

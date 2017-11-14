@@ -56,6 +56,7 @@ public class ServerHandlerTransferThread implements Runnable {
 				readMsg = bufferedReader.readLine();
 				//这个位置应该加一个协议过滤器，非法协议直接跳过
 				if (!readMsg.equals("")) {
+					if(!readMsg.contains("HeartBeatProt"))
 					LOGGER.info((player.getUserName() == null ? "未登陆的":player.getUserName())+"发送了消息："+readMsg);
 					int endIdx = readMsg.indexOf("{");
 					String className = readMsg.substring(0,endIdx);
@@ -84,9 +85,9 @@ public class ServerHandlerTransferThread implements Runnable {
 				}
 			}
 		} catch (SocketException e1) {
-			e1.printStackTrace();
+			LOGGER.info("SocketException异常错误："+e1.getMessage());
 			if(player != null && player.getUserName() != null)
-			LOGGER.info(player.getUserName()+"掉线了");
+			LOGGER.info(player.getUserName()+"异常掉线了");
 		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
