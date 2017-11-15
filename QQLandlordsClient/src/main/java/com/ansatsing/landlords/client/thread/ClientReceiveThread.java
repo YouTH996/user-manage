@@ -94,17 +94,9 @@ public class ClientReceiveThread implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.info("客户端信息接受线程出现异常："+e.getMessage());
 		}finally {
-			/*if(socket != null) {//只要没有收到退出信号，就不应该有关闭套接字的代码
-				try {
-					socket.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}*/
+			LOGGER.info("客户端信息接受线程关闭！");
 		}
 	}
 	//停止线程
