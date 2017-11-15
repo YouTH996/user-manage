@@ -1,10 +1,6 @@
 package com.ansatsing.landlords.client.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Polygon;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -38,8 +34,8 @@ import com.ansatsing.landlords.client.thread.ClientReceiveThread;
  */
 public class GameLobbyWindow extends JFrame {
 	private final static Logger LOGGER = LoggerFactory.getLogger(GameLobbyWindow.class);
-	private final int WIDTH = 1500;
-	private final int HEIGHT = 800;
+	private  int WIDTH = 1500;
+	private  int HEIGHT = 800;
 	private JPanel childJpanel1;// 主窗体左侧
 	private JPanel childJpanel2;// 主窗体右侧
 	private JScrollPane historyScroll;
@@ -82,6 +78,9 @@ public class GameLobbyWindow extends JFrame {
 	}
 
 	private void initGUI() {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		WIDTH = screenSize.width;
+		HEIGHT = screenSize.height - 30;
 		setSize(WIDTH, HEIGHT);
 		setLocationRelativeTo(null);// 居中显示
 		setResizable(false);// 宽高度固死
