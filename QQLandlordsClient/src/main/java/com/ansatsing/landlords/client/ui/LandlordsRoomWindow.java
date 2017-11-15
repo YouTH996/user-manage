@@ -331,7 +331,7 @@ public class LandlordsRoomWindow extends JFrame {
 
 		// 历史记录
 		BoxLayout layout=new BoxLayout(childJpanel2, BoxLayout.Y_AXIS);
-		historyMsg = new JTextArea(30,28);
+		historyMsg = new JTextArea(30,26);
 		historyMsg.setEditable(false);
 		historyScroll = new JScrollPane(historyMsg );
 		//historyScroll.setBounds(0,0,childJpanel2.getWidth(),double());
@@ -339,7 +339,7 @@ public class LandlordsRoomWindow extends JFrame {
 
 		//发送消息区
 		//sendPanel = new JPanel();
-		sendMsg = new JTextArea(2,25);
+		sendMsg = new JTextArea(2,26);
 		//sendPanel.add(sendMsg);
 		send = new JButton("发送");
 		//send.setBounds(335, 2, 30, 50);
@@ -810,22 +810,28 @@ public class LandlordsRoomWindow extends JFrame {
 					//getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 					sortCardAndShow();
-				}else{
+				}else if((seatNum-1)%3==0){
 					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
+				}else{
+					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
 			}else if((i-1)%3==0){//接下来发三角 顶上那个位置的人牌
 				if((seatNum-1)%3 ==0){
 					//getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 					sortCardAndShow();
+				}else if(seatNum%3==0){
+					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}else{
-					getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
+					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
-			}else{//接下来发三角形右边那个人的牌
+			}else if((i+1)/3 == 0){//接下来发三角形右边那个人的牌
 				if((seatNum+1)%3 ==0){
 					//getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 					sortCardAndShow();
+				}else if(seatNum%3==0){
+					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}else{
 					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}

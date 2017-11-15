@@ -59,38 +59,40 @@ public class ServerHandlerTransferThread implements Runnable {
 					if(!readMsg.contains("HeartBeatProt"))
 					LOGGER.info((player.getUserName() == null ? "未登陆的":player.getUserName())+"发送了消息："+readMsg);
 					int endIdx = readMsg.indexOf("{");
-					String className = readMsg.substring(0,endIdx);
-					String classContent = readMsg.substring(endIdx);
-					if(className.equals("com.ansatsing.landlords.protocol.HeartBeatProt")){
-						player.setLastReveHeatTime( System.currentTimeMillis());
-						continue;
-					}
-					Class class1 = null;
-					try{
-						class1 = Class.forName(className);
-					}catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-					if(class1 != null){
-						protocol = (AbstractProtocol) JSON.parseObject(classContent,class1);
-						protocol.setPlayer(player);
-						protocol.setPlayerMap(playerMap);
-						protocol.setTableMap(tableMap);
-						protocol.setUserName2Player(userName2Player);
-						protocol.handleProt();
-						if(className.equals("com.ansatsing.landlords.protocol.SystemExitProt")){
-							break;
+					try {
+						String className = readMsg.substring(0, endIdx);
+						String classContent = readMsg.substring(endIdx);
+						if (className.equals("com.ansatsing.landlords.protocol.HeartBeatProt")) {
+							player.setLastReveHeatTime(System.currentTimeMillis());
+							continue;
 						}
+						player.setLastReveHeatTime(System.currentTimeMillis());
+						Class class1 = null;
+						try {
+							class1 = Class.forName(className);
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+						}
+						if (class1 != null) {
+							protocol = (AbstractProtocol) JSON.parseObject(classContent, class1);
+							protocol.setPlayer(player);
+							protocol.setPlayerMap(playerMap);
+							protocol.setTableMap(tableMap);
+							protocol.setUserName2Player(userName2Player);
+							protocol.handleProt();
+							if (className.equals("com.ansatsing.landlords.protocol.SystemExitProt")) {
+								break;
+							}
+						}
+					}catch (Exception e1){
+						LOGGER.info("异常信息："+e1.getMessage());
 					}
 				}
 			}
-		} catch (SocketException e1) {
+		} catch (IOException  e1) {
 			LOGGER.info("SocketException异常错误："+e1.getMessage());
 			if(player != null && player.getUserName() != null)
 			LOGGER.info(player.getUserName()+"异常掉线了");
-		}catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} finally {
 			if(player!=null){
 				LOGGER.info("退出系统时,player.getSeatNum():"+player.getSeatNum());
