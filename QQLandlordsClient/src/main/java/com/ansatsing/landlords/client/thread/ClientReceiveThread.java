@@ -97,6 +97,14 @@ public class ClientReceiveThread implements Runnable {
 			LOGGER.info("客户端信息接受线程出现异常："+e.getMessage());
 		}finally {
 			LOGGER.info("客户端信息接受线程关闭！");
+			//掉线重新登录
+			if(landlordsRoomWindow != null){
+				landlordsRoomWindow.closeRoom();
+			}
+			if(qqGameWindow!=null){
+				qqGameWindow.dispose();
+			}
+			loginWidow = new LoginWidow();
 		}
 	}
 	//停止线程
