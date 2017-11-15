@@ -810,28 +810,22 @@ public class LandlordsRoomWindow extends JFrame {
 					//getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 					sortCardAndShow();
-				}else if((seatNum-1)%3==0){
+				}else {
 					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
-				}else{
-					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
 			}else if((i-1)%3==0){//接下来发三角 顶上那个位置的人牌
 				if((seatNum-1)%3 ==0){
 					//getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 					sortCardAndShow();
-				}else if(seatNum%3==0){
-					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}else{
-					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
+					getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
 			}else if((i+1)/3 == 0){//接下来发三角形右边那个人的牌
 				if((seatNum+1)%3 ==0){
 					//getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 					sortCardAndShow();
-				}else if(seatNum%3==0){
-					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}else{
 					getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
