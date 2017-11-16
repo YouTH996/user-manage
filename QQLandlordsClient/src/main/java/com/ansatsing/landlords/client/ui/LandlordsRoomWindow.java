@@ -810,7 +810,7 @@ public class LandlordsRoomWindow extends JFrame {
 					//getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));
 					sortCardAndShow();
-				}else {
+				}else{
 					getLeftPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
 			}else if((i-1)%3==0){//接下来发三角 顶上那个位置的人牌
@@ -821,7 +821,7 @@ public class LandlordsRoomWindow extends JFrame {
 				}else{
 					getTopPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/back.png"));
 				}
-			}else if((i+1)/3 == 0){//接下来发三角形右边那个人的牌
+			}else{//接下来发三角形右边那个人的牌
 				if((seatNum+1)%3 ==0){
 					//getRightPlayer()[i/3].setIcon(PictureUtil.getPicture("cards/"+str+".jpg"));
 					cardList.add(LandlordsUtil.generateCard(Integer.valueOf(str)));

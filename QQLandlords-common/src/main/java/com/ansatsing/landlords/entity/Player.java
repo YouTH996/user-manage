@@ -14,6 +14,7 @@ public class Player {
 	private int gameStatus;//1代表斗地主游戏中；0代表不是
 	private boolean unnormalExited;//true代表非正常退出，false代表正在退出
 	private long lastReveHeatTime;//最后一次收到心跳包协议的时间：单位毫秒
+	private int tableNum = -1;//第几桌;-1代表未入座
 	public String getUserName() {
 		return userName;
 	}
@@ -57,7 +58,17 @@ public class Player {
 	public Socket getSocket() {
 		return socket;
 	}
-	
+
+	public int getTableNum() {
+		if(tableNum == -1 && seatNum > -1){
+			tableNum = seatNum/3;
+		}
+		return tableNum;
+	}
+
+	public void setTableNum(int tableNum) {
+		this.tableNum = tableNum;
+	}
 
 	public int getReadFlag() {
 		return readFlag;
