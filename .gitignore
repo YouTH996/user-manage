@@ -5,3 +5,6 @@
 out/
 **/build/
 **/dist/
+QQLandlords-common/target/
+QQLandlordsClient/target/
+QQLandlordsServer/target/
