@@ -5,6 +5,7 @@ import com.ansatsing.landlords.entity.Table;
 import com.ansatsing.landlords.server.netty.NettyServerListener;
 import com.ansatsing.landlords.util.LandlordsUtil;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.handler.codec.Delimiters;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -68,8 +69,9 @@ public abstract class AbstractProtocol {
                 e.printStackTrace();
             }
         }else if(_player.getChannel() != null) {
+           // sendMsg = sendMsg+ Delimiters.lineDelimiter();
             _player.getChannel().writeAndFlush(ByteBufAllocator.DEFAULT.buffer()
-                    .writeBytes(sendMsg.getBytes()))
+                    .writeBytes((sendMsg+System.getProperty("line.separator")).getBytes()))
                     .addListener(new NettyServerListener());
             System.out.println("发送的消息：" + sendMsg.getBytes().length + sendMsg);
         }

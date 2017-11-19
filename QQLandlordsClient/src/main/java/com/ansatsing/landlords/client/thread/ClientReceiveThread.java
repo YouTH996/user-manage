@@ -2,6 +2,7 @@ package com.ansatsing.landlords.client.thread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
@@ -59,11 +60,21 @@ public class ClientReceiveThread implements Runnable {
 
 	public void run() {
 		BufferedReader bufferedReader;
+		InputStream in=null;
 		String readMsg = "";
 		try {
 			bufferedReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream(),"UTF-8"));
+			//in = this.socket.getInputStream();
 			while(!isStop) {
 				readMsg = bufferedReader.readLine();
+				/*int count = 0;
+				while (count == 0) {
+					count = in.available();
+				}
+				byte[] buf = new byte[count];
+				in.read(buf);
+				readMsg = new String(buf, "UTF-8");*/
+				System.out.print(readMsg);
 				if(readMsg != null){
 					if(!readMsg.equals("")) {
 						LOGGER.info("从服务器收到的消息："+readMsg);

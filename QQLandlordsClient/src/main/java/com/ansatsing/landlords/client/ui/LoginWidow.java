@@ -275,11 +275,11 @@ public class LoginWidow extends JDialog {
 	//当收到服务器返回的注册信息时 进行如下处理
 	public void handleGameRegister(boolean registerSuccessful,AbstractProtocol protocol){
 		if(registerSuccessful){
-			 heartBeatThread = new HeartBeatThread(player);
+			 //heartBeatThread = new HeartBeatThread(player);//netty自带心跳机制
 			GameLobbyWindow qqGameWindow = new GameLobbyWindow(player.getSocket(),userNameField.getText().trim(),qqClientHandler);
 			protocol.setGameLobbyWindow(qqGameWindow);
 
-			new Thread(heartBeatThread).start();
+			//new Thread(heartBeatThread).start();
 			dispose();//仅仅关闭窗体
 		}else{
 			errorTip.setText("这网名有人正在使用,请更换网名!");

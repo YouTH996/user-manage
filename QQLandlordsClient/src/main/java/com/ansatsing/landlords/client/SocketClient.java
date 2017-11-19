@@ -12,8 +12,8 @@ public class SocketClient implements  IClient {
     }
 
     public void connectServer() throws UnknownHostException,SocketException,ConnectException ,IOException{
-       String host = "39.108.166.35";
-        //String host = "localhost";
+        //String host = "39.108.166.35";
+        String host = "localhost";
         int port = 6789;
         Socket socket = null;
         socket = new Socket(host, port);
