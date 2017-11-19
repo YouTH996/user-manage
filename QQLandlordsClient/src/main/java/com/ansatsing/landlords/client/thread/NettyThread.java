@@ -23,10 +23,8 @@ public class NettyThread implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("1nettyClietn");
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
-        System.out.println("2nettyClietn");
         try{
             bootstrap.group(group)
                     .channel(NioSocketChannel.class)
@@ -42,9 +40,7 @@ public class NettyThread implements Runnable{
                             pipeline.addLast(new NettyClientHandler(context));
                         }
                     });
-            System.out.println("3nettyClietn");
             ChannelFuture future = bootstrap.connect("127.0.0.1",6789).sync();
-            System.out.println("4nettyClietn");
             context.getPlayer().setChannel(future.channel());
             future.channel().closeFuture().sync();
 

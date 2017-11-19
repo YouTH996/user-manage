@@ -18,21 +18,13 @@ public class BioSocketThread implements Runnable {
 
 	private AbstractProtocol protocol;
 	private volatile Context context;
-	public BioSocketThread(Context context) {
-		String host = "localhost";
-		int port = 6789;
-		Socket socket = null;
-		try {
-			socket = new Socket(host, port);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
+	public BioSocketThread(Context context) {
 		this.context =context;
-		this.context.getPlayer().setSocket(socket);
+
 	}
 
-	public void run() {
+	public void run(){
 
 		BufferedReader bufferedReader;
 		InputStream in=null;
