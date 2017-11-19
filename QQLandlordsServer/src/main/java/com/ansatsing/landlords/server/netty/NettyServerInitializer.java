@@ -22,7 +22,6 @@ public class NettyServerInitializer extends ChannelInitializer<NioSocketChannel>
     Map<String, Player> userName2Player = new ConcurrentHashMap<String, Player>();//记录全部牌友信息
     protected void initChannel(NioSocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-        //解决TCP粘包问题,以"$_"作为分隔
         ByteBuf delimiter = Unpooled.copiedBuffer(System.getProperty("line.separator").getBytes());
         pipeline.addLast(new DelimiterBasedFrameDecoder(1024,delimiter));
         pipeline.addLast(new StringDecoder(Charset.forName("UTF-8")));
