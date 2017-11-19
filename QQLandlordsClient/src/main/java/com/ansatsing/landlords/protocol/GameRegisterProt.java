@@ -42,9 +42,12 @@ public class GameRegisterProt  extends AbstractProtocol implements Serializable 
 
     public GameRegisterProt(String userName, Socket socket) {
         this.userName = userName;
-        super.socket = socket;
+       // super.socket = socket;
     }
-
+    public GameRegisterProt(String userName) {
+        this.userName = userName;
+        // super.socket = socket;
+    }
     public GameRegisterProt() {
     }
     @Override

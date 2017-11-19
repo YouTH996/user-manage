@@ -1,17 +1,6 @@
 package com.ansatsing.landlords.client.ui;
 
-import com.ansatsing.landlords.client.handler.SendMessageHandler;
-import com.ansatsing.landlords.client.thread.ClientReceiveThread;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.net.Socket;
 
 /**
  * QQ斗地主游戏大厅

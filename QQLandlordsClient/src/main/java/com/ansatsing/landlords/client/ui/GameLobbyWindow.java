@@ -5,7 +5,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.Socket;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,16 +14,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import com.ansatsing.landlords.protocol.ChatMsgProt;
-import com.ansatsing.landlords.protocol.EnterSeatProt;
-import com.ansatsing.landlords.protocol.ExitSeatProt;
-import com.ansatsing.landlords.protocol.SystemExitProt;
+import com.ansatsing.landlords.client.Context;
+import com.ansatsing.landlords.entity.Player;
+import com.ansatsing.landlords.protocol.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ansatsing.landlords.client.handler.ReceiveMessageHandler;
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
-import com.ansatsing.landlords.client.thread.ClientReceiveThread;
+import com.ansatsing.landlords.client.thread.BioSocketThread;
 
 /**
  * QQ斗地主游戏大厅
@@ -46,35 +43,32 @@ public class GameLobbyWindow extends JFrame {
 	private JTextArea sendMsg;
 	/** 输入消息区域 */
 	private JButton send;
-	private ClientReceiveThread qqClientHandler;
+	private BioSocketThread qqClientHandler;
 	private JLabel seats[]; // 斗地主座位
 	// private JButton seats[]; //斗地主座位
 	private final int TOTAL = 30;// 总共多少桌
 	private String userName;// 网名
 	private LandlordsRoomWindow currentRoom;
 	private SendMessageHandler messageHandler;
-	private Socket socket;
+	private Player player;
+	private  Context context;
 	/*
 	 * public static void main(String[] args) { Socket socket = null;
 	 * QQGameWindow qqGameWindow = new QQGameWindow(socket); }
 	 */
 
-	public GameLobbyWindow(Socket socket, String userName,ClientReceiveThread qqClientHandler) {
+	public GameLobbyWindow(Player player,Context context) {
+		this.userName = player.getUserName();
 		setTitle("QQ斗地主--" + userName);
 		initGUI();
 		initListener();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		/////////////////////////////////////////////////////////////////
-		this.qqClientHandler = qqClientHandler;
-		/*ClientReceiveThread qqClientHandler = new ClientReceiveThread(socket, this);
-		Thread thread = new Thread(qqClientHandler);
-		thread.start();*/
-		/////////////////////////////////////////////////////////////////
-		this.qqClientHandler = qqClientHandler;
-		this.userName = userName;
-		this.messageHandler = new SendMessageHandler(socket);
-		this.socket =socket;
+		//this.qqClientHandler = qqClientHandler;
+		//this.qqClientHandler = qqClientHandler;
+		this.player = player;
+		this.context = context;
 	}
 
 	private void initGUI() {
@@ -171,7 +165,8 @@ public class GameLobbyWindow extends JFrame {
 					closeLandlordsRoom();
 				}
 				//messageHandler.sendSystemExitMsg();
-				SystemExitProt systemExitProt = new SystemExitProt(userName,socket);
+				AbstractProtocol systemExitProt = new SystemExitProt(userName);
+				systemExitProt.setPlayer(player);
 				systemExitProt.sendMsg();
 				qqClientHandler.stop();// 收信息的线程停止
 			}
@@ -183,7 +178,8 @@ public class GameLobbyWindow extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (!sendMsg.getText().trim().equals("")) {
 					////////////////////////////////////////////////////////
-					ChatMsgProt chatMsgProt = new ChatMsgProt(1,userName,userName+"说："+sendMsg.getText().trim(),socket);
+					AbstractProtocol chatMsgProt = new ChatMsgProt(1,userName,userName+"说："+sendMsg.getText().trim());
+					chatMsgProt.setPlayer(player);
 					chatMsgProt.sendMsg();
 					setHistoryMsg("你说:" + sendMsg.getText().trim());
 					/*String msg = sendMsg.getText().trim();
@@ -214,11 +210,13 @@ public class GameLobbyWindow extends JFrame {
 							closeLandlordsRoom();
 						}
 						jLabelTemp.setText(userName);
-						currentRoom = new LandlordsRoomWindow(jLabelTemp, seatNum,userName,socket,GameLobbyWindow.this);
+						currentRoom = new LandlordsRoomWindow(jLabelTemp, seatNum,player,GameLobbyWindow.this);
+						context.setLandlordsRoomWindow(currentRoom);
 						///////////////////////20171107//////////////////////////////////////////
-						EnterSeatProt  enterSeatProt= new EnterSeatProt(seatNum,userName,socket);
+						AbstractProtocol  enterSeatProt= new EnterSeatProt(seatNum,userName);
+						enterSeatProt.setPlayer(player);
 						enterSeatProt.sendMsg();
-						qqClientHandler .setLandlordsRoomWindow(currentRoom);
+						//qqClientHandler .setLandlordsRoomWindow(currentRoom);
 						/*messageHandler.sendEnterSeatMsg(seatNum + "");
 						qqClientHandler.getReceiveMessageHandler().setLandlordsRoomWindow(currentRoom);*/
 
@@ -265,7 +263,8 @@ public class GameLobbyWindow extends JFrame {
 	private void closeLandlordsRoom() {
 		////////////////////////////////////////////////////////////////////
 			//messageHandler.sendExitSeatMsg(String.valueOf(currentRoom.getSeatNum()));
-		ExitSeatProt exitSeatProt = new ExitSeatProt(currentRoom.getSeatNum(),userName,socket);
+		AbstractProtocol exitSeatProt = new ExitSeatProt(currentRoom.getSeatNum(),userName);
+		exitSeatProt.setPlayer(player);
 		exitSeatProt.sendMsg();
 			/////////////////////////////////////////////////////////////////////////////
 			currentRoom.closeRoom();

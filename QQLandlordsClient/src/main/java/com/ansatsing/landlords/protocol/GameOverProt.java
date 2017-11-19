@@ -16,7 +16,10 @@ public class GameOverProt  extends AbstractProtocol implements Serializable{
     }
 
     public GameOverProt(Socket socket) {
-        super.socket = socket;
+        //super.socket = socket;
+    }
+    public GameOverProt() {
+
     }
 
     @Override

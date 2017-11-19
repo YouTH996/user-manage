@@ -23,7 +23,7 @@ public abstract class AbstractProtocol {
     protected LandlordsRoomWindow landlordsRoomWindow;
     protected GameLobbyWindow gameLobbyWindow;
     protected LoginWidow loginWidow;
-    protected Socket socket;
+   // protected Socket socket;
     protected Player player;
     //从服务器端收到信息然后进行信息处理
     public void handleProt(){
@@ -53,7 +53,7 @@ public abstract class AbstractProtocol {
     public LoginWidow getLoginWidow() {
         return loginWidow;
     }
-    @Transient
+  /*  @Transient
     public Socket getSocket() {
         return socket;
     }
@@ -61,7 +61,7 @@ public abstract class AbstractProtocol {
     public void setSocket(Socket socket) {
         this.socket = socket;
     }
-
+*/
     public void setGameLobbyWindow(GameLobbyWindow gameLobbyWindow) {
         this.gameLobbyWindow = gameLobbyWindow;
     }
@@ -76,7 +76,9 @@ public abstract class AbstractProtocol {
     protected void sendMsg(String msg) {
         if(!msg.contains("HeartBeatProt"))
         LOGGER.info("客户端向服务器发送信息："+msg);
-        if(player == null){
+        System.out.println("发送的消息："  + msg);
+        if(player == null) throw new NullPointerException("player为空指针!");
+        /*if(player == null){
             PrintWriter printWriter= null;
             try {
                 // printWriter =  new PrintWriter(socket.getOutputStream(), true);//解决中文乱码问题
@@ -87,7 +89,8 @@ public abstract class AbstractProtocol {
             }
             printWriter.println(msg);
             // printWriter.close();//不能关闭 关闭了 就彻底完蛋了
-        }else{
+        }else{*/
+            if(player.getSocket() == null && player.getChannel() == null) throw new NullPointerException("player的socket或者channel为空指针!");
             if(player.getSocket() != null){
                 PrintWriter printWriter= null;
                 try {
@@ -101,10 +104,9 @@ public abstract class AbstractProtocol {
                 // printWriter.close();//不能关闭 关闭了 就彻底完蛋了
             }else if(player.getChannel()!= null){
                 player.getChannel().writeAndFlush(ByteBufAllocator.DEFAULT.buffer()
-                        .writeBytes(msg.getBytes()))
+                        .writeBytes((msg+System.getProperty("line.separator")).getBytes()))
                         .addListener(new NettyServerListener());
-                System.out.println("发送的消息：" + msg.getBytes().length + msg);
+                System.out.println("发送的消息："  + msg);
             }
-        }
     }
 }

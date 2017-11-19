@@ -50,12 +50,18 @@ public class PlayCardProt  extends AbstractProtocol implements Serializable {
 
     public PlayCardProt(boolean isLandlord, int nextSeatNum, String cards, Socket socket,int seatNum) {
         this.cards = cards;
-        super.socket = socket;
+       // super.socket = socket;
         this.isLandlord = isLandlord;
         this.nextSeatNum = nextSeatNum;
         this.seatNum = seatNum;
     }
-
+    public PlayCardProt(boolean isLandlord, int nextSeatNum, String cards,int seatNum) {
+        this.cards = cards;
+       // super.socket = socket;
+        this.isLandlord = isLandlord;
+        this.nextSeatNum = nextSeatNum;
+        this.seatNum = seatNum;
+    }
     @Override
     public void handleProt() {
         landlordsRoomWindow.showCardAndPlayCard(cards,nextSeatNum,isLandlord,seatNum);

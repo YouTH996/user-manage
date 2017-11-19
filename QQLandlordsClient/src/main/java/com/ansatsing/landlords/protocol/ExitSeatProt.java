@@ -33,11 +33,15 @@ public class ExitSeatProt extends AbstractProtocol implements Serializable {
 
     public ExitSeatProt() {
     }
-
     public ExitSeatProt(int seatNum, String userName, Socket socket) {
         this.seatNum = seatNum;
         this.userName = userName;
-        super.socket = socket;
+       // super.socket = socket;
+    }
+    public ExitSeatProt(int seatNum, String userName) {
+        this.seatNum = seatNum;
+        this.userName = userName;
+       // super.socket = socket;
     }
 
     @Override

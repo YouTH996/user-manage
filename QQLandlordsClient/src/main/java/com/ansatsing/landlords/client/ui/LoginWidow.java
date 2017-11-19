@@ -1,22 +1,14 @@
 package com.ansatsing.landlords.client.ui;
 
-import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.MenuItem;
 import java.awt.Point;
-import java.awt.PopupMenu;
 //import java.awt.SystemTray;
 //import java.awt.TrayIcon;
 import java.awt.event.*;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ConnectException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -25,11 +17,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import com.ansatsing.landlords.client.BioSocketClient;
+import com.ansatsing.landlords.client.Context;
 import com.ansatsing.landlords.client.IClient;
-import com.ansatsing.landlords.client.SocketClient;
+import com.ansatsing.landlords.client.NettyClient;
 import com.ansatsing.landlords.client.handler.SendMessageHandler;
-import com.ansatsing.landlords.client.thread.ClientReceiveThread;
+import com.ansatsing.landlords.client.thread.BioSocketThread;
 import com.ansatsing.landlords.client.thread.HeartBeatThread;
+import com.ansatsing.landlords.client.thread.NettyThread;
 import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
 import com.ansatsing.landlords.protocol.GameRegisterProt;
@@ -56,10 +51,11 @@ public class LoginWidow extends JDialog {
 	private Socket socket;
 	private JLabel errorTip;//提示信息
 	private SendMessageHandler messageHandler;
-	private ClientReceiveThread qqClientHandler;
+	private BioSocketThread qqClientHandler;
 	private Player player;
 	private HeartBeatThread heartBeatThread;
-	public LoginWidow(/*Socket socket,ClientReceiveThread qqClientHandler*/) {
+	private volatile Context context;
+	public LoginWidow( ) {
 		initGUI();
 		//pack();
 		//initTrayIcon();
@@ -67,8 +63,10 @@ public class LoginWidow extends JDialog {
 		setLocationRelativeTo(null);
 		setVisible(true);
 		//this.socket = socket;
-		this.messageHandler = new SendMessageHandler(socket);
+		//this.messageHandler = new SendMessageHandler(socket);
 		//this.qqClientHandler = qqClientHandler;
+		//this.context = context;
+		//context.setLoginWidow(this);
 
 	}
 
@@ -230,18 +228,23 @@ public class LoginWidow extends JDialog {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				System.out.println("000000000");
 				if(userNameField.getText().equals("")) {
 					errorTip.setText("网名不能为空!");
-					return ;
 				}else {
-					if(qqClientHandler == null){
+
+						context = new Context();
 						player = new Player();
-						startReceiveThread(player);
-					}
-					if(player.getSocket() != null){
-						GameRegisterProt registerProt = new GameRegisterProt(userNameField.getText().trim(),player.getSocket());
+						context.setLoginWidow(LoginWidow.this);
+						context.setPlayer(player);
+						startConnectServer(false);
+						for(;;){
+							if(context.getPlayer().getChannel() != null || context.getPlayer().getSocket() != null) break;
+						}
+						AbstractProtocol registerProt = new GameRegisterProt(userNameField.getText().trim());
+						registerProt.setPlayer(player);
 						registerProt.sendMsg();
-					}
+					//}
 
 					/////////////////////////下面信息没有无限扩展的老代码////////////////////////////
 					/*
@@ -276,9 +279,11 @@ public class LoginWidow extends JDialog {
 	public void handleGameRegister(boolean registerSuccessful,AbstractProtocol protocol){
 		if(registerSuccessful){
 			 //heartBeatThread = new HeartBeatThread(player);//netty自带心跳机制
-			GameLobbyWindow qqGameWindow = new GameLobbyWindow(player.getSocket(),userNameField.getText().trim(),qqClientHandler);
+			//GameLobbyWindow qqGameWindow = new GameLobbyWindow(userNameField.getText().trim(),qqClientHandler);
+			player.setUserName(userNameField.getText().trim());
+			GameLobbyWindow qqGameWindow = new GameLobbyWindow(player,context);
 			protocol.setGameLobbyWindow(qqGameWindow);
-
+			context.setQqGameWindow(qqGameWindow);
 			//new Thread(heartBeatThread).start();
 			dispose();//仅仅关闭窗体
 		}else{
@@ -296,37 +301,20 @@ public class LoginWidow extends JDialog {
 		System.exit(0);
 	}
 	//启动信息接收线程
-	private void startReceiveThread(Player player){
+	private void startConnectServer(boolean isNetty){
 		try{
-			IClient iClient = new SocketClient(player);
-			iClient.connectServer();
-			qqClientHandler = new ClientReceiveThread(player.getSocket(),player);
-			qqClientHandler.setLoginWidow(this);
-			Thread thread = new Thread(qqClientHandler);
-			thread.start();
+			IClient client = null;
+			if(!isNetty){
+				client = new BioSocketClient(context);
+			}else{
+				client = new NettyClient(context);
+			}
+			if(client == null) throw new NullPointerException("客户端连接器为空!");
+			client.connectServer();
+
 		}catch (Exception e){
 			errorTip.setText("游戏服务器未开启！");
 			return;
 		}
-		///////////////////////////////////////////////////
-		/*String host = "39.108.166.35";
-		//String host = "localhost";
-		int port = 6789;
-		Socket socket = null;
-		try {
-			socket = new Socket(host, port);
-			qqClientHandler = new ClientReceiveThread(socket,player);
-			qqClientHandler.setLoginWidow(this);
-			this.socket = socket;
-			Thread thread = new Thread(qqClientHandler);
-			thread.start();
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}*/
-		//////////////////////////////////////////////////////
 	}
 }

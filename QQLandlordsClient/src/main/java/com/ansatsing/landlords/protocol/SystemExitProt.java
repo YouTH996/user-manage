@@ -21,10 +21,14 @@ public class SystemExitProt  extends AbstractProtocol implements Serializable {
 
     public SystemExitProt(String userName,Socket socket) {
         this.userName = userName;
-        super.socket = socket;
+       // super.socket = socket;
     }
     public SystemExitProt(Socket socket) {
-        super.socket = socket;
+       // super.socket = socket;
+    }
+    public SystemExitProt(String userName) {
+        this.userName = userName;
+        // super.socket = socket;
     }
 
     @Override

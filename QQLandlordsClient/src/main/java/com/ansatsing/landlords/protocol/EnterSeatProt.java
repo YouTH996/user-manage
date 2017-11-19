@@ -35,7 +35,12 @@ public class EnterSeatProt extends AbstractProtocol implements Serializable {
     public EnterSeatProt(int seatNum, String userName, Socket socket) {
         this.seatNum = seatNum;
         this.userName = userName;
-        super.socket = socket;
+        //super.socket = socket;
+    }
+    public EnterSeatProt(int seatNum, String userName) {
+        this.seatNum = seatNum;
+        this.userName = userName;
+        //super.socket = socket;
     }
 
     @Override

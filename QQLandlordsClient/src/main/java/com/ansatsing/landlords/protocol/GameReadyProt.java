@@ -30,9 +30,13 @@ public class GameReadyProt extends AbstractProtocol implements Serializable{
     public GameReadyProt(int readyFlag, int seatNum, Socket socket) {
         this.readyFlag = readyFlag;
         this.seatNum = seatNum;
-        super.socket = socket;
+      //  super.socket = socket;
     }
-
+    public GameReadyProt(int readyFlag, int seatNum) {
+        this.readyFlag = readyFlag;
+        this.seatNum = seatNum;
+        //  super.socket = socket;
+    }
     public GameReadyProt() {
     }
     @Override

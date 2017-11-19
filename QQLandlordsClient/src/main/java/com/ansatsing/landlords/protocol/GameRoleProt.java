@@ -20,9 +20,14 @@ public class GameRoleProt extends AbstractProtocol implements Serializable {
         this.nextSeatNum = nextSeatNum;//下一个抢地主位置
         this.userName = userName;//当前抢地主的用户
         this.roleFlag = roleFlag;
-        super.socket = socket;
+        //super.socket = socket;
     }
-
+    public GameRoleProt(int nextSeatNum, String userName, int roleFlag) {
+        this.nextSeatNum = nextSeatNum;//下一个抢地主位置
+        this.userName = userName;//当前抢地主的用户
+        this.roleFlag = roleFlag;
+        //super.socket = socket;
+    }
     public int getNextSeatNum() {
         return nextSeatNum;
     }

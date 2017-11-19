@@ -20,6 +20,7 @@ import javax.swing.JTextArea;
 
 import com.ansatsing.landlords.client.thread.PlayCountDownThread;
 import com.ansatsing.landlords.entity.OutCard;
+import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.protocol.*;
 import com.ansatsing.landlords.util.Constants;
 import org.slf4j.Logger;
@@ -65,7 +66,6 @@ public class LandlordsRoomWindow extends JFrame {
 	private JLabel rightUserName;
 	private JLabel[] topCards;
 	private String userName;
-	private SendMessageHandler messageHandler;
 	private JLabel time;//当前牌友的倒计时
 	private JLabel rob ;
 	private JLabel noRob;
@@ -109,7 +109,6 @@ public class LandlordsRoomWindow extends JFrame {
 	private boolean isOutCard = true;//默认是出牌的
 	private JLabel centerCards[] = new JLabel[12];//最多一次只能出12张牌
 	private JLabel playResult ;//斗地主输赢显示器
-	private Socket socket;
 	private GameLobbyWindow gameLobbyWindow;
 	private OutCard lastOutCard;//上家出的牌
 	private OutCard currentOutCard;//当前位置出的牌
@@ -117,19 +116,19 @@ public class LandlordsRoomWindow extends JFrame {
 	private int cardsX ;//自己牌的第一张拍的x坐标
 	private int cardsY;
 	private PlayCountDownThread playCountDownThread;
+	private Player player;
 	//private List<String> otherPlayCards = new ArrayList<>();//
 	public static void main(String[] args) {
 		//new LandlordsRoomWindow();
 	}
-	public LandlordsRoomWindow(JLabel seat,int seatNum,String userName,Socket socket,GameLobbyWindow gameLobbyWindow) {
-		this.userName = userName;
+	public LandlordsRoomWindow(JLabel seat, int seatNum, Player player, GameLobbyWindow gameLobbyWindow) {
+		this.userName = player.getUserName();
 		initGUI();
 		initListener();
 		this.seatNum = seatNum;
 		this.seat = seat;
-		this.messageHandler = new SendMessageHandler(socket);
-		this.socket = socket;
 		this.gameLobbyWindow = gameLobbyWindow;
+		this.player = player;
 	}
 	private void initGUI() {
 		setTitle("开房斗地主---" +userName);
@@ -393,7 +392,8 @@ public class LandlordsRoomWindow extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (!sendMsg.getText().trim().equals("")) {
 					////////////////////////////////////////////
-					ChatMsgProt chatMsgProt = new ChatMsgProt(2,userName,userName+"说："+sendMsg.getText().trim(),seatNum,socket);
+					AbstractProtocol chatMsgProt = new ChatMsgProt(2,userName,userName+"说："+sendMsg.getText().trim(),seatNum);
+					chatMsgProt.setPlayer(player);
 					chatMsgProt.sendMsg();
 					setHistoryMsg("你说:" + sendMsg.getText().trim());
 					/*String msg = sendMsg.getText().trim();
@@ -424,7 +424,8 @@ public class LandlordsRoomWindow extends JFrame {
 					centerCards[i].setIcon(null);
 				}
 				/////////////////////////////////
-				GameReadyProt gameReadyProt = new GameReadyProt(1,seatNum,socket);
+				AbstractProtocol gameReadyProt = new GameReadyProt(1,seatNum);
+				gameReadyProt.setPlayer(player);
 				gameReadyProt.sendMsg();
 				//messageHandler.sendGameReadyMsg("1");//1代表准备好
 				/////////////////////////////////////
@@ -515,7 +516,8 @@ public class LandlordsRoomWindow extends JFrame {
 			//return;
 		}
 		///////////////////////////////////////////////////////////
-		ExitSeatProt exitSeatProt = new ExitSeatProt(seatNum,userName,socket);
+		AbstractProtocol exitSeatProt = new ExitSeatProt(seatNum,userName);
+		exitSeatProt.setPlayer(player);
 		exitSeatProt.sendMsg();
 		gameLobbyWindow.setLandlordsRoomtoNull();
 		//messageHandler.sendExitSeatMsg(String.valueOf(seatNum));
@@ -763,9 +765,9 @@ public class LandlordsRoomWindow extends JFrame {
 			}
 		}
 	}
-	public void sendDealMsg() {
+	/*public void sendDealMsg() {
 		messageHandler.sendGameDealMsg(userName);
-	}
+	}*/
 	//把自己的抢地主信息通知其他2位牌友:   消息格式：username=角色=(seatNUm+1)  ； (seatNUm+1)-->意味轮到这个座位号的人抢地主
 	public void sendRobMsg(String msg) {
 		if(msg.equals("2")){//把其他地主更新为农民
@@ -783,7 +785,8 @@ public class LandlordsRoomWindow extends JFrame {
 		rob.setVisible(false);
 		noRob.setVisible(false);
 		///////////////////////////////////////////////////////
-		GameRoleProt gameRoleProt = new  GameRoleProt( (seatNum+1),  userName,  Integer.parseInt(msg),  socket);
+		AbstractProtocol gameRoleProt = new  GameRoleProt( (seatNum+1),  userName,  Integer.parseInt(msg));
+		gameRoleProt.setPlayer(player);
 		gameRoleProt.sendMsg();
 		//messageHandler.sendGameRobMsg(userName+"="+msg+"="+(seatNum+1));
 		////////////////////////////////////////////////////////
@@ -989,7 +992,8 @@ public class LandlordsRoomWindow extends JFrame {
 	//全部是农民重启新一轮游戏准备
 	public void restartGameReady(){
 		//要把未准备的信息 告知服务器端，因为新的一轮 每个人的准备状态信息都是未准备
-		messageHandler.sendGameReadyMsg("0");
+		//messageHandler.sendGameReadyMsg("0");
+
 		playerRole.setText("角色");
 		leftPlayerRole.setText("角色");
 		rightPlayerRole.setText("角色");
@@ -1220,7 +1224,8 @@ public class LandlordsRoomWindow extends JFrame {
 		}
 		////////////////////////////////////////////////////
 		boolean isLandord = playerRole.getText().equals("地主")?true:false;
-		PlayCardProt playCardProt = new PlayCardProt(isLandord,seat_num,msg,socket,this.seatNum);
+		AbstractProtocol playCardProt = new PlayCardProt(isLandord,seat_num,msg,this.seatNum);
+		playCardProt.setPlayer(player);
 		playCardProt.sendMsg();
 		//messageHandler.sendPlayCardMsg(msg+"="+seat_num);
 		///////////////////////////////////////////////////
@@ -1236,7 +1241,8 @@ public class LandlordsRoomWindow extends JFrame {
 		if(cardList.size() == 0){
             cardList.clear();//每次游戏结束清理变量
 			///////////////////////////////////////////////////
-			GameOverProt gameOverProt = new GameOverProt(socket);
+			AbstractProtocol gameOverProt = new GameOverProt();
+			gameOverProt.setPlayer(player);
 			gameOverProt.sendMsg();
 			//messageHandler.sendGameOverMsg(userName+"="+seatNum);
 			//////////////////////////////////////////
@@ -1308,7 +1314,8 @@ public class LandlordsRoomWindow extends JFrame {
 		//游戏结束,发送信号
 		if(seat_num == -1){
 			///////////////////////////////////////////////////
-			GameOverProt gameOverProt = new GameOverProt(socket);
+			AbstractProtocol gameOverProt = new GameOverProt();
+			gameOverProt.setPlayer(player);
 			gameOverProt.sendMsg();
 			//messageHandler.sendGameOverMsg(userName+"="+seatNum);
 			//////////////////////////////////////////
