@@ -12,7 +12,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
+import java.net.ConnectException;
 import java.nio.charset.Charset;
 
 public class NettyThread implements Runnable{
@@ -21,8 +24,8 @@ public class NettyThread implements Runnable{
         this.context = context;
     }
 
-    @Override
-    public void run() {
+
+    public void  run() {
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         try{
@@ -40,13 +43,32 @@ public class NettyThread implements Runnable{
                             pipeline.addLast(new NettyClientHandler(context));
                         }
                     });
-            ChannelFuture future = bootstrap.connect("127.0.0.1",6789).sync();
+            ChannelFuture future = null;
+            try {
+                future = bootstrap.connect("127.0.0.1",6789).sync();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            future.addListener(new GenericFutureListener<Future<? super Void>>() {
+                @Override
+                public void operationComplete(Future<? super Void> future) throws Exception {
+                    if(future.isSuccess()){
+                        context.setConnect(true);
+                    }else{
+                        context.setConnect(false);
+                    }
+                }
+            });
             context.getPlayer().setChannel(future.channel());
-            future.channel().closeFuture().sync();
+            try {
+                future.channel().closeFuture().sync();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }finally {
+        }catch (Exception e){
+            System.out.println("异常："+e.getMessage());
+        }  finally{
             group.shutdownGracefully();
         }
     }

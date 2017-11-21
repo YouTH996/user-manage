@@ -237,13 +237,15 @@ public class LoginWidow extends JDialog {
 						player = new Player();
 						context.setLoginWidow(LoginWidow.this);
 						context.setPlayer(player);
-						startConnectServer(false);
-						for(;;){
-							if(context.getPlayer().getChannel() != null || context.getPlayer().getSocket() != null) break;
+						startConnectServer(true);
+						if(!context.isConnect()){
+							errorTip.setText("服务器未启动!");
+						}else {
+							AbstractProtocol registerProt = new GameRegisterProt(userNameField.getText().trim());
+							registerProt.setPlayer(player);
+							registerProt.sendMsg();
 						}
-						AbstractProtocol registerProt = new GameRegisterProt(userNameField.getText().trim());
-						registerProt.setPlayer(player);
-						registerProt.sendMsg();
+
 					//}
 
 					/////////////////////////下面信息没有无限扩展的老代码////////////////////////////
@@ -302,19 +304,16 @@ public class LoginWidow extends JDialog {
 	}
 	//启动信息接收线程
 	private void startConnectServer(boolean isNetty){
-		try{
+		//try{
 			IClient client = null;
+			String host = "127.0.0.1";
+			int port = 6789;
 			if(!isNetty){
-				client = new BioSocketClient(context);
+				client = new BioSocketClient(context,host,port);
 			}else{
 				client = new NettyClient(context);
 			}
 			if(client == null) throw new NullPointerException("客户端连接器为空!");
 			client.connectServer();
-
-		}catch (Exception e){
-			errorTip.setText("游戏服务器未开启！");
-			return;
-		}
 	}
 }

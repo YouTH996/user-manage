@@ -15,9 +15,15 @@ public class BioSocketClient implements  IClient {
         this.host = host;
         this.port = port;
     }
-    public void connectServer() throws IOException{
+    public void connectServer(){
         Socket socket = null;
-        socket = new Socket(host, port);
+        try {
+            socket = new Socket(host, port);
+            context.setConnect(true);
+        } catch (IOException e) {
+            context.setConnect(false);
+            e.printStackTrace();
+        }
         this.context.getPlayer().setSocket(socket);
         new Thread(new BioSocketThread(context)).start();
 

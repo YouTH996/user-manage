@@ -8,7 +8,9 @@ public class NettyClient implements  IClient{
         this.context = context;
     }
     public void connectServer() {
-        new Thread(new NettyThread(context)).start();
+       NettyThread nettyThread = new NettyThread(context);
+        //FutureTask<String> result = new FutureTask<String>(nettyThread);
+        new Thread(nettyThread).start();
 
     }
 }
