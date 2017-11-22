@@ -19,13 +19,12 @@ public class BioSocketClient implements  IClient {
         Socket socket = null;
         try {
             socket = new Socket(host, port);
-            context.setConnect(true);
+            this.context.getPlayer().setSocket(socket);
+            new Thread(new BioSocketThread(context)).start();
+            context.getLoginWidow().handleLogin(true);
         } catch (IOException e) {
-            context.setConnect(false);
-            e.printStackTrace();
+            System.out.println("连接服务器异常："+e.getMessage());
+            context.getLoginWidow().handleLogin(false);
         }
-        this.context.getPlayer().setSocket(socket);
-        new Thread(new BioSocketThread(context)).start();
-
     }
 }

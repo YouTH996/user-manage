@@ -5,6 +5,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -168,7 +169,16 @@ public class GameLobbyWindow extends JFrame {
 				AbstractProtocol systemExitProt = new SystemExitProt(userName);
 				systemExitProt.setPlayer(player);
 				systemExitProt.sendMsg();
-				qqClientHandler.stop();// 收信息的线程停止
+				//qqClientHandler.stop();// 收信息的线程停止
+				if(player.getSocket() != null){
+					try {
+						player.getSocket().close();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}else if(player.getChannel() != null){
+					player.getChannel().closeFuture();
+				}
 			}
 		});
 		// 消息发送事件

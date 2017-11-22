@@ -228,7 +228,6 @@ public class LoginWidow extends JDialog {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("000000000");
 				if(userNameField.getText().equals("")) {
 					errorTip.setText("网名不能为空!");
 				}else {
@@ -237,45 +236,20 @@ public class LoginWidow extends JDialog {
 						player = new Player();
 						context.setLoginWidow(LoginWidow.this);
 						context.setPlayer(player);
-						startConnectServer(true);
-						if(!context.isConnect()){
-							errorTip.setText("服务器未启动!");
-						}else {
-							AbstractProtocol registerProt = new GameRegisterProt(userNameField.getText().trim());
-							registerProt.setPlayer(player);
-							registerProt.sendMsg();
-						}
-
-					//}
-
-					/////////////////////////下面信息没有无限扩展的老代码////////////////////////////
-					/*
-					try {
-						messageHandler.sendUsernameMSg(userNameField.getText().trim());
-						BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-						String readMsg = null;
-						while(true){//应付网名重复
-							readMsg = bufferedReader.readLine();
-							if(readMsg != null) {
-								break;
-							}
-						}
-						if(readMsg.equals("这个网名可以啦!")) {//进入聊天室
-							GameLobbyWindow qqGameWindow = new GameLobbyWindow(socket,userNameField.getText().trim());
-							//System.exit(0);
-							dispose();//仅仅关闭窗体
-						}else {//重新输入网名
-							errorTip.setText("这网名有人正在使用,请更换网名!");
-							userNameField.setText("");
-						}
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}*/
+						startConnectServer(false);
 				}
 			}
 			
 		});
+	}
+	public void handleLogin(boolean isConnected){
+		if(!isConnected){
+			errorTip.setText("服务器未启动!");
+		}else{
+			AbstractProtocol registerProt = new GameRegisterProt(userNameField.getText().trim());
+			registerProt.setPlayer(player);
+			registerProt.sendMsg();
+		}
 	}
 	//当收到服务器返回的注册信息时 进行如下处理
 	public void handleGameRegister(boolean registerSuccessful,AbstractProtocol protocol){
@@ -311,7 +285,7 @@ public class LoginWidow extends JDialog {
 			if(!isNetty){
 				client = new BioSocketClient(context,host,port);
 			}else{
-				client = new NettyClient(context);
+				client = new NettyClient(context,host,port);
 			}
 			if(client == null) throw new NullPointerException("客户端连接器为空!");
 			client.connectServer();

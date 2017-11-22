@@ -20,8 +20,12 @@ import java.nio.charset.Charset;
 
 public class NettyThread implements Runnable{
     private volatile Context context;
-    public NettyThread(Context context){
+    private  final String host;
+    private  final  int port;
+    public NettyThread(Context context,String host,int port){
         this.context = context;
+        this.host = host;
+        this.port = port;
     }
 
 
@@ -45,21 +49,12 @@ public class NettyThread implements Runnable{
                     });
             ChannelFuture future = null;
             try {
-                future = bootstrap.connect("127.0.0.1",6789).sync();
+                future = bootstrap.connect(host,port).sync();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            future.addListener(new GenericFutureListener<Future<? super Void>>() {
-                @Override
-                public void operationComplete(Future<? super Void> future) throws Exception {
-                    if(future.isSuccess()){
-                        context.setConnect(true);
-                    }else{
-                        context.setConnect(false);
-                    }
-                }
-            });
             context.getPlayer().setChannel(future.channel());
+            context.getLoginWidow().handleLogin(future.isSuccess());
             try {
                 future.channel().closeFuture().sync();
             } catch (InterruptedException e) {
@@ -67,6 +62,7 @@ public class NettyThread implements Runnable{
             }
 
         }catch (Exception e){
+            context.getLoginWidow().handleLogin(false);
             System.out.println("异常："+e.getMessage());
         }  finally{
             group.shutdownGracefully();

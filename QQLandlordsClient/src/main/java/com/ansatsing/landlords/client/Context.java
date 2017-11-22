@@ -10,7 +10,6 @@ public class Context {
     private volatile LoginWidow loginWidow;
     private volatile LandlordsRoomWindow landlordsRoomWindow;
     private Player player;
-    private volatile boolean isConnect = false;
 
     public GameLobbyWindow getQqGameWindow() {
         return qqGameWindow;
@@ -44,11 +43,4 @@ public class Context {
         this.player = player;
     }
 
-    public boolean isConnect() {
-        return isConnect;
-    }
-
-    public void setConnect(boolean connect) {
-        isConnect = connect;
-    }
 }
