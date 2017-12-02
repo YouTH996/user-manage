@@ -64,8 +64,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        LOGGER.error("出现异常:",cause.getMessage());
         if(player!=null){
-            LOGGER.info("{}退出系统时,player.getSeatNum():",player.getSeatNum());
+            LOGGER.info("{}异常退出系统时,player.getSeatNum():",player.getSeatNum());
             if(player.getSeatNum() > -1){
                 if(player.getGameStatus() == 1){//在游戏中的处理逻辑
                     //todo

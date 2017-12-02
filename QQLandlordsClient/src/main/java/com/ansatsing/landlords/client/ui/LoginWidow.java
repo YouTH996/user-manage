@@ -236,7 +236,7 @@ public class LoginWidow extends JDialog {
 						player = new Player();
 						context.setLoginWidow(LoginWidow.this);
 						context.setPlayer(player);
-						startConnectServer(false);
+						startConnectServer(true);
 				}
 			}
 			
@@ -246,6 +246,7 @@ public class LoginWidow extends JDialog {
 		if(!isConnected){
 			errorTip.setText("服务器未启动!");
 		}else{
+			context.setLoginSuccess(true);
 			AbstractProtocol registerProt = new GameRegisterProt(userNameField.getText().trim());
 			registerProt.setPlayer(player);
 			registerProt.sendMsg();

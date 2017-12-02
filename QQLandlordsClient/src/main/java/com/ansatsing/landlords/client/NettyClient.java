@@ -12,9 +12,15 @@ public class NettyClient implements  IClient{
         this.port = port;
     }
     public void connectServer() {
-       NettyThread nettyThread = new NettyThread(context,host,port);
-        //FutureTask<String> result = new FutureTask<String>(nettyThread);
-        new Thread(nettyThread).start();
-
+            NettyThread nettyThread = new NettyThread(context,host,port);
+            //FutureTask<String> result = new FutureTask<String>(nettyThread);
+           Thread thread =  new Thread(nettyThread);
+           thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+               @Override
+               public void uncaughtException(Thread t, Throwable e) {
+                   System.out.println("连接服务器时异常1："+e.getMessage());
+               }
+           });
+           thread.start();
     }
 }

@@ -6,10 +6,16 @@ import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 import com.ansatsing.landlords.client.ui.LoginWidow;
 import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
+import com.ansatsing.landlords.util.Constants;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientHandler.class);
@@ -21,11 +27,14 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
     private Player player;*/
     private volatile Context context;
     private AbstractProtocol protocol;
-    public NettyClientHandler(Context context){
+    private Bootstrap bootstrap;
+    private static int reconnetNums = 0;
+    public NettyClientHandler(Context context,Bootstrap bootstrap){
        /* this.player = context.getPlayer();
         this.landlordsRoomWindow = context.getLandlordsRoomWindow();
         this.loginWidow = context.getLoginWidow();
         this.qqGameWindow = context.getQqGameWindow();*/
+        this.bootstrap = bootstrap;
         this.context =context;
     }
     @Override
@@ -70,9 +79,42 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        reconnetNums = 0;
         if(context.getPlayer() == null) throw new NullPointerException("player为空!");
         context.getPlayer().setChannel(ctx.channel());
         System.out.println("channelActivechannelActive");
+    }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        if(context.isLoginSuccess()){
+            if(reconnetNums >= Constants.RECONNECT_NUM){
+                System.out.printf("已经连续重连服务器%d次啦，哎呀算了不玩这游戏了....\n",reconnetNums);
+                bootstrap.group().shutdownGracefully();
+                return;
+            }
+            reconnetNums++;
+            System.out.printf("掉线了，3秒后将进行第%d次重连服务器....\n",reconnetNums);
+            ctx.channel().eventLoop().schedule(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        bootstrap.connect().addListener(new ChannelFutureListener() {
+                            @Override
+                            public void operationComplete(ChannelFuture future) throws Exception {
+                                if(future.cause() != null){
+                                    System.out.printf("重连出现异常：%s,可能是服务器没有开启！\n",future.cause().getMessage());
+                                }else {
+                                    System.out.printf("第%d次重连成功!",reconnetNums);
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            },2, TimeUnit.SECONDS);
+        }
     }
 
     //停止线程

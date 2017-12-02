@@ -10,7 +10,7 @@ public class Context {
     private volatile LoginWidow loginWidow;
     private volatile LandlordsRoomWindow landlordsRoomWindow;
     private Player player;
-
+    private boolean loginSuccess = false;//登录是否成功，用于判断释放重连服务器
     public GameLobbyWindow getQqGameWindow() {
         return qqGameWindow;
     }
@@ -43,4 +43,11 @@ public class Context {
         this.player = player;
     }
 
+    public boolean isLoginSuccess() {
+        return loginSuccess;
+    }
+
+    public void setLoginSuccess(boolean loginSuccess) {
+        this.loginSuccess = loginSuccess;
+    }
 }
