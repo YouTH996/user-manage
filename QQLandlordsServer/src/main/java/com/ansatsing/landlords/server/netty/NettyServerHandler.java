@@ -33,6 +33,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<String> {
     }
 
     protected void channelRead0(ChannelHandlerContext ctx, String readMsg) throws Exception {
+        if(!readMsg.contains("HeartBeatProt"))
         LOGGER.info("{}向服务器发送了消息：{}", (player.getUserName() == null ? "未登陆的" : player.getUserName()), readMsg);
         try {
             int endIdx = readMsg.indexOf("{");
