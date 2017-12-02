@@ -6,12 +6,15 @@ import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 import com.ansatsing.landlords.client.ui.LoginWidow;
 import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
+import com.ansatsing.landlords.protocol.HeartBeatProt;
 import com.ansatsing.landlords.util.Constants;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,5 +123,21 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
     //停止线程
     public void stop() {
         this.isStop = true;
+    }
+
+    /**
+     *持续没有读写事件多少秒后就触发发送心跳包到服务器
+     * @param ctx
+     * @param evt
+     * @throws Exception
+     */
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if(!(evt instanceof IdleStateEvent)) return;
+        IdleStateEvent event = (IdleStateEvent)evt;
+        if(event.state() == IdleState.ALL_IDLE){
+            AbstractProtocol heartBeatProt = new HeartBeatProt(context.getPlayer());
+            heartBeatProt.sendMsg();
+        }
     }
 }

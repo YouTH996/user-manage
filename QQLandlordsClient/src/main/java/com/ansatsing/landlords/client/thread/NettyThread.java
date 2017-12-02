@@ -2,6 +2,7 @@ package com.ansatsing.landlords.client.thread;
 
 import com.ansatsing.landlords.client.Context;
 import com.ansatsing.landlords.client.NettyClientHandler;
+import com.ansatsing.landlords.util.Constants;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -12,9 +13,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
 
 public class NettyThread implements Runnable {
     private volatile Context context;
@@ -41,6 +43,7 @@ public class NettyThread implements Runnable {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
                             ByteBuf delimiter = Unpooled.copiedBuffer(System.getProperty("line.separator").getBytes());
+                            pipeline.addLast(new IdleStateHandler(0,0, Constants.CLIENT_IDLE_TIMEOUT, TimeUnit.SECONDS));
                             pipeline.addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
                             pipeline.addLast(new StringDecoder(Charset.forName("UTF-8")));
                             pipeline.addLast(new StringEncoder(Charset.forName("UTF-8")));

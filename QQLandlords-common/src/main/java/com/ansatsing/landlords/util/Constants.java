@@ -2,6 +2,8 @@ package com.ansatsing.landlords.util;
 
 public class Constants {
 	public final  static int RECONNECT_NUM = 5;//掉线重连次数
+	public final  static int CLIENT_IDLE_TIMEOUT = 4;//客户端读写空闲时间
+	public final  static int SERVER_IDLE_TIMEOUT = 10;//服务器端读写空闲时间
 	public final  static String PROT_PACK_NAME = "com.ansatsing.landlords.entity.protocol";//斗地主协议包名
 	public final static  int CARD_WIDTH = 105;//牌的宽度
 	public final static  int CARD_HEIGHT = 150;//牌的高度
