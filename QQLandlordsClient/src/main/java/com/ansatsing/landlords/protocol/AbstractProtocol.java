@@ -5,6 +5,7 @@ import com.ansatsing.landlords.client.ui.GameLobbyWindow;
 import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
 import com.ansatsing.landlords.client.ui.LoginWidow;
 import com.ansatsing.landlords.entity.Player;
+import com.ansatsing.landlords.util.Constants;
 import io.netty.buffer.ByteBufAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,8 +92,8 @@ public abstract class AbstractProtocol {
                 // printWriter.close();//不能关闭 关闭了 就彻底完蛋了
             }else if(player.getChannel()!= null){
                 player.getChannel().writeAndFlush(ByteBufAllocator.DEFAULT.buffer()
-                        .writeBytes((msg+System.getProperty("line.separator")).getBytes()))
-                        .addListener(new NettyServerListener());
+                        .writeBytes((msg+ Constants.LINE_SEPARATOR).getBytes()));
+                       // .addListener(new NettyServerListener());
             }
     }
 }
