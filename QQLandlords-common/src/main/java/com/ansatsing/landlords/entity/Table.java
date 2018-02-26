@@ -10,15 +10,15 @@ import java.util.List;
  */
 public class Table {
 
-	private String cards;
-	private List<Player> players = new ArrayList<Player>(3);
-	private boolean isWait = true;
-	private boolean isReady =false;
-	private boolean isRob =false;
-	private boolean isDeal =false;
-	private boolean isPlay =false;
-	private boolean isOver = false;
-	private Player landlord;//谁是地主
+	private volatile String cards;
+	private  List<Player> players = new ArrayList<Player>(3);
+	private volatile boolean isWait = true;
+	private volatile boolean isReady =false;
+	private volatile boolean isRob =false;
+	private volatile boolean isDeal =false;
+	private volatile boolean isPlay =false;
+	private volatile boolean isOver = false;
+	private  Player landlord;//谁是地主
 	public String getCards() {
 		return cards;
 	}
