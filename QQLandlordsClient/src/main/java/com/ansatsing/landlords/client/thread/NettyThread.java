@@ -42,7 +42,7 @@ public class NettyThread implements Runnable {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
-                            ByteBuf delimiter = Unpooled.copiedBuffer(System.getProperty("line.separator").getBytes());
+                            ByteBuf delimiter = Unpooled.copiedBuffer(Constants.LINE_SEPARATOR.getBytes());
                             pipeline.addLast(new IdleStateHandler(0,0, Constants.CLIENT_IDLE_TIMEOUT, TimeUnit.SECONDS));
                             pipeline.addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
                             pipeline.addLast(new StringDecoder(Charset.forName("UTF-8")));
