@@ -281,8 +281,8 @@ public class LoginWidow extends JDialog {
 	private void startConnectServer(boolean isNetty){
 		//try{
 			IClient client = null;
-			String host = "39.108.166.35";
-			//String host = "127.0.0.1";
+			//String host = "39.108.166.35";
+			String host = "127.0.0.1";
 			int port = 6789;
 			if(!isNetty){
 				client = new BioSocketClient(context,host,port);

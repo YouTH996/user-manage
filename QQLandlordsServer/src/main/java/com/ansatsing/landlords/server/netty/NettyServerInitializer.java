@@ -26,7 +26,7 @@ public class NettyServerInitializer extends ChannelInitializer<NioSocketChannel>
     protected void initChannel(NioSocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
         ByteBuf delimiter = Unpooled.copiedBuffer(Constants.LINE_SEPARATOR.getBytes());
-        pipeline.addLast(new IdleStateHandler(0,0, Constants.SERVER_IDLE_TIMEOUT, TimeUnit.SECONDS));
+//        pipeline.addLast(new IdleStateHandler(0,0, Constants.SERVER_IDLE_TIMEOUT, TimeUnit.SECONDS));
         pipeline.addLast(new DelimiterBasedFrameDecoder(1024,delimiter));
         pipeline.addLast(new StringDecoder(Charset.forName("UTF-8")));
         pipeline.addLast(new StringEncoder(Charset.forName("UTF-8")));

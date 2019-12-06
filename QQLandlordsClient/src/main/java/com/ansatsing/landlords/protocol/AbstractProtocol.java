@@ -76,7 +76,7 @@ public abstract class AbstractProtocol {
     }
     protected void sendMsg(String msg) {
         if(!msg.contains("HeartBeatProt"))
-        LOGGER.info("客户端向服务器发送信息："+msg);
+
         if(player == null) throw new NullPointerException("player为空指针!");
             if(player.getSocket() == null && player.getChannel() == null) throw new NullPointerException("player的socket或者channel为空指针!");
             if(player.getSocket() != null){
@@ -95,5 +95,6 @@ public abstract class AbstractProtocol {
                         .writeBytes((msg+ Constants.LINE_SEPARATOR).getBytes()));
                        // .addListener(new NettyServerListener());
             }
+            LOGGER.info("客户端向服务器发送信息："+msg);
     }
 }

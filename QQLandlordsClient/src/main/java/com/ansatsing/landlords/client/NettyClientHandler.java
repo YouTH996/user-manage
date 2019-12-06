@@ -1,10 +1,6 @@
 package com.ansatsing.landlords.client;
 
 import com.alibaba.fastjson.JSON;
-import com.ansatsing.landlords.client.ui.GameLobbyWindow;
-import com.ansatsing.landlords.client.ui.LandlordsRoomWindow;
-import com.ansatsing.landlords.client.ui.LoginWidow;
-import com.ansatsing.landlords.entity.Player;
 import com.ansatsing.landlords.protocol.AbstractProtocol;
 import com.ansatsing.landlords.protocol.HeartBeatProt;
 import com.ansatsing.landlords.util.Constants;
@@ -42,7 +38,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
     }
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String readMsg) throws Exception {
-        LOGGER.info("从服务器收到的消息：{}", readMsg);
+        LOGGER.info("从服务器收到的消息1：{}", readMsg);
         int endIdx = readMsg.indexOf("{");
         String className = readMsg.substring(0, endIdx);
         String classContent = readMsg.substring(endIdx);
@@ -65,10 +61,12 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
         protocol.setGameLobbyWindow(context.getQqGameWindow());
         protocol.setLandlordsRoomWindow(context.getLandlordsRoomWindow());
         protocol.handleProt();
+        LOGGER.info("从服务器收到的消息2：{}", readMsg);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
         LOGGER.error("客户端信息接受线程出现异常：" + cause.getMessage());
         ctx.channel().close();
         if (context.getLandlordsRoomWindow() != null) {
